@@ -101,39 +101,5 @@ namespace AsciiUml {
 
 			return result.ToArray();
 		}
-
-		public static List<Coord> TooOptimisticPathFromPointToPoint(Coord from, Coord to, Canvass c) {
-			if (from.Equals(to))
-				return new List<Coord>();
-
-			var res = new List<Coord>();
-			res.Add(from);
-
-			var alreadyOnRoute = new HashSet<Coord>();
-			alreadyOnRoute.Add(from);
-
-			while (true) {
-				if (res.Count > 50)
-					Console.WriteLine("wooops");
-
-				//Console.WriteLine("step from =" + res.Last());
-				var stepPotentials = PaintServiceCore.CalculateBoxOutline(res.Last());
-
-				if (stepPotentials.Any(x => x.Equals(to))) {
-					res.Add(to);
-					return res;
-				}
-
-				var filteredPotentials = stepPotentials
-					.Where(x => !alreadyOnRoute.Contains(x))
-					.Where(x => c.IsCellFree(x.X, x.Y))
-					.ToArray();
-
-				var smallest = PaintServiceCore.CalcSmallestDist(filteredPotentials, new[] {to}).Min;
-
-				res.Add(smallest);
-				alreadyOnRoute.Add(smallest);
-			}
-		}
 	}
 }

@@ -152,30 +152,6 @@ namespace AsciiUml {
 			c.Paint(coord.X, coord.Y, CalculateDirectionArrowHead(line[i - 1], coord), l.Id);
 		}
 
-
-		public static void PaintLine(Canvass c, Line l, List<IPaintable<object>> model) {
-			var fromBox = (Box) model.First(x => x.Id == l.FromId);
-			var toBox = (Box) model.First(x => x.Id == l.ToId);
-			var smallestDist = CalcStartAndEndSmallestDist(fromBox, toBox);
-
-			var line = ShortestPathFinder.TooOptimisticPathFromPointToPoint(smallestDist.Min, smallestDist.Max, c);
-			if (line.Count < 2)
-				return;
-
-			Coord coord;
-
-			// dont draw first nor 2-last elements. First/last elements are box-frames
-			int i = 1;
-			for (; i < line.Count - 2; i++) {
-				coord = line[i];
-				c.Paint(coord.X, coord.Y, CalculateDirectionLine(line[i - 1], coord, line[i + 1]), l.Id);
-			}
-
-			// secondlast element is the arrow head
-			coord = line[i];
-			c.Paint(coord.X, coord.Y, CalculateDirectionArrowHead(line[i - 1], coord), l.Id);
-		}
-
 		public static Coord[] CalculateBoxOutline(Coord b) {
 			return Box.GetFrameCoords(b.X - 1, b.Y - 1, 3, 3);
 		}
