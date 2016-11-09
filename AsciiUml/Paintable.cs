@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using LanguageExt;
 
 namespace AsciiUml {
@@ -77,6 +76,8 @@ namespace AsciiUml {
 
 		public LineSegment ExtendEndpoint(int x, int y, EndpointKind kind) {
 			Coord newTo, newFrom;
+			var direction = Kind;
+
 			switch (kind) {
 				case EndpointKind.From:
 					newFrom = new Coord(From.X + x, From.Y + y);
@@ -85,11 +86,12 @@ namespace AsciiUml {
 				case EndpointKind.To:
 					newFrom = From;
 					newTo = new Coord(To.X + x, To.Y + y);
+					direction = From == To && y != 0 ? SegmentKind.Vertical : SegmentKind.Horizontal;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
 			}
-			return new LineSegment(Id, Origin, newFrom, newTo, Kind);
+			return new LineSegment(Id, Origin, newFrom, newTo, direction);
 		}
 	}
 
@@ -125,20 +127,18 @@ namespace AsciiUml {
 		}
 
 		public SlopedLine Drag(Coord dragFrom, Coord dragTo) {
-			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => null);
+			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
 		}
 
 		public Option<SlopedLine> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
 			var endpoints = MatchEndpoint(dragFrom).ToList();
-			LineSegment matchedSegment;
 			if (endpoints.Any()) {
 				//if (endpoints.Count == 1)
 				{
 					var newList = Segments.ToList();
 					var match = endpoints.First();
-					matchedSegment = newList[match.Item1];
-					var deltaX = dragTo.X - matchedSegment.To.X;
-					var deltaY = dragTo.Y - matchedSegment.To.Y;
+					var deltaX = dragTo.X - dragFrom.X;
+					var deltaY = dragTo.Y - dragFrom.Y;
 
 					for (int i = match.Item1; i < newList.Count; i++)
 						newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY, match.Item2);
@@ -147,7 +147,7 @@ namespace AsciiUml {
 			}
 
 			int pos = -1;
-			matchedSegment = Segments.FirstOrDefault(s => IsPointPartOfLine(s.From, s.To, dragFrom), p => pos = p);
+			var matchedSegment = Segments.FirstOrDefault(s => IsPointPartOfLine(s.From, s.To, dragFrom), p => pos = p);
 			var noLinesAreHit = matchedSegment == null;
 			if (noLinesAreHit)
 				return null;
@@ -173,11 +173,9 @@ namespace AsciiUml {
 				var segment = Segments[i];
 
 				if (segment.From == segment.To) {
-					if (segment.From == dragFrom) {
-					}
-					yield return Tuple.Create(i, EndpointKind.From);
-					if (segment.To == dragFrom && segment.From != segment.To)
+					if (segment.To == dragFrom) {
 						yield return Tuple.Create(i, EndpointKind.To);
+					}
 				}
 				else {
 					if (segment.From == dragFrom)

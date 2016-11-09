@@ -2,9 +2,9 @@
 using System.Linq;
 using AsciiUml;
 using NUnit.Framework;
-using static ClassLibrary1.Test;
+using static AsciiUmlTests.Test;
 
-namespace ClassLibrary1 {
+namespace AsciiUmlTests {
 	public class BoxTest {
 		[Test]
 		public void FrameCoords() {

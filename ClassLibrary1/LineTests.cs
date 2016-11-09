@@ -5,9 +5,9 @@ using System.Reflection;
 using AsciiUml;
 using NUnit.Framework;
 using static LanguageExt.Prelude;
-using static ClassLibrary1.Test;
+using static AsciiUmlTests.Test;
 
-namespace ClassLibrary1 {
+namespace AsciiUmlTests {
 	public class LineTests {
 		[Test]
 		public void BoxOutline() {

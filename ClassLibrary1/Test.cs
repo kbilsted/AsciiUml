@@ -2,7 +2,7 @@ using System.Linq;
 using AsciiUml;
 using NUnit.Framework;
 
-namespace ClassLibrary1 {
+namespace AsciiUmlTests {
 	public static class Test {
 		public static void AssertString(string expected, string actual) {
 			Assert.AreEqual(expected.Replace("" + (char) 13, ""), actual.Replace("" + (char) 13, ""));

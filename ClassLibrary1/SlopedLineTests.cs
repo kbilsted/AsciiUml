@@ -1,97 +1,120 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using AsciiUml;
 using LanguageExt;
 using NUnit.Framework;
 using static LanguageExt.Prelude;
-using static ClassLibrary1.Test;
+using static AsciiUmlTests.Test;
 
-namespace ClassLibrary1 {
+namespace AsciiUmlTests {
+
 	public class SlopedLineTests {
-		Label labelX = new Label(1000, 0, 0, "x", LabelDirection.LeftToRight);
+		static Label labelX = new Label(1000, 0, 0, "x", LabelDirection.LeftToRight);
 
-		[Test]
-		public void PaintSlopedLine_2_0() {
-			var res = PaintOneLine(labelX, GetLine2_0());
-			Assert.AreEqual(@"x -", res);
+		public class SinglePoint_DragTests {
+			[Test]
+			public void Test2_0() {
+				var res = PaintOneLine(labelX, GetLine2_0());
+				Assert.AreEqual(@"x -", res);
+			}
+
+			[Test]
+			public void Test2_0_DragLeftAt_2_0() {
+				var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(1, 0));
+				var res = PaintOneLine(labelX, line);
+				Assert.AreEqual(@"x--", res);
+			}
+
+			[Test]
+			public void Test2_0_DragRightAt_2_0() {
+				var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0));
+				var res = PaintOneLine(labelX, line);
+				Assert.AreEqual(@"x --", res);
+			}
+
+			[Test]
+			public void Test2_0_DragRightDragLeft_Should_result_in_size_1()
+			{
+				var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0)).Drag(new Coord(3,0), new Coord(2,0) );
+				var res = PaintOneLine(labelX, line);
+				Assert.AreEqual(@"x -", res);
+			}
+
+			[Test]
+			public void Test2_0_DragDownAt_2_0() {
+				var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(2, 1));
+				var res = PaintOneLine(labelX, line);
+				Assert.AreEqual(@"x |
+  |", res);
+			}
+
+			[Test]
+			public void Test2_1_DragUpAt_2_1() {
+				var line = GetLine(new Coord(2, 1), new Coord(2, 1)).Drag(new Coord(2, 1), new Coord(2, 0));
+				var res = PaintOneLine(labelX, line);
+				Assert.AreEqual(@"x |
+  |", res);
+			}
 		}
 
+		public class Line_DragTests {
+			[Test]
+			public void Test1_4() {
+				var res = PaintOneLine(labelX, GetLine10_40());
+				Assert.AreEqual(@"x----", res);
+			}
 
-		[Test]
-		public void PaintSlopedLine_2_0_DragLeftAt_2_0() {
-			var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(1, 0));
-			var res = PaintOneLine(labelX, line);
-			Assert.AreEqual(@"x--", res);
+			[Test]
+			public void Drag_outside_line_has_no_effect() {
+				var res = PaintOneLine(labelX, GetLine10_40().Drag(new Coord(2,2), new Coord(2,3)));
+				Assert.AreEqual(@"x----", res);
+			}
+
+			[Test]
+			public void DragLeft_on_left_will_extend_line() {
+				var line14 = GetLine10_40().Drag(new Coord(1, 0), new Coord(0, 0));
+				var res = PaintOneLine(line14);
+				Assert.AreEqual(@"-----", res);
+			}
+
+			[Test]
+			public void DragRight_on_left_will_subtract_line() {
+				var line14 = GetLine10_40().Drag(new Coord(1, 0), new Coord(2, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(@"x ---", res);
+			}
+
+			[Test]
+			public void DragLeft_on_secondleft_will_not_extend_line() {
+				var line14 = GetLine10_40().Drag(new Coord(2, 0), new Coord(3, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(@"x----", res);
+			}
+
+			[Test]
+			public void DragRight_on_secondleft_will_not_extend_line() {
+				var line14 = GetLine10_40().Drag(new Coord(2, 0), new Coord(1, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(@"x----", res);
+			}
+
+			[Test]
+			public void DragLeft_on_rightend_will_subtract_line() {
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(3, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(@"x---", res);
+			}
+
+			[Test]
+			public void DragRight_on_rightend_will_extend_line() {
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(5, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(@"x-----", res);
+			}
 		}
 
-		[Test]
-		public void PaintSlopedLine_2_0_DragRightAt_2_0() {
-			var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0));
-			var res = PaintOneLine(labelX, line);
-			Assert.AreEqual(@"x --", res);
-		}
-
-
-		[Test]
-		public void PaintSlopedLine_1_4() {
-			var res = Paint(labelX, GetLine1_4());
-
-			Assert.AreEqual(
-				@"
-x
- ---", res);
-		}
-
-
-		[Test]
-		public void PaintSlopedLine_1_4_drag_11_to_01_will_extend_start_of_segments() {
-			var line14 = GetLine1_4().DragAnArrowLinePiece(new Coord(1, 1), new Coord(0, 1)).MatchUnsafe(x => x, () => null);
-			;
-			var res = Paint(labelX, line14);
-
-			Assert.AreEqual(
-				@"
-x
-----", res);
-		}
-
-
-		[Test]
-		public void PaintSlopedLine_1_4_drag_11_to_21_move_inside_line_along_the_line_Then_no_action() {
-			var act = GetLine1_4().DragAnArrowLinePiece(new Coord(1, 1), new Coord(2, 1));
-			Assert.AreEqual(Option<SlopedLine>.None, act);
-
-			act = GetLine1_4().DragAnArrowLinePiece(new Coord(2, 1), new Coord(3, 1));
-			Assert.AreEqual(Option<SlopedLine>.None, act);
-
-			act = GetLine1_4().DragAnArrowLinePiece(new Coord(3, 1), new Coord(4, 1));
-			Assert.AreEqual(Option<SlopedLine>.None, act);
-		}
-
-		[Test]
-		public void PaintSlopedLine_1_4_drag_reverse_11_to_21_move_inside_line_along_the_line_Then_no_action() {
-			var act = GetLine1_4().DragAnArrowLinePiece(new Coord(2, 1), new Coord(1, 1));
-			Assert.AreEqual(Option<SlopedLine>.None, act);
-
-			act = GetLine1_4().DragAnArrowLinePiece(new Coord(3, 1), new Coord(2, 1));
-			Assert.AreEqual(Option<SlopedLine>.None, act);
-
-			act = GetLine1_4().DragAnArrowLinePiece(new Coord(4, 1), new Coord(3, 1));
-			Assert.AreEqual(Option<SlopedLine>.None, act);
-		}
-
-		[Test]
-		public void PaintSlopedLine_1_4_drag_41_to_51_extend_end_point() {
-			var line14 = GetLine1_4().DragAnArrowLinePiece(new Coord(4, 1), new Coord(5, 1)).MatchUnsafe(x => x, () => null);
-			var res = Paint(labelX, line14);
-
-			Assert.AreEqual(
-				@"
-x
- ----", res);
-		}
+		// todo drag lines up/down
 
 		private static SlopedLine GetLine(Coord from, Coord to) {
 			SlopedLine l1 = new SlopedLine();
@@ -105,8 +128,8 @@ x
 			return GetLine(new Coord(2, 0), new Coord(2, 0));
 		}
 
-		private static SlopedLine GetLine1_4() {
-			return GetLine(new Coord(1, 1), new Coord(4, 1));
+		private static SlopedLine GetLine10_40() {
+			return GetLine(new Coord(1, 0), new Coord(4, 0));
 		}
 	}
 }
