@@ -27,25 +27,27 @@ namespace AsciiUml {
 
 		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, List<IPaintable<object>> model) {
 			foreach (var segment in slopedLine.Segments) {
-				char xx;
+				char c;
 				switch (segment.Kind) {
 					case SegmentKind.Horizontal:
-						xx = '-';
+						c = '-';
 						break;
 					case SegmentKind.Vertical:
-						xx = '|';
+						c = '|';
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
 
 				var delta = Math.Abs(segment.From.X - segment.To.X);
+				var direction = segment.From.X < segment.To.X ? 1 : -1;
 				for (int i = 0; i <= delta; i++)
-					canvass.Paint(segment.From.X + i, segment.From.Y, xx, segment.Id);
+					canvass.Paint(segment.From.X + (i*direction), segment.From.Y, c, segment.Id);
 
+				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
 				for (int i = 0; i <= delta; i++)
-					canvass.Paint(segment.From.X, segment.From.Y + i, xx, segment.Id);
+					canvass.Paint(segment.From.X, segment.From.Y + (i*direction), c, segment.Id);
 			}
 		}
 
