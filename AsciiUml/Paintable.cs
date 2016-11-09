@@ -156,15 +156,6 @@ namespace AsciiUml {
 			if (isMoveWithinLine)
 				return null;
 			return null;
-
-
-			//var newList = Segments.ToList();
-			//var deltaX = dragTo.X - matchedSegment.To.X;
-			//var deltaY = dragTo.Y - matchedSegment.To.Y;
-			//for (int i = pos; i < newList.Count; i++)
-			//	newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY);
-
-			//return new SlopedLine(Id, newList);
 		}
 
 

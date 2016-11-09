@@ -78,7 +78,7 @@ namespace AsciiUml {
 						.Select(nabo => new {nabo, EstimatedDist = PaintServiceCore.FastEuclid(nabo, to)})
 						.Where(x => felt.Distance + x.EstimatedDist < nuværendeBedsteLøsning)
 						.OrderByDescending(x => x.EstimatedDist)
-						.Select(x => new FeltTilUndersøgelse(x.nabo, stiForFeltet, felt.Distance));
+						.Select(x => new FeltTilUndersøgelse(x.nabo, stiForFeltet, felt.Distance + 1));
 
 					potentialerne.Each(x => felterDerskalUndersøges.Push(x));
 				}
