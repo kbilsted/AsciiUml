@@ -78,10 +78,7 @@ namespace AsciiUml {
 						.Select(nabo => new {nabo, EstimatedDist = PaintServiceCore.FastEuclid(nabo, to)})
 						.Where(x => felt.Distance + x.EstimatedDist < nuværendeBedsteLøsning)
 						.OrderByDescending(x => x.EstimatedDist)
-						.Select(
-							x =>
-								new FeltTilUndersøgelse(x.nabo, stiForFeltet,
-									felt.Distance + CalcPercievedDistOfLineFromAngle(felt.Position, x.nabo)));
+						.Select(x => new FeltTilUndersøgelse(x.nabo, stiForFeltet, felt.Distance));
 
 					potentialerne.Each(x => felterDerskalUndersøges.Push(x));
 				}
@@ -106,13 +103,6 @@ namespace AsciiUml {
 
 			return result.ToArray();
 		}
-
-		private static int CalcPercievedDistOfLineFromAngle(Coord a, Coord b) {
-			if (a.X == b.X || a.Y == b.Y)
-				return 1;
-			return 3;
-		}
-
 
 		public static List<Coord> TooOptimisticPathFromPointToPoint(Coord from, Coord to, Canvass c) {
 			//Console.WriteLine($"Calc {from}-{to}");
