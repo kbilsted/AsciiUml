@@ -4,41 +4,41 @@ using System.Linq;
 
 namespace AsciiUml {
 	static class ShortestPathFinder {
-		class FeltTilUndersøgelse {
-			public Coord Position;
-			public List<Coord> Sti;
-			public int Distance;
+		class UnhandledField {
+			public readonly Coord Position;
+			public readonly List<Coord> Path;
+			public readonly int Distance;
 
-			public FeltTilUndersøgelse(Coord position, List<Coord> sti, int distance) {
+			public UnhandledField(Coord position, List<Coord> path, int distance) {
 				Position = position;
-				Sti = sti;
+				Path = path;
 				Distance = distance;
 			}
 
 			public override string ToString() {
-				return Position.ToString() + "::" + Sti.Count;
+				return $"{Position}::{Path.Count}";
 			}
 		}
 
-		class Løsning {
-			public List<Coord> Sti;
-			public int Distance;
+		class Solution {
+			public readonly List<Coord> Path;
+			public readonly int Distance;
 
-			public Løsning(List<Coord> sti, int distance) {
-				Sti = sti;
-				Distance = UdregnDistance(sti);
+			public Solution(List<Coord> path, int distance) {
+				Path = path;
+				Distance = PenalizeTurns(path);
 			}
 
-			int UdregnDistance(List<Coord> rute) {
+			int PenalizeTurns(List<Coord> rute) {
 				int distance = rute.Count;
 
 				for (int i = 0; i < rute.Count - 3; i++)
-					if (ErDerSving(rute[i], rute[i + 1], rute[i + 2]))
+					if (IsTurn(rute[i], rute[i + 1], rute[i + 2]))
 						distance = distance + 1;
 				return distance;
 			}
 
-			bool ErDerSving(Coord a, Coord b, Coord c) {
+			bool IsTurn(Coord a, Coord b, Coord c) {
 				if (a.X == b.X && b.X == c.X)
 					return false;
 				if (a.Y == b.Y && b.Y == c.Y)
@@ -48,46 +48,44 @@ namespace AsciiUml {
 		}
 
 		public static List<Coord> Calculate(Coord from, Coord to, Canvass c) {
-			Løsning[,] løsninger = new Løsning[c.Lines.Count, c.Lines.First().Length];
+			var solutions = new Solution[c.Lines.Count, c.Lines.First().Length];
 
-			Stack<FeltTilUndersøgelse> felterDerskalUndersøges = new Stack<FeltTilUndersøgelse>();
-			felterDerskalUndersøges.Push(new FeltTilUndersøgelse(from, new List<Coord>(), 0));
+			var unHandled = new Stack<UnhandledField>();
+			unHandled.Push(new UnhandledField(from, new List<Coord>(), 0));
 
-			while (felterDerskalUndersøges.Count > 0) {
-				var felt = felterDerskalUndersøges.Pop();
-				//Console.WriteLine($"undersøger {felt.Position}");
+			while (unHandled.Count > 0) {
+				var felt = unHandled.Pop();
 
-				var stiForFeltet = new List<Coord>(felt.Sti.Count + 1);
-				stiForFeltet.AddRange(felt.Sti);
-				stiForFeltet.Add(felt.Position);
+				var pathForPosition = new List<Coord>(felt.Path.Count + 1);
+				pathForPosition.AddRange(felt.Path);
+				pathForPosition.Add(felt.Position);
 
-				var løsning = new Løsning(stiForFeltet, felt.Distance);
+				var solution = new Solution(pathForPosition, felt.Distance);
 
-				if (løsninger[felt.Position.Y, felt.Position.X] == null
-				    || løsning.Distance < løsninger[felt.Position.Y, felt.Position.X].Distance) {
-					løsninger[felt.Position.Y, felt.Position.X] = løsning;
+				var ifNoOrWeakerSolution = solutions[felt.Position.Y, felt.Position.X] == null
+				        || solution.Distance < solutions[felt.Position.Y, felt.Position.X].Distance;
+				if (ifNoOrWeakerSolution) {
+					solutions[felt.Position.Y, felt.Position.X] = solution;
 
-					var nuværendeBedsteLøsning = int.MaxValue;
-					if (løsninger[to.Y, to.X] != null)
-						nuværendeBedsteLøsning = løsninger[to.Y, to.X].Distance;
+					var currentBestSolutionAtDestination = int.MaxValue;
+					if (solutions[to.Y, to.X] != null)
+						currentBestSolutionAtDestination = solutions[to.Y, to.X].Distance;
 
-					var naboerne = CalculateNSEW(felt.Position);
+					var neighbours = CalculateNSEW(felt.Position);
 
-					var potentialerne = naboerne
+					var potentials = neighbours
 						.Where(x => x.Equals(to) || c.IsCellFree(x.X, x.Y))
 						.Select(nabo => new {nabo, EstimatedDist = PaintServiceCore.FastEuclid(nabo, to)})
-						.Where(x => felt.Distance + x.EstimatedDist < nuværendeBedsteLøsning)
+						.Where(x => felt.Distance + x.EstimatedDist < currentBestSolutionAtDestination)
 						.OrderByDescending(x => x.EstimatedDist)
-						.Select(x => new FeltTilUndersøgelse(x.nabo, stiForFeltet, felt.Distance + 1));
+						.Select(x => new UnhandledField(x.nabo, pathForPosition, felt.Distance + 1));
 
-					potentialerne.Each(x => felterDerskalUndersøges.Push(x));
+					potentials.Each(x => unHandled.Push(x));
 				}
 			}
 
-			var kortesteVej = løsninger[to.Y, to.X];
-			if (kortesteVej == null)
-				return new List<Coord>();
-			return kortesteVej.Sti;
+			var shortestPath = solutions[to.Y, to.X];
+			return shortestPath == null ? new List<Coord>() : shortestPath.Path;
 		}
 
 		private static Coord[] CalculateNSEW(Coord coord) {
@@ -105,7 +103,6 @@ namespace AsciiUml {
 		}
 
 		public static List<Coord> TooOptimisticPathFromPointToPoint(Coord from, Coord to, Canvass c) {
-			//Console.WriteLine($"Calc {from}-{to}");
 			if (from.Equals(to))
 				return new List<Coord>();
 
