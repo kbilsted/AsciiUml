@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace AsciiUml {
 	static class ShortestPathFinder {
+		const int WeightOfTurn = 1;
+		const int StepLength = 1;
+
 		class UnhandledField {
 			public readonly Coord Position;
 			public readonly List<Coord> Path;
@@ -34,7 +37,7 @@ namespace AsciiUml {
 
 				for (int i = 0; i < rute.Count - 3; i++)
 					if (IsTurn(rute[i], rute[i + 1], rute[i + 2]))
-						distance = distance + 1;
+						distance = distance + WeightOfTurn;
 				return distance;
 			}
 
@@ -54,31 +57,31 @@ namespace AsciiUml {
 			unHandled.Push(new UnhandledField(from, new List<Coord>(), 0));
 
 			while (unHandled.Count > 0) {
-				var felt = unHandled.Pop();
+				var current = unHandled.Pop();
 
-				var pathForPosition = new List<Coord>(felt.Path.Count + 1);
-				pathForPosition.AddRange(felt.Path);
-				pathForPosition.Add(felt.Position);
+				var pathForPosition = new List<Coord>(current.Path.Count + 1);
+				pathForPosition.AddRange(current.Path);
+				pathForPosition.Add(current.Position);
 
-				var solution = new Solution(pathForPosition, felt.Distance);
+				var solution = new Solution(pathForPosition, current.Distance);
 
-				var ifNoOrWeakerSolution = solutions[felt.Position.Y, felt.Position.X] == null
-				        || solution.Distance < solutions[felt.Position.Y, felt.Position.X].Distance;
+				var ifNoOrWeakerSolution = solutions[current.Position.Y, current.Position.X] == null
+				        || solution.Distance < solutions[current.Position.Y, current.Position.X].Distance;
 				if (ifNoOrWeakerSolution) {
-					solutions[felt.Position.Y, felt.Position.X] = solution;
+					solutions[current.Position.Y, current.Position.X] = solution;
 
-					var currentBestSolutionAtDestination = int.MaxValue;
-					if (solutions[to.Y, to.X] != null)
-						currentBestSolutionAtDestination = solutions[to.Y, to.X].Distance;
+					var currentBestSolutionAtDestination = solutions[to.Y, to.X] == null 
+						? int.MaxValue 
+						: solutions[to.Y, to.X].Distance;
 
-					var neighbours = CalculateNSEW(felt.Position);
+					var neighbours = CalculateNSEW(current.Position);
 
 					var potentials = neighbours
-						.Where(x => x.Equals(to) || c.IsCellFree(x.X, x.Y))
-						.Select(nabo => new {nabo, EstimatedDist = PaintServiceCore.FastEuclid(nabo, to)})
-						.Where(x => felt.Distance + x.EstimatedDist < currentBestSolutionAtDestination)
+						.Where(x => x == to || c.IsCellFree(x.X, x.Y))
+						.Select(nabo => new {nabo, EstimatedDist = PaintServiceCore.ManhattenDistance(nabo, to) + (nabo.IsStraighLineBetweenPoints(to) ? 0 : WeightOfTurn)})
+						.Where(x => current.Distance + x.EstimatedDist + StepLength < currentBestSolutionAtDestination)
 						.OrderByDescending(x => x.EstimatedDist)
-						.Select(x => new UnhandledField(x.nabo, pathForPosition, felt.Distance + 1));
+						.Select(x => new UnhandledField(x.nabo, pathForPosition, current.Distance + StepLength));
 
 					potentials.Each(x => unHandled.Push(x));
 				}

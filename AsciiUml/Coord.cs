@@ -45,5 +45,9 @@ namespace AsciiUml {
 		public bool IsAnyNegative() {
 			return X < 0 || Y < 0;
 		}
+
+		public bool IsStraighLineBetweenPoints(Coord to) {
+			return X == to.X || Y == to.Y;
+		}
 	}
 }
