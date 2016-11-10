@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LanguageExt;
+using LanguageExt.SomeHelp;
 
 namespace AsciiUml {
 	static class PaintAbles {
@@ -50,33 +52,99 @@ namespace AsciiUml {
 		}
 	}
 
+	public enum LineDirection {
+		North = 1,
+		South = 2,
+		East = 4,
+		West = 8,
+	}
+
+	public static class LineDirections {
+		public static LineDirection GetDirectionFromBend(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
+			switch (kind) {
+				case EndpointKind.From:
+					switch (direction)
+					{
+						case LineDirection.North:
+						case LineDirection.South:
+							if (dragx > 0)
+								return LineDirection.West;
+							if (dragx < 0)
+								return LineDirection.East;
+							return direction;
+						case LineDirection.East:
+						case LineDirection.West:
+							if (dragy > 0)
+								return LineDirection.North;
+							if (dragy < 0)
+								return LineDirection.South;
+							return direction;
+						default:
+							throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+					}
+				case EndpointKind.To:
+					switch (direction)
+					{
+						case LineDirection.North:
+						case LineDirection.South:
+							if (dragx > 0)
+								return LineDirection.East;
+							if (dragx < 0)
+								return LineDirection.West;
+							return direction;
+						case LineDirection.East:
+						case LineDirection.West:
+							if (dragy > 0)
+								return LineDirection.South;
+							if (dragy < 0)
+								return LineDirection.North;
+							return direction;
+						default:
+							throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+					}
+				default:
+					throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+			}
+		}
+	}
 
 	public class LineSegment {
 		public int Id { get; }
 		public Coord From, To;
-		public SegmentKind Kind;
+		public SegmentType Type;
+		public LineDirection Direction;
 		public SlopedLine Origin;
 
-		public LineSegment(SlopedLine l) {
-			Id = PaintAbles.Id++;
-			Origin = l;
+		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type)
+			: this(PaintAbles.Id++, l, from, to, type, Coord.GetDirection(from, to)) {
 		}
 
-		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentKind kind) {
+		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction)
+			: this(PaintAbles.Id++, l, from, to, type, direction) {
+		}
+
+		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type)
+			: this(id, l, from, to, type, Coord.GetDirection(from, to)) {
+		}
+
+		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction) {
+			if(type==SegmentType.Slope && from!=to)
+				throw new ArgumentException("Slopes can only be size 1");
+
 			Id = id;
 			Origin = l;
 			From = from;
 			To = to;
-			Kind = kind;
+			Type = type;
+			Direction = direction;
 		}
 
 		public LineSegment Move(int x, int y) {
-			return new LineSegment(Id, Origin, From.Move(x, y), To.Move(x, y), Kind);
+			return new LineSegment(Id, Origin, From.Move(x, y), To.Move(x, y), Type);
 		}
 
 		public LineSegment ExtendEndpoint(int x, int y, EndpointKind kind) {
 			Coord newTo, newFrom;
-			var direction = Kind;
 
 			switch (kind) {
 				case EndpointKind.From:
@@ -86,23 +154,66 @@ namespace AsciiUml {
 				case EndpointKind.To:
 					newFrom = From;
 					newTo = new Coord(To.X + x, To.Y + y);
-					direction = From == To && y != 0 ? SegmentKind.Vertical : SegmentKind.Horizontal;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
 			}
-			return new LineSegment(Id, Origin, newFrom, newTo, direction);
+			return new LineSegment(Id, Origin, newFrom, newTo, Type);
+		}
+
+		public LineSegment Reduce(EndpointKind kind) {
+			if(!IsReducable())
+				throw new ArgumentException("cannot reduce line of length 1");
+
+			switch (kind) {
+				case EndpointKind.From:
+					switch (Direction) {
+						case LineDirection.North:
+							return new LineSegment(Id, Origin, new Coord(From.X, From.Y - 1), To, Type, Direction);
+						case LineDirection.South:
+							return new LineSegment(Id, Origin, new Coord(From.X, From.Y + 1), To, Type, Direction);
+						case LineDirection.East:
+							return new LineSegment(Id, Origin, new Coord(From.X + 1, From.Y), To, Type, Direction);
+						case LineDirection.West:
+							return new LineSegment(Id, Origin, new Coord(From.X - 1, From.Y), To, Type, Direction);
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				case EndpointKind.To:
+					switch (Direction) {
+						case LineDirection.North:
+							return new LineSegment(Id, Origin, From, new Coord(To.X, To.Y + 1), Type, Direction);
+						case LineDirection.South:
+							return new LineSegment(Id, Origin, From, new Coord(To.X, To.Y - 1), Type, Direction);
+						case LineDirection.East:
+							return new LineSegment(Id, Origin, From, new Coord(To.X - 1, To.Y), Type, Direction);
+						case LineDirection.West:
+							return new LineSegment(Id, Origin, From, new Coord(To.X + 1, To.Y), Type, Direction);
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				default:
+					throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+			}
+		}
+
+		public bool IsReducable() {
+			return From != To;
+		}
+
+		public bool SpanOneCell() {
+			return From == To;
 		}
 	}
 
-	public enum SegmentKind {
-		Horizontal,
-		Vertical
+	public enum SegmentType {
+		Line = 1,
+		Slope = 2,
 	}
 
 	public enum EndpointKind {
-		From,
-		To
+		From = 1,
+		To = 2,
 	}
 
 	public class SlopedLine : IPaintable<SlopedLine> {
@@ -140,8 +251,40 @@ namespace AsciiUml {
 					var deltaX = dragTo.X - dragFrom.X;
 					var deltaY = dragTo.Y - dragFrom.Y;
 
-					for (int i = match.Item1; i < newList.Count; i++)
-						newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY, match.Item2);
+					var currentSegment = newList[match.Item1];
+
+					if (IsAtomic()) {
+						newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
+					}
+					else if (DragIsDiagonalOfLine(currentSegment, dragFrom, dragTo)) {
+						if(newList[match.Item1].IsReducable())
+							newList[match.Item1] = currentSegment.Reduce(match.Item2);
+						else 
+							newList.RemoveAt(match.Item1);
+
+						Coord slopePoint = match.Item2 == EndpointKind.From
+							? currentSegment.From
+							: currentSegment.To;
+						newList.Insert(match.Item1, new LineSegment(this, slopePoint, slopePoint, SegmentType.Slope));
+
+						var directionFromBend = LineDirections.GetDirectionFromBend(currentSegment.Direction, match.Item2, deltaX, deltaY);
+						var newSegmentPos = match.Item2 == EndpointKind.From
+							? currentSegment.From.Move(deltaX, deltaY)
+							: currentSegment.To.Move(deltaX, deltaY);
+						newList.Insert(match.Item1, new LineSegment(this, newSegmentPos, newSegmentPos, SegmentType.Line, directionFromBend));
+					}
+					else {
+						if (currentSegment.SpanOneCell()) {
+							newList.RemoveAt(match.Item1);
+						}
+						else {
+							for (int i = match.Item1; i < newList.Count; i++) {
+								if(newList[i].Type == SegmentType.Slope)
+									break;
+								newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY, match.Item2);
+							}
+						}
+					}
 					return new SlopedLine(Id, newList);
 				}
 			}
@@ -158,6 +301,18 @@ namespace AsciiUml {
 			return null;
 		}
 
+		private bool IsAtomic() {
+			return Segments.Count == 1 && Segments[0].From == Segments[0].To;
+		}
+
+		private bool DragIsDiagonalOfLine(LineSegment segment, Coord dragFrom, Coord dragTo) {
+			if (segment.Direction == LineDirection.East || segment.Direction == LineDirection.West) {
+				return dragFrom.Y != dragTo.Y;
+			}
+
+			return dragFrom.X != dragTo.X;
+		}
+
 
 		private IEnumerable<Tuple<int, EndpointKind>> MatchEndpoint(Coord dragFrom) {
 			for (int i = 0; i < Segments.Count; i++) {
@@ -169,18 +324,20 @@ namespace AsciiUml {
 					}
 				}
 				else {
-					if (segment.From == dragFrom)
+					if (segment.From == dragFrom) {
 						yield return Tuple.Create(i, EndpointKind.From);
-					if (segment.To == dragFrom && segment.From != segment.To)
+					}
+					if (segment.To == dragFrom && segment.From != segment.To) {
 						yield return Tuple.Create(i, EndpointKind.To);
+					}
 				}
 			}
 		}
 
 		private bool IsPointPartOfLine(Coord lineFrom, Coord lineTo, Coord point) {
-			if (lineFrom.X <= point.X && point.X <= lineTo.X
-			    && lineFrom.Y <= point.Y && point.Y <= lineTo.Y)
+			if (lineFrom.X <= point.X && point.X <= lineTo.X && lineFrom.Y <= point.Y && point.Y <= lineTo.Y) {
 				return true;
+			}
 			return false;
 		}
 	}
@@ -262,12 +419,14 @@ namespace AsciiUml {
 				var rows = value.Split('\n');
 
 				var requiredWidth = rows.Select(x => x.Length).Max() + 4;
-				if (W < requiredWidth)
+				if (W < requiredWidth) {
 					W = requiredWidth;
+				}
 
 				var requiredHeight = 2 + rows.Length;
-				if (H < requiredHeight)
+				if (H < requiredHeight) {
 					H = requiredHeight;
+				}
 			}
 		}
 
@@ -307,25 +466,29 @@ namespace AsciiUml {
 		}
 
 		public void Check() {
-			if (H < 3)
+			if (H < 3) {
 				throw new ArgumentException("Height must be at least 3");
-			if (W < 2)
+			}
+			if (W < 2) {
 				throw new ArgumentException("Width must be at least 2");
+			}
 		}
 
-		static Dictionary<string, Coord[]> CacheFrames = new Dictionary<string, Coord[]>();
+		private static Dictionary<string, Coord[]> CacheFrames = new Dictionary<string, Coord[]>();
 
 		public static Coord[] GetFrameCoords(int x, int y, int h, int w) {
 			Coord[] res;
 			var key = "" + x + y + h + w;
-			if (!CacheFrames.TryGetValue(key, out res))
+			if (!CacheFrames.TryGetValue(key, out res)) {
 				CacheFrames[key] = res = CalcFrameCoords(x, y, h, w);
+			}
 			return res;
 		}
 
 		public static Tuple<Coord, BoxFramePart>[] GetFrameParts(int x, int y, int h, int w) {
-			if (h == 1 && w == 1)
+			if (h == 1 && w == 1) {
 				throw new ArgumentException("box too small to be painted");
+			}
 
 			List<Tuple<Coord, BoxFramePart>> coords = new List<Tuple<Coord, BoxFramePart>>();
 
@@ -352,8 +515,9 @@ namespace AsciiUml {
 		public static Coord[] CalcFrameCoords(int x, int y, int h, int w) {
 			if (h == 1 && w == 1) {
 				var coord = new Coord(x, y);
-				if (coord.IsAnyNegative())
+				if (coord.IsAnyNegative()) {
 					return new Coord[0];
+				}
 				return new[] {coord};
 			}
 

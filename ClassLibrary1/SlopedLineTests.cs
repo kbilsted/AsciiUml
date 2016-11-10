@@ -8,15 +8,25 @@ using static LanguageExt.Prelude;
 using static AsciiUmlTests.Test;
 
 namespace AsciiUmlTests {
-
 	public class SlopedLineTests {
 		static Label labelX = new Label(1000, 0, 0, "x", LabelDirection.LeftToRight);
 
 		public class SinglePoint_DragTests {
 			[Test]
-			public void Test2_0() {
+			public void PaintLine() {
 				var res = PaintOneLine(labelX, GetLine2_0());
 				Assert.AreEqual(@"x -", res);
+			}
+
+			[Test]
+			public void PaintLine_horizontal() {
+				var line = new SlopedLine();
+				line.Segments.Add(new LineSegment(line, new Coord(0, 0), new Coord(0, 1), SegmentType.Line));
+
+				var res = PaintOneLine(line);
+				Assert.AreEqual(
+					@"|
+|", res);
 			}
 
 			[Test]
@@ -34,10 +44,13 @@ namespace AsciiUmlTests {
 			}
 
 			[Test]
-			public void Test2_0_DragRightDragLeft_Should_result_in_size_1()
-			{
-				var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0)).Drag(new Coord(3,0), new Coord(2,0) );
+			public void Test2_0_DragRightDragLeft_Should_result_in_size_1() {
+				var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0));
 				var res = PaintOneLine(labelX, line);
+				Assert.AreEqual(@"x --", res);
+
+				line = line.Drag(new Coord(3, 0), new Coord(2, 0));
+				res = PaintOneLine(labelX, line);
 				Assert.AreEqual(@"x -", res);
 			}
 
@@ -60,14 +73,14 @@ namespace AsciiUmlTests {
 
 		public class Line_DragTests {
 			[Test]
-			public void Test1_4() {
+			public void Can_draw_line_10_40() {
 				var res = PaintOneLine(labelX, GetLine10_40());
 				Assert.AreEqual(@"x----", res);
 			}
 
 			[Test]
-			public void Drag_outside_line_has_no_effect() {
-				var res = PaintOneLine(labelX, GetLine10_40().Drag(new Coord(2,2), new Coord(2,3)));
+			public void Drag_outside_any_line_has_no_effect() {
+				var res = PaintOneLine(labelX, GetLine10_40().Drag(new Coord(2, 2), new Coord(2, 3)));
 				Assert.AreEqual(@"x----", res);
 			}
 
@@ -83,6 +96,64 @@ namespace AsciiUmlTests {
 				var line14 = GetLine10_40().Drag(new Coord(1, 0), new Coord(2, 0));
 				var res = PaintOneLine(labelX, line14);
 				Assert.AreEqual(@"x ---", res);
+			}
+
+			[ Test]
+			public void Drag_down_on_leftbound_will_slope_line() {
+				var line14 = GetLine10_40().Drag(new Coord(1, 0), new Coord(1, 1));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(
+					@"x+---
+ |", res);
+			}
+
+			[Test]
+			public void Drag_up_on_leftbound_will_slope_line()
+			{
+				var line14 = GetLine11_41().Drag(new Coord(1, 1), new Coord(1, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(
+@"x|
+ +---", res);
+			}
+
+			[Test]
+			public void Drag_down_on_rightbound_will_slope_line()
+			{
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(
+					@"x---+
+    |", res);
+			}
+
+			[Test]
+			public void Drag_down_on_rightbound_then_up_will_unslope_line()
+			{
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1)).Drag(new Coord(4,1), new Coord(4,0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(@"x---+", res);
+			}
+
+			[Test]
+			public void Drag_down_on_rightbound_then_drag_left_will_slope_a_u_shape()
+			{
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1));
+				line14 = line14.Drag(new Coord(4,1), new Coord(3,1));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(
+					@"x---+
+   -+", res);
+			}
+
+			[Test]
+			public void Drag_up_on_rightbound_will_slope_line()
+			{
+				var line14 = GetLine11_41().Drag(new Coord(4, 1), new Coord(4, 0));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(
+@"x   |
+ ---+", res);
 			}
 
 			[Test]
@@ -118,9 +189,7 @@ namespace AsciiUmlTests {
 
 		private static SlopedLine GetLine(Coord from, Coord to) {
 			SlopedLine l1 = new SlopedLine();
-			l1.Segments = new List<LineSegment>() {
-				new LineSegment(l1) {From = from, To = to}
-			};
+			l1.Segments.Add(new LineSegment(l1, from, to, SegmentType.Line));
 			return l1;
 		}
 
@@ -128,8 +197,14 @@ namespace AsciiUmlTests {
 			return GetLine(new Coord(2, 0), new Coord(2, 0));
 		}
 
-		private static SlopedLine GetLine10_40() {
+		private static SlopedLine GetLine10_40()
+		{
 			return GetLine(new Coord(1, 0), new Coord(4, 0));
+		}
+
+		private static SlopedLine GetLine11_41()
+		{
+			return GetLine(new Coord(1, 1), new Coord(4, 1));
 		}
 	}
 }

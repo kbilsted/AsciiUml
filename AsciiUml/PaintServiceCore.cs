@@ -28,26 +28,42 @@ namespace AsciiUml {
 		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, List<IPaintable<object>> model) {
 			foreach (var segment in slopedLine.Segments) {
 				char c;
-				switch (segment.Kind) {
-					case SegmentKind.Horizontal:
-						c = '-';
+
+				switch (segment.Type) {
+					case SegmentType.Line:
+						switch (segment.Direction) {
+							case LineDirection.East:
+							case LineDirection.West:
+								c = '-';
+								break;
+							case LineDirection.North:
+							case LineDirection.South:
+								c = '|';
+								break;
+							default:
+								throw new ArgumentOutOfRangeException();
+						}
 						break;
-					case SegmentKind.Vertical:
-						c = '|';
+					case SegmentType.Slope:
+						c = '+';
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
 
+
 				var delta = Math.Abs(segment.From.X - segment.To.X);
-				var direction = segment.From.X < segment.To.X ? 1 : -1;
-				for (int i = 0; i <= delta; i++)
+				int direction;
+				direction = segment.From.X < segment.To.X ? 1 : -1;
+				for (int i = 0; i <= delta; i++) {
 					canvass.Paint(segment.From.X + (i*direction), segment.From.Y, c, segment.Id);
+				}
 
 				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
-				for (int i = 0; i <= delta; i++)
+				for (int i = 0; i <= delta; i++) {
 					canvass.Paint(segment.From.X, segment.From.Y + (i*direction), c, segment.Id);
+				}
 			}
 		}
 
@@ -58,8 +74,9 @@ namespace AsciiUml {
 				case LabelDirection.LeftToRight:
 					int extraY = 0;
 					foreach (var line in lines) {
-						for (int i = 0; i < line.Length; i++)
+						for (int i = 0; i < line.Length; i++) {
 							canvass.Paint(label.X + i, label.Y + extraY, line[i], label.Id);
+						}
 						extraY++;
 					}
 					break;
@@ -67,8 +84,9 @@ namespace AsciiUml {
 				case LabelDirection.TopDown:
 					int extraX = 0;
 					foreach (var line in lines) {
-						for (int i = 0; i < line.Length; i++)
+						for (int i = 0; i < line.Length; i++) {
 							canvass.Paint(label.X + extraX, label.Y + i, line[i], label.Id);
+						}
 						extraX++;
 					}
 					break;
@@ -88,43 +106,54 @@ namespace AsciiUml {
 			b.GetFrameCoords().Each(pos => c.Paint(pos.X, pos.Y, '*', b.Id));
 
 			if (!string.IsNullOrWhiteSpace(b.Text)) {
-				b.Text.Split('\n')
-					.Each((text, i) => PaintString(c, text, b.X + 2, b.Y + 1 + i, b.Id));
+				b.Text.Split('\n').Each((text, i) => PaintString(c, text, b.X + 2, b.Y + 1 + i, b.Id));
 			}
 		}
 
 		public static char CalculateDirectionLine(Coord previous, Coord point, Coord next) {
-			if (previous.X == point.X)
+			if (previous.X == point.X) {
 				return point.X == next.X ? '|' : '+';
+			}
 
-			if (previous.Y == point.Y)
+			if (previous.Y == point.Y) {
 				return point.Y == next.Y ? '-' : '+';
+			}
 
-			if (previous.X < point.X && previous.Y < point.Y)
+			if (previous.X < point.X && previous.Y < point.Y) {
 				return '\\';
-			if (previous.X < point.X && previous.Y > point.Y)
+			}
+			if (previous.X < point.X && previous.Y > point.Y) {
 				return '/';
-			if (previous.X > point.X && previous.Y < point.Y)
+			}
+			if (previous.X > point.X && previous.Y < point.Y) {
 				return '/';
-			if (previous.X > point.X && previous.Y > point.Y)
+			}
+			if (previous.X > point.X && previous.Y > point.Y) {
 				return '\\';
+			}
 
 			throw new ArgumentException("Cannot find a direction");
 		}
 
 		public static char CalculateDirectionArrowHead(Coord previous, Coord point) {
-			if (previous.X == point.X)
+			if (previous.X == point.X) {
 				return previous.Y > point.Y ? '^' : 'v';
-			if (previous.Y == point.Y)
+			}
+			if (previous.Y == point.Y) {
 				return previous.X > point.X ? '<' : '>';
-			if (previous.X < point.X && previous.Y < point.Y)
+			}
+			if (previous.X < point.X && previous.Y < point.Y) {
 				return '>';
-			if (previous.X < point.X && previous.Y > point.Y)
+			}
+			if (previous.X < point.X && previous.Y > point.Y) {
 				return '>';
-			if (previous.X > point.X && previous.Y < point.Y)
+			}
+			if (previous.X > point.X && previous.Y < point.Y) {
 				return '<';
-			if (previous.X > point.X && previous.Y > point.Y)
+			}
+			if (previous.X > point.X && previous.Y > point.Y) {
 				return '<';
+			}
 			throw new ArgumentException("Cannot find a direction");
 		}
 
@@ -134,8 +163,9 @@ namespace AsciiUml {
 			var smallestDist = CalcStartAndEndSmallestDist(fromBox, toBox);
 
 			var line = ShortestPathFinder.Calculate(smallestDist.Min, smallestDist.Max, c);
-			if (line.Count < 2)
+			if (line.Count < 2) {
 				return;
+			}
 
 			Coord coord;
 
@@ -167,12 +197,7 @@ namespace AsciiUml {
 			return CalcSmallestDist(froms, tos);
 		}
 
-		public static double Euclid(Coord a, Coord b) {
-			var dist = Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2);
-			return dist;
-		}
-
-		public static int FastEuclid(Coord a, Coord b) {
+		public static int ManhattenDistance(Coord a, Coord b) {
 			var dist = Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
 			return dist;
 		}
@@ -182,7 +207,7 @@ namespace AsciiUml {
 			Range<Coord> minDist = null;
 			foreach (var pointFrom in froms) {
 				foreach (var pointTo in tos) {
-					var dist = FastEuclid(pointFrom, pointTo);
+					var dist = ManhattenDistance(pointFrom, pointTo);
 					if (dist < smallestDist) {
 						smallestDist = dist;
 						minDist = new Range<Coord>(pointFrom, pointTo);
