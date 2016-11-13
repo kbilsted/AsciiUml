@@ -73,6 +73,7 @@
     <Compile Include="PaintServiceCore.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen.cs" />
     <Compile Include="ShortestPathFinder.cs" />
     <Compile Include="TooSlowConsoleWriter.cs" />
   </ItemGroup>
