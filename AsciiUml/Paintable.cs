@@ -13,6 +13,7 @@ namespace AsciiUml {
 	public interface IPaintable<out T> {
 		int Id { get; }
 		T Move(int x, int y);
+		T Move(Coord delta);
 	}
 
 	public interface ISelectable {
@@ -49,6 +50,10 @@ namespace AsciiUml {
 
 		public Cursor Move(int x, int y) {
 			return new Cursor(Math.Max(0, X + x), Math.Max(0, Y + y)); // todo bug.. kan bevæge sig over max for canvas
+		}
+
+		public Cursor Move(Coord delta) {
+			return Move(delta.X, delta.Y);
 		}
 	}
 
@@ -233,6 +238,10 @@ namespace AsciiUml {
 			throw new NotImplementedException();
 		}
 
+		public SlopedLine Move(Coord delta) {
+			throw new NotImplementedException();
+		}
+
 		public SlopedLine AutoRoute() {
 			return null; // return a new shortest path from start to end
 		}
@@ -361,6 +370,10 @@ namespace AsciiUml {
 		public Line Move(int x, int y) {
 			throw new NotImplementedException();
 		}
+
+		public Line Move(Coord delta) {
+			throw new NotImplementedException();
+		}
 	}
 
 	public class Label : IPaintable<Label>, ISelectable {
@@ -386,12 +399,17 @@ namespace AsciiUml {
 			return new Label(Id, X + x, Y + y, Text, Direction);
 		}
 
+		public Label Move(Coord delta) {
+			return Move(delta.X, delta.Y);
+		}
+
 		public Label Rotate() {
 			return new Label(Id, X, Y, Text, (LabelDirection) ((1 + (int) Direction)%2));
 		}
 	}
 
 	public interface IResizeable<out T> {
+		IPaintable<object> Resize(Coord delta);
 		T Resize(int width, int height);
 	}
 
@@ -459,6 +477,14 @@ namespace AsciiUml {
 
 		public Box Move(int x, int y) {
 			return new Box(Id, X + x, W, Y + y, H, Text);
+		}
+
+		public Box Move(Coord delta) {
+			return Move(delta.X, delta.Y);
+		}
+
+		public IPaintable<object> Resize(Coord delta) {
+			return Resize(delta.X, delta.Y);
 		}
 
 		public Box Resize(int width, int height) {
