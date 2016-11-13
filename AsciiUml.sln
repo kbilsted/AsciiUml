@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "ClassLibrary1\Test
 		{CCA515E2-1522-49EB-8613-C140E4444DA9} = {CCA515E2-1522-49EB-8613-C140E4444DA9}
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AsciiUmlF", "AsciiUmlF\AsciiUmlF.fsproj", "{5FC87549-6C38-41C4-8155-2E11637DF36E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{6D604CD3-18E6-456D-8AEA-86433743C6BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D604CD3-18E6-456D-8AEA-86433743C6BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D604CD3-18E6-456D-8AEA-86433743C6BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FC87549-6C38-41C4-8155-2E11637DF36E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FC87549-6C38-41C4-8155-2E11637DF36E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FC87549-6C38-41C4-8155-2E11637DF36E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC87549-6C38-41C4-8155-2E11637DF36E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

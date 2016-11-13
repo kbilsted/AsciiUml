@@ -22,7 +22,6 @@ namespace AsciiUml {
 
 			TempModelForPlayingAround(state.Model);
 
-
 			state = ReadKeyboardEvalLoop(state);
 			return;
 		}

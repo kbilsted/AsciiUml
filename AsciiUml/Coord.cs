@@ -44,7 +44,7 @@ namespace AsciiUml {
 
 		public static LineDirection GetDirection(Coord from, Coord to) {
 			if (from == to)
-				return LineDirection.West;
+				return LineDirection.East;
 			if (from.X < to.X)
 				return LineDirection.East;
 			if (from.X > to.X)
