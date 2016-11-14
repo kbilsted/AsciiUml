@@ -56,13 +56,23 @@ namespace AsciiUml {
 				int direction;
 				direction = segment.From.X < segment.To.X ? 1 : -1;
 				for (int i = 0; i <= delta; i++) {
-					canvass.Paint(segment.From.X + (i*direction), segment.From.Y, c, segment.Id);
+					var newX = segment.From.X + (i*direction);
+					var newY = segment.From.Y;
+					if((canvass.Lines[newY][newX]=='-' && c == '|') || (canvass.Lines[newY][newX] == '|' && c == '-'))
+						canvass.Paint(newX, newY, '+', segment.Id);
+					else 
+						canvass.Paint(newX, newY, c, segment.Id);
 				}
 
 				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
 				for (int i = 0; i <= delta; i++) {
-					canvass.Paint(segment.From.X, segment.From.Y + (i*direction), c, segment.Id);
+					var newX = segment.From.X;
+					var newY = segment.From.Y + (i*direction);
+					if ((canvass.Lines[newY][newX] == '-' && c == '|') || (canvass.Lines[newY][newX] == '|' && c == '-'))
+						canvass.Paint(newX, newY, '+', segment.Id);
+					else
+						canvass.Paint(newX, newY, c, segment.Id);
 				}
 			}
 		}

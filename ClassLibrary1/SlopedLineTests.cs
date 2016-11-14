@@ -130,8 +130,10 @@ namespace AsciiUmlTests {
 			[Test]
 			public void Drag_down_on_rightbound_then_up_will_unslope_line()
 			{
-				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1)).Drag(new Coord(4,1), new Coord(4,0));
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1));
+				line14 = line14.Drag(new Coord(4,1), new Coord(4,0));
 				var res = PaintOneLine(labelX, line14);
+				Console.WriteLine(res);
 				Assert.AreEqual(@"x---+", res);
 			}
 
@@ -145,6 +147,34 @@ namespace AsciiUmlTests {
 					@"x---+
    -+", res);
 			}
+
+			[Test]
+			public void Drag_down_on_rightbound_then_drag_left_then_drag_left_will_slope_a_u_shape()
+			{
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1));
+				line14 = line14.Drag(new Coord(4, 1), new Coord(3, 1));
+				line14 = line14.Drag(new Coord(3, 1), new Coord(2, 1));
+				var res = PaintOneLine(labelX, line14);
+				Assert.AreEqual(
+					@"x---+
+  --+", res);
+			}
+
+			[Test]
+			public void Drag_down_on_rightbound_then_drag_left_then_drag_up_will_slope_a_box_shape()
+			{
+				var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(4, 1));
+				line14 = line14.Drag(new Coord(4, 1), new Coord(3, 1));
+				line14 = line14.Drag(new Coord(3, 1), new Coord(2, 1));
+				line14 = line14.Drag(new Coord(2, 1), new Coord(2, 0));
+				var res = PaintOneLine(labelX, line14);
+				Console.WriteLine(res);
+				Assert.AreEqual(
+@"x-+-+
+  +-+", res);
+			}
+
+
 
 			[Test]
 			public void Drag_up_on_rightbound_will_slope_line()

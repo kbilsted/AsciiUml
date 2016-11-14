@@ -93,7 +93,7 @@ namespace AsciiUml
 						.Select(x =>
 								new
 								{
-									Neighbour = x, EstimatedDist = PaintServiceCore.ManhattenDistance(x, to) + (x.IsStraighLineBetweenPoints(to) ? 0 : WeightOfTurn)
+									Neighbour = x, EstimatedDist = PaintServiceCore.ManhattenDistance(x, to) + (Vector.IsStraightLine(from, to) ? 0 : WeightOfTurn)
 								})
 						.Where(x => current.Distance + x.EstimatedDist + StepLength < currentBestSolutionAtDestination)
 						.OrderByDescending(x => x.EstimatedDist)

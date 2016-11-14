@@ -42,22 +42,8 @@ namespace AsciiUml {
 			}
 		}
 
-		public static LineDirection GetDirection(Coord from, Coord to) {
-			if (from == to)
-				return LineDirection.East;
-			if (from.X < to.X)
-				return LineDirection.East;
-			if (from.X > to.X)
-				return LineDirection.West;
-			return from.Y < to.Y ? LineDirection.North : LineDirection.South;
-		}
-
 		public bool IsAnyNegative() {
 			return X < 0 || Y < 0;
-		}
-
-		public bool IsStraighLineBetweenPoints(Coord to) {
-			return X == to.X || Y == to.Y;
 		}
 	}
 }

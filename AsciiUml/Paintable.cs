@@ -64,6 +64,29 @@ namespace AsciiUml {
 		West = 8,
 	}
 
+	public static class Vector {
+		public static bool IsDirectionOpposite(LineDirection d1, LineDirection d2) {
+			return d1 == LineDirection.North && d2 == LineDirection.South
+				|| d1 == LineDirection.South && d2 == LineDirection.North
+				|| d1 == LineDirection.East && d2 == LineDirection.West
+				|| d1 == LineDirection.West && d2 == LineDirection.East;
+		}
+
+		public static bool IsStraightLine(Coord from, Coord to) {
+			return from.X == to.X || from.Y == to.Y;
+		}
+
+		public static LineDirection GetDirection(Coord from, Coord to) {
+			if (@from == to)
+				return LineDirection.East;
+			if (@from.X < to.X)
+				return LineDirection.East;
+			if (@from.X > to.X)
+				return LineDirection.West;
+			return @from.Y < to.Y ? LineDirection.South : LineDirection.North;
+		}
+	}
+
 	public static class LineDirections {
 		public static LineDirection GetDirectionFromBend(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
 			switch (kind) {
@@ -121,7 +144,7 @@ namespace AsciiUml {
 		public SlopedLine Origin;
 
 		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type)
-			: this(PaintAbles.Id++, l, from, to, type, Coord.GetDirection(from, to)) {
+			: this(PaintAbles.Id++, l, from, to, type, Vector.GetDirection(from, to)) {
 		}
 
 		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction)
@@ -129,7 +152,7 @@ namespace AsciiUml {
 		}
 
 		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type)
-			: this(id, l, from, to, type, Coord.GetDirection(from, to)) {
+			: this(id, l, from, to, type, Vector.GetDirection(from, to)) {
 		}
 
 		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction) {
@@ -262,10 +285,13 @@ namespace AsciiUml {
 
 					var currentSegment = newList[match.Item1];
 
-					if (IsAtomic()) {
+					if (currentSegment.Type == SegmentType.Slope) {
+						newList.Insert(0, new LineSegment(this, dragTo, dragTo, SegmentType.Line));
+					}
+					else if (IsLineAtomic()) { //
 						newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
 					}
-					else if (DragIsDiagonalOfLine(currentSegment, dragFrom, dragTo)) {
+					else if (IsDragDiagonalOfLine(currentSegment, dragFrom, dragTo)) {
 						if(newList[match.Item1].IsReducable())
 							newList[match.Item1] = currentSegment.Reduce(match.Item2);
 						else 
@@ -284,7 +310,10 @@ namespace AsciiUml {
 					}
 					else {
 						if (currentSegment.SpanOneCell()) {
-							newList.RemoveAt(match.Item1);
+							if(Vector.IsDirectionOpposite(currentSegment.Direction, Vector.GetDirection(dragFrom, dragTo)))
+								newList.RemoveAt(match.Item1);
+							else
+								newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
 						}
 						else {
 							for (int i = match.Item1; i < newList.Count; i++) {
@@ -310,11 +339,11 @@ namespace AsciiUml {
 			return null;
 		}
 
-		private bool IsAtomic() {
+		private bool IsLineAtomic() {
 			return Segments.Count == 1 && Segments[0].From == Segments[0].To;
 		}
 
-		private bool DragIsDiagonalOfLine(LineSegment segment, Coord dragFrom, Coord dragTo) {
+		private bool IsDragDiagonalOfLine(LineSegment segment, Coord dragFrom, Coord dragTo) {
 			if (segment.Direction == LineDirection.East || segment.Direction == LineDirection.West) {
 				return dragFrom.Y != dragTo.Y;
 			}
@@ -452,14 +481,6 @@ namespace AsciiUml {
 			Id = PaintAbles.Id++;
 			H = 1;
 			W = 1;
-		}
-
-		private Box(int x, int w, int y, int h) {
-			Id = -3;
-			X = x;
-			W = w;
-			Y = y;
-			H = h;
 		}
 
 		public Box(int id, int x, int w, int y, int h, string text) {
