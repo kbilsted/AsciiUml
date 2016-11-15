@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using LanguageExt;
 using LanguageExt.SomeHelp;
+using AsciiUml;
 
 namespace AsciiUml {
 	static class PaintAbles {
@@ -84,6 +85,23 @@ namespace AsciiUml {
 			if (@from.X > to.X)
 				return LineDirection.West;
 			return @from.Y < to.Y ? LineDirection.South : LineDirection.North;
+		}
+
+		public static bool IsOrthogonal(LineDirection d1, LineDirection d2) {
+			return d1 == LineDirection.East || d1 == LineDirection.West
+				? d2 == LineDirection.North || d2 == LineDirection.South
+				: d2 == LineDirection.East || d2 == LineDirection.West;
+		}
+
+		public static LineDirection GetOppositeDirection(LineDirection direction) {
+			switch (direction) {
+				case LineDirection.North: return LineDirection.South;
+				case LineDirection.South: return LineDirection.North;
+				case LineDirection.East: return LineDirection.West;
+				case LineDirection.West: return LineDirection.East;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+			}
 		}
 	}
 
@@ -244,6 +262,112 @@ namespace AsciiUml {
 		To = 2,
 	}
 
+	public class SlopedLine2 : IPaintable<SlopedLine2> {
+		class SlopedSegment2 {
+			public Coord Pos;
+
+			public SlopedSegment2(Coord pos, SegmentType type) {
+				Pos = pos;
+				Type = type;
+			}
+
+			public SegmentType Type;
+		}
+
+		public enum LineSemantic
+		{
+			StartArrow, EndArrow,  Slope, LinePiece,
+		}
+
+		public int Id { get; }
+		private List<SlopedSegment2> Segments = new List<SlopedSegment2>();
+
+		public SlopedLine2 Drag(Coord dragFrom, Coord dragTo)
+		{
+			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
+		}
+
+		LineDirection GetDirectionOf(int index) {
+			if(index == 0 && Segments.Count==1)
+				return Vector.GetDirection(Segments[index].Pos, Segments[index].Pos);
+			return Vector.GetDirection(Segments[index - 1].Pos, Segments[index].Pos);
+		}
+
+		public Option<SlopedLine2> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
+			LineSemantic s = FindOnLine(dragFrom);
+			switch (s) {
+				case LineSemantic.StartArrow:
+					if (Segments.Count == 0) {
+						Segments.Add(new SlopedSegment2(dragTo, SegmentType.Line));
+						return this;
+					}
+
+					if (Segments.Count > 1 && Segments[1].Pos == dragTo) {
+						Segments.RemoveAt(0);
+						return this;
+					}
+
+					Segments.Insert(0, new SlopedSegment2(dragTo, SegmentType.Line));
+					if (Vector.IsOrthogonal(GetDirectionOf(0), GetDirectionOf(1)))
+						Segments[1].Type = SegmentType.Slope;
+					return this;
+
+				case LineSemantic.EndArrow:
+					int nthlastPos = GetLastNthLastPos(Segments, 1);
+					if (Segments.Count > 1 && Segments[nthlastPos].Pos == dragTo) {
+						Segments.RemoveAt(Segments.Count - 1);
+						Segments[Segments.Count - 1].Type = SegmentType.Line; // ensure to convert slopes to lines
+						return this;
+					}
+
+					int posAtInsert = Segments.Count - 1;
+					Segments.Add(new SlopedSegment2(dragTo, SegmentType.Line));
+					if (Vector.IsOrthogonal(GetDirectionOf(posAtInsert), GetDirectionOf(posAtInsert+1)))
+						Segments[posAtInsert].Type = SegmentType.Slope;
+					Segments[Segments.Count-1].Type = SegmentType.Line; // ensure to convert slopes to lines
+					return this;
+
+				case LineSemantic.Slope:
+					break;
+				case LineSemantic.LinePiece:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			return null;
+		}
+
+		private int GetLastNthLastPos<T>(List<T> colList, int last)
+		{
+			return colList.Count - 1 - last;
+		}
+
+		private LineSemantic FindOnLine(Coord coord) {
+			int pos = Segments.FindIndex(x => x.Pos == coord);
+			if (pos == 0)
+				return LineSemantic.StartArrow;
+			if(pos == Segments.Count-1)
+				return LineSemantic.EndArrow;
+			if (Segments[pos].Type == SegmentType.Slope)
+				return LineSemantic.Slope;
+			return LineSemantic.LinePiece;
+		}
+
+		public SlopedLine AutoRoute()
+		{
+			return null; // return a new shortest path from start to end
+		}
+
+		public SlopedLine2 Move(int x, int y) {
+			throw new NotImplementedException();
+		}
+
+		public SlopedLine2 Move(Coord delta) {
+			throw new NotImplementedException();
+		}
+	}
+
+
 	public class SlopedLine : IPaintable<SlopedLine> {
 		public List<LineSegment> Segments = new List<LineSegment>();
 		public int Id { get; }
@@ -344,9 +468,8 @@ namespace AsciiUml {
 		}
 
 		private bool IsDragDiagonalOfLine(LineSegment segment, Coord dragFrom, Coord dragTo) {
-			if (segment.Direction == LineDirection.East || segment.Direction == LineDirection.West) {
+			if (segment.Direction == LineDirection.East || segment.Direction == LineDirection.West) 
 				return dragFrom.Y != dragTo.Y;
-			}
 
 			return dragFrom.X != dragTo.X;
 		}
