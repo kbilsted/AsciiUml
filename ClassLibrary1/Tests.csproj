@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LabelTest.cs" />
+    <Compile Include="SlopedLineTests2.cs" />
     <Compile Include="SlopedLineTests.cs" />
     <Compile Include="LineTests.cs" />
     <Compile Include="BoxTest.cs" />

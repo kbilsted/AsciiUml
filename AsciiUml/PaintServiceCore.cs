@@ -19,10 +19,48 @@ namespace AsciiUml {
 			//model.OfType<Line>().Each(x => PaintLine(c, x, model));
 			model.OfType<Line>().Each(x => PaintLine2(c, x, model));
 			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x, model));
+			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x, model));
 			// labels may cross lines and be printed over lines
 			model.OfType<Label>().Each(x => PaintLabel(c, x));
 
 			return c;
+		}
+
+		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2, List<IPaintable<object>> model) {
+			int i = -1;
+			foreach (var segment in slopedLine2.Segments) {
+				char c;
+				i++;
+				switch (segment.Type) {
+					case SegmentType.Line:
+						switch (slopedLine2.GetDirectionOf(i)) {
+							case LineDirection.East:
+							case LineDirection.West:
+								c = '-';
+								break;
+							case LineDirection.North:
+							case LineDirection.South:
+								c = '|';
+								break;
+							default:
+								throw new ArgumentOutOfRangeException();
+						}
+						break;
+					case SegmentType.Slope:
+						c = '+';
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+
+				var newX = segment.Pos.X;
+				var newY = segment.Pos.Y;
+				if ((canvass.Lines[newY][newX] == '-' && c == '|') || (canvass.Lines[newY][newX] == '|' && c == '-'))
+					canvass.Paint(newX, newY, '+', slopedLine2.Id);
+				else
+					canvass.Paint(newX, newY, c, slopedLine2.Id);
+
+			}
 		}
 
 		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, List<IPaintable<object>> model) {

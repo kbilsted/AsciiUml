@@ -87,7 +87,8 @@ namespace AsciiUml {
 			return @from.Y < to.Y ? LineDirection.South : LineDirection.North;
 		}
 
-		public static bool IsOrthogonal(LineDirection d1, LineDirection d2) {
+		public static bool IsOrthogonal(LineDirection d1, LineDirection d2)
+		{
 			return d1 == LineDirection.East || d1 == LineDirection.West
 				? d2 == LineDirection.North || d2 == LineDirection.South
 				: d2 == LineDirection.East || d2 == LineDirection.West;
@@ -263,15 +264,14 @@ namespace AsciiUml {
 	}
 
 	public class SlopedLine2 : IPaintable<SlopedLine2> {
-		class SlopedSegment2 {
+		public class SlopedSegment2 {
 			public Coord Pos;
+			public SegmentType Type;
 
 			public SlopedSegment2(Coord pos, SegmentType type) {
 				Pos = pos;
 				Type = type;
 			}
-
-			public SegmentType Type;
 		}
 
 		public enum LineSemantic
@@ -280,16 +280,20 @@ namespace AsciiUml {
 		}
 
 		public int Id { get; }
-		private List<SlopedSegment2> Segments = new List<SlopedSegment2>();
+		public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
 
 		public SlopedLine2 Drag(Coord dragFrom, Coord dragTo)
 		{
 			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
 		}
 
-		LineDirection GetDirectionOf(int index) {
-			if(index == 0 && Segments.Count==1)
+		public LineDirection GetDirectionOf(int index)
+		{
+			if (index == 0) {
+				if (Segments.Count > 1)
+					return Vector.GetDirection(Segments[index].Pos, Segments[index + 1].Pos);
 				return Vector.GetDirection(Segments[index].Pos, Segments[index].Pos);
+			}
 			return Vector.GetDirection(Segments[index - 1].Pos, Segments[index].Pos);
 		}
 
@@ -297,18 +301,18 @@ namespace AsciiUml {
 			LineSemantic s = FindOnLine(dragFrom);
 			switch (s) {
 				case LineSemantic.StartArrow:
-					if (Segments.Count == 0) {
-						Segments.Add(new SlopedSegment2(dragTo, SegmentType.Line));
-						return this;
-					}
-
 					if (Segments.Count > 1 && Segments[1].Pos == dragTo) {
 						Segments.RemoveAt(0);
 						return this;
 					}
 
+					bool insertWhenSingularLine = Segments.Count == 1;
+					var directionDragFrom = GetDirectionOf(0);
+
 					Segments.Insert(0, new SlopedSegment2(dragTo, SegmentType.Line));
-					if (Vector.IsOrthogonal(GetDirectionOf(0), GetDirectionOf(1)))
+					var directionDragTo = GetDirectionOf(0);
+
+					if (Vector.IsOrthogonal(directionDragFrom, directionDragTo) && !insertWhenSingularLine)
 						Segments[1].Type = SegmentType.Slope;
 					return this;
 
