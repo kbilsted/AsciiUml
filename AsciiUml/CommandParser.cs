@@ -92,10 +92,5 @@ namespace AsciiUml {
 				}
 			} while (true);
 		}
-
-		public static void Parse(string s) {
-			if (s == "print") {
-			}
-		}
 	}
 }

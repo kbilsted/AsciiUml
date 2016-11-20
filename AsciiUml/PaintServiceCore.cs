@@ -18,70 +18,44 @@ namespace AsciiUml {
 			// lines may not cross boxes, hence drawn afterwards
 			//model.OfType<Line>().Each(x => PaintLine(c, x, model));
 			model.OfType<Line>().Each(x => PaintLine2(c, x, model));
-			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x, model));
-			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x, model));
+			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x));
+			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));
 			// labels may cross lines and be printed over lines
 			model.OfType<Label>().Each(x => PaintLabel(c, x));
 
 			return c;
 		}
 
-		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2, List<IPaintable<object>> model) {
-			int i = -1;
-			foreach (var segment in slopedLine2.Segments) {
-				char c;
-				i++;
-				switch (segment.Type) {
-					case SegmentType.Line:
-						switch (slopedLine2.GetDirectionOf(i)) {
-							case LineDirection.East:
-							case LineDirection.West:
-								c = '-';
-								break;
-							case LineDirection.North:
-							case LineDirection.South:
-								c = '|';
-								break;
-							default:
-								throw new ArgumentOutOfRangeException();
-						}
-						break;
-					case SegmentType.Slope:
-						c = '+';
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
+		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2) {
+			slopedLine2.Segments.Each((segment, i) => {
+				char c = GetLineChar(slopedLine2.GetDirectionOf(i), segment.Type);
 				PaintLineOrCross(canvass, segment.Pos, c, slopedLine2.Id);
+			});
+		}
+
+		private static char GetLineChar(LineDirection direction, SegmentType segmentType) {
+			switch (segmentType) {
+				case SegmentType.Line:
+					switch (direction) {
+						case LineDirection.East:
+						case LineDirection.West:
+							return '-';
+						case LineDirection.North:
+						case LineDirection.South:
+							return '|';
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				case SegmentType.Slope:
+					return '+';
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, List<IPaintable<object>> model) {
+		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine) {
 			foreach (var segment in slopedLine.Segments) {
-				char c;
-
-				switch (segment.Type) {
-					case SegmentType.Line:
-						switch (segment.Direction) {
-							case LineDirection.East:
-							case LineDirection.West:
-								c = '-';
-								break;
-							case LineDirection.North:
-							case LineDirection.South:
-								c = '|';
-								break;
-							default:
-								throw new ArgumentOutOfRangeException();
-						}
-						break;
-					case SegmentType.Slope:
-						c = '+';
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-
+				char c = GetLineChar(segment.Direction, segment.Type);
 
 				var delta = Math.Abs(segment.From.X - segment.To.X);
 				int direction;
@@ -130,12 +104,11 @@ namespace AsciiUml {
 			}
 		}
 
-
 		public static void PaintBox(Canvass c, Box b) {
-			b.GetFrameCoords().Each(pos => c.Paint(pos.X, pos.Y, '*', b.Id));
-
+			b.GetFrameCoords().Each(pos => c.Paint(pos, '*', b.Id));
+			const int padX = 2, padY = 1; // TODO make padding configurable pr. box
 			if (!string.IsNullOrWhiteSpace(b.Text)) {
-				b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + 2, b.Y + 1 + i, b.Id));
+				b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + padX, b.Y + padY + i, b.Id));
 			}
 		}
 
@@ -171,19 +144,9 @@ namespace AsciiUml {
 			if (previous.Y == point.Y) {
 				return previous.X > point.X ? '<' : '>';
 			}
-			if (previous.X < point.X && previous.Y < point.Y) {
-				return '>';
-			}
-			if (previous.X < point.X && previous.Y > point.Y) {
-				return '>';
-			}
-			if (previous.X > point.X && previous.Y < point.Y) {
-				return '<';
-			}
-			if (previous.X > point.X && previous.Y > point.Y) {
-				return '<';
-			}
-			throw new ArgumentException("Cannot find a direction");
+
+			// diagonal lines
+			return previous.X < point.X ? '>' : '<';
 		}
 
 		public static void PaintLine2(Canvass c, Line l, List<IPaintable<object>> model) {

@@ -59,10 +59,9 @@ namespace AsciiUml
 			}
 		}
 
-		public static List<Coord> Calculate(Coord from, Coord to, Canvass c)
-		{
-			var solutions = new Solution[c.Lines.Count, c.Lines.First().Length];
-
+		public static List<Coord> Calculate(Coord from, Coord to, Canvass c) {
+			var size = c.GetSize();
+			var solutions = new Solution[size.Item1, size.Item2];
 			var unHandled = new Stack<UnhandledField>();
 			unHandled.Push(new UnhandledField(from, new List<Coord>(), 0));
 

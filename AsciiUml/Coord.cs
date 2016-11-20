@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AsciiUml {
 	public class Coord : IEquatable<Coord> {
-		public int X, Y;
+		public readonly int X, Y;
 
 		public Coord(int x, int y) {
 			X = x;

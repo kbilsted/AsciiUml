@@ -9,7 +9,7 @@ using static AsciiUmlTests.Test;
 
 namespace AsciiUmlTests {
 	public class SlopedLineTests {
-		static Label labelX = new Label(1000, 0, 0, "x", LabelDirection.LeftToRight);
+		static Label labelX = new Label(1000,new Coord(0, 0), "x", LabelDirection.LeftToRight);
 
 		public class SinglePoint_DragTests {
 			[Test]

@@ -5,27 +5,35 @@ using System.Text;
 
 namespace AsciiUml {
 	public class Canvass {
-		public int?[,] Occupants = new int?[40, 80];
+		readonly int?[,] occupants = new int?[40, 80];
 
-		public List<char[]> Lines = new List<char[]>();
+		readonly List<char[]> lines = new List<char[]>();
 
 		public Canvass() {
 			for (int i = 0; i < 39; i++) {
-				Lines.Add(new char[80]);
+				lines.Add(new char[80]);
 			}
+		}
+
+		public Tuple<int, int> GetSize() {
+			return Tuple.Create(lines.Count, lines.First().Length);
+		}
+
+		public int? GetOccupants(Coord pos) {
+			return occupants[pos.Y, pos.X];
 		}
 
 		public char GetCell(Coord pos)
 		{
-			return Lines[pos.Y][pos.X];
+			return lines[pos.Y][pos.X];
 		}
 
 		public bool IsCellFree(Coord pos) {
 			int x = pos.X, y = pos.Y;
-			if (y > Lines.Count)
+			if (y > lines.Count)
 				return false; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
 
-			var line = Lines[y];
+			var line = lines[y];
 			if (x > line.Length)
 				return false; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
 
@@ -38,17 +46,17 @@ namespace AsciiUml {
 		}
 
 		public void Paint(int x, int y, char c, int objectId) {
-			if (y > Lines.Count || y < 0)
+			if (y > lines.Count || y < 0)
 				return; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
 
-			var line = Lines[y];
+			var line = lines[y];
 			if (x > line.Length || x < 0)
 				return; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
 
-			Lines[y][x] = c;
+			lines[y][x] = c;
 			var isCursor = objectId == -1;
 			if (!isCursor)
-				Occupants[y, x] = objectId;
+				occupants[y, x] = objectId;
 		}
 
 		public static void PaintString(Canvass c, string s, int x, int y, int objectId)  {
@@ -62,12 +70,12 @@ namespace AsciiUml {
 
 		public override string ToString() {
 			var sb = new StringBuilder();
-			Lines.Each(x => sb.AppendLine(NilToSpace(x)));
+			lines.Each(x => sb.AppendLine(NilToSpace(x)));
 			return sb.ToString();
 		}
 
 		public string TrimEndToString() {
-			var asLines = Lines.Select(x => NilToSpace(x)).ToList();
+			var asLines = lines.Select(x => NilToSpace(x)).ToList();
 			var lastLineWithContent = asLines.FindLastIndex(x => x.Trim().Any());
 
 			var sb = new StringBuilder();

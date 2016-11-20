@@ -176,7 +176,7 @@ namespace AsciiUml {
 			if ((key.Modifiers & ConsoleModifiers.Shift) == 0)
 				return null;
 
-			var objectId = state.Canvas.Occupants[state.TheCurser.Pos.Y, state.TheCurser.Pos.X];
+			var objectId = state.Canvas.GetOccupants(state.TheCurser.Pos);
 			if (!objectId.HasValue)
 				return null;
 
@@ -226,9 +226,9 @@ namespace AsciiUml {
 			Screen.SetConsoleSelectColor();
 			var x = curser.X;
 			var y = curser.Y;
-
-			Console.SetCursorPosition(x, y + 1);
-			Console.Write(canvass.Lines[y][x]);
+			const int TopMenuSize = 1;
+			Console.SetCursorPosition(x, y + TopMenuSize);
+			Console.Write(canvass.GetCell(curser.Pos));
 			Screen.SetConsoleStandardColor();
 			Console.SetCursorPosition(left, top);
 		}
@@ -239,7 +239,7 @@ namespace AsciiUml {
 			model.Add(new Box(new Coord(19, 27)) { Text = "foo\nServer\nbazooka"});
 			model.Add(new Box(new Coord(13, 20)) { Text = "goo\nWeb\nServer"});
 			model.Add(new Line() {FromId = 0, ToId = 1});
-			model.Add(new Label() {Y = 5, X = 5, Text = "Server\nClient\nAAA"});
+			model.Add(new Label(new Coord(5,5)) { Text = "Server\nClient\nAAA"});
 		}
 
 		private static Option<Label> CreateLabel() {
@@ -310,7 +310,7 @@ namespace AsciiUml {
 		}
 
 		private static Option<Tuple<int, bool>> SelectObject(State state) {
-			var occupant = state.Canvas.Occupants[state.TheCurser.Y, state.TheCurser.X];
+			var occupant = state.Canvas.GetOccupants(state.TheCurser.Pos);
 			if (occupant != null)
 				return Tuple.Create(occupant.Value, false);
 			return PrintIdsAndLetUserSelectOpbejct(state).Select(x => Tuple.Create(x, true));

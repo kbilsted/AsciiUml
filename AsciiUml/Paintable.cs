@@ -35,9 +35,9 @@ namespace AsciiUml {
 
 
 	public class Cursor : IPaintable<Cursor> {
-		public Coord Pos;
-		public int X { get { return Pos.X; } }
-		public int Y { get { return Pos.Y; } }
+		public readonly Coord Pos;
+		public int X => Pos.X;
+		public int Y => Pos.Y;
 
 		public Cursor(Coord c)
 		{
@@ -179,10 +179,6 @@ namespace AsciiUml {
 			To = to;
 			Type = type;
 			Direction = direction;
-		}
-
-		public LineSegment Move(int x, int y) {
-			return new LineSegment(Id, Origin, From.Move(x, y), To.Move(x, y), Type);
 		}
 
 		public LineSegment ExtendEndpoint(int x, int y, EndpointKind kind) {
@@ -368,7 +364,7 @@ namespace AsciiUml {
 
 
 	public class SlopedLine : IPaintable<SlopedLine> {
-		public List<LineSegment> Segments = new List<LineSegment>();
+		public readonly List<LineSegment> Segments = new List<LineSegment>();
 		public int Id { get; }
 
 		public SlopedLine() {
@@ -529,35 +525,37 @@ namespace AsciiUml {
 
 	public class Label : IPaintable<Label>, ISelectable {
 		public int Id { get; }
-		public int X { get; set; }
-		public int Y { get; set; }
+		public int X => Pos.X;
+		public int Y => Pos.Y;
 		public string Text { get; set; }
 		public Coord Pos { get; }
 		public LabelDirection Direction { get; set; }
 
-		public Label() {
+		public Label()
+		{
 			Id = PaintAbles.Id++;
+			Pos = new Coord(0, 0);
+		}
+		public Label(Coord pos)
+		{
+			Id = PaintAbles.Id++;
+			Pos = pos;
 		}
 
-		public Label(int id, int x, int y, string text, LabelDirection direction) {
+		public Label(int id, Coord pos , string text, LabelDirection direction)
+		{
 			Id = id;
-			X = x;
-			Y = y;
 			Text = text;
-			Pos = new Coord(x, y);
+			Pos = pos;
 			Direction = direction;
 		}
 
-		public Label Move(int x, int y) {
-			return new Label(Id, X + x, Y + y, Text, Direction);
-		}
-
 		public Label Move(Coord delta) {
-			return Move(delta.X, delta.Y);
+			return new Label(Id, Pos.Move(delta), Text, Direction);
 		}
 
 		public Label Rotate() {
-			return new Label(Id, X, Y, Text, (LabelDirection) ((1 + (int) Direction)%2));
+			return new Label(Id, Pos, Text, (LabelDirection) ((1 + (int) Direction)%2));
 		}
 	}
 
