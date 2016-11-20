@@ -89,7 +89,7 @@ namespace AsciiUml
 					var neighbours = CalculateNSEW(current.Position);
 
 					var potentials = neighbours
-						.Where(x => x == to || c.IsCellFree(x.X, x.Y))
+						.Where(x => x == to || c.IsCellFree(x))
 						.Select(x =>
 								new
 								{

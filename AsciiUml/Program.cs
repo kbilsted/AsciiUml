@@ -24,7 +24,7 @@ namespace AsciiUml {
 
 			Console.SetWindowSize(90, 50);
 			var state = new State();
-			state.TheCurser = new Cursor(0, 0);
+			state.TheCurser = new Cursor(new Coord(0, 0));
 
 			TempModelForPlayingAround(state.Model);
 
@@ -79,7 +79,7 @@ namespace AsciiUml {
 			state.SelectedIndexInModel = idx;
 			state.SelectedId = id;
 			if (moveCursor)
-				state.TheCurser = new Cursor(elem.X, elem.Y);
+				state.TheCurser = new Cursor(elem.Pos);
 
 			return state;
 		}
@@ -176,7 +176,7 @@ namespace AsciiUml {
 			if ((key.Modifiers & ConsoleModifiers.Shift) == 0)
 				return null;
 
-			var objectId = state.Canvas.Occupants[state.TheCurser.Y, state.TheCurser.X];
+			var objectId = state.Canvas.Occupants[state.TheCurser.Pos.Y, state.TheCurser.Pos.X];
 			if (!objectId.HasValue)
 				return null;
 
@@ -234,10 +234,10 @@ namespace AsciiUml {
 		}
 
 		private static void TempModelForPlayingAround(List<IPaintable<object>> model) {
-			model.Add(new Box() {Text = "Foo\nMiddleware\nMW1"});
+			model.Add(new Box(new Coord(0,0)) {Text = "Foo\nMiddleware\nMW1"});
 			//model.Add(new Box() {Y = 14, Text = "goo\nand\nbazooka"});
-			model.Add(new Box() {X = 19, Y = 27, Text = "foo\nServer\nbazooka"});
-			model.Add(new Box() {Y = 20, X = 13, Text = "goo\nWeb\nServer"});
+			model.Add(new Box(new Coord(19, 27)) { Text = "foo\nServer\nbazooka"});
+			model.Add(new Box(new Coord(13, 20)) { Text = "goo\nWeb\nServer"});
 			model.Add(new Line() {FromId = 0, ToId = 1});
 			model.Add(new Label() {Y = 5, X = 5, Text = "Server\nClient\nAAA"});
 		}
@@ -254,7 +254,7 @@ namespace AsciiUml {
 			Screen.SetConsoleGetInputColors();
 			Console.Write("Create box. Title: ");
 			var res = CommandParser.TryReadLineWithCancel()
-				.Match(x => new Box() {X = cursor.X, Y = cursor.Y, Text = x}, () => Option<Box>.None);
+				.Match(x => new Box(cursor.Pos) {Text = x}, () => Option<Box>.None);
 			Screen.SetConsoleStandardColor();
 			return res;
 		}
@@ -341,7 +341,7 @@ namespace AsciiUml {
 
 		private static void PrintIdsOfModel(List<IPaintable<object>> model) {
 			foreach (var selectable in model.OfType<ISelectable>()) {
-				Console.SetCursorPosition(selectable.X, selectable.Y + 1);
+				Console.SetCursorPosition(selectable.Pos.X, selectable.Pos.Y + 1);
 				Console.Write(selectable.Id);
 			}
 		}

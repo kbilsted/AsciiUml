@@ -15,7 +15,13 @@ namespace AsciiUml {
 			}
 		}
 
-		public bool IsCellFree(int x, int y) {
+		public char GetCell(Coord pos)
+		{
+			return Lines[pos.Y][pos.X];
+		}
+
+		public bool IsCellFree(Coord pos) {
+			int x = pos.X, y = pos.Y;
 			if (y > Lines.Count)
 				return false; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
 
@@ -25,6 +31,10 @@ namespace AsciiUml {
 
 			//Console.WriteLine($"{x},{y}::{(int)line[x]}");
 			return line[x] != '*'; // TODO change semantics so we know what occupies the cell..ie. box/label/..
+		}
+
+		public void Paint(Coord pos, char c, int objectId) {
+			Paint(pos.X, pos.Y, c, objectId);
 		}
 
 		public void Paint(int x, int y, char c, int objectId) {
@@ -39,6 +49,11 @@ namespace AsciiUml {
 			var isCursor = objectId == -1;
 			if (!isCursor)
 				Occupants[y, x] = objectId;
+		}
+
+		public static void PaintString(Canvass c, string s, int x, int y, int objectId)  {
+			for (int i = 0; i < s.Length; i++)
+				c.Paint(new Coord(x + i, y), s[i], objectId);
 		}
 
 		public static string NilToSpace(char[] c) {

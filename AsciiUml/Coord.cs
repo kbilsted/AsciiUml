@@ -14,6 +14,11 @@ namespace AsciiUml {
 			return new Coord(X + x, Y + y);
 		}
 
+		public Coord Move(Coord c)
+		{
+			return new Coord(X + c.X, Y + c.Y);
+		}
+
 		public override string ToString() {
 			return $"x:{X}, y:{Y}";
 		}

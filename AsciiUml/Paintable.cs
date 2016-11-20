@@ -13,14 +13,12 @@ namespace AsciiUml {
 
 	public interface IPaintable<out T> {
 		int Id { get; }
-		T Move(int x, int y);
 		T Move(Coord delta);
 	}
 
 	public interface ISelectable {
 		int Id { get; }
-		int X { get; }
-		int Y { get; }
+		Coord Pos { get; }
 	}
 
 	public enum Direction {
@@ -37,24 +35,21 @@ namespace AsciiUml {
 
 
 	public class Cursor : IPaintable<Cursor> {
-		public int X { get; }
-		public int Y { get; }
+		public Coord Pos;
+		public int X { get { return Pos.X; } }
+		public int Y { get { return Pos.Y; } }
 
-		public Cursor(int x, int y) {
-			X = x;
-			Y = y;
+		public Cursor(Coord c)
+		{
+			Pos = c;
 		}
 
 		public int Id {
 			get { return -1; }
 		}
 
-		public Cursor Move(int x, int y) {
-			return new Cursor(Math.Max(0, X + x), Math.Max(0, Y + y)); // todo bug.. kan bevæge sig over max for canvas
-		}
-
 		public Cursor Move(Coord delta) {
-			return Move(delta.X, delta.Y);
+			return new Cursor(Pos.Move(delta));
 		}
 	}
 
@@ -537,6 +532,7 @@ namespace AsciiUml {
 		public int X { get; set; }
 		public int Y { get; set; }
 		public string Text { get; set; }
+		public Coord Pos { get; }
 		public LabelDirection Direction { get; set; }
 
 		public Label() {
@@ -548,6 +544,7 @@ namespace AsciiUml {
 			X = x;
 			Y = y;
 			Text = text;
+			Pos = new Coord(x, y);
 			Direction = direction;
 		}
 
@@ -579,13 +576,13 @@ namespace AsciiUml {
 	}
 
 	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box> {
-		public int X { get; set; }
+		public int X { get { return Pos.X; } }
 		public int W { get; set; }
-		public int Y { get; set; }
+		public int Y { get { return Pos.Y; } }
 		public int H { get; set; }
+		public Coord Pos { get; }
 
 		private string text;
-
 		public string Text {
 			get { return text; }
 			set {
@@ -604,31 +601,28 @@ namespace AsciiUml {
 			}
 		}
 
-		public Box() {
+		public Box(Coord pos) {
 			Id = PaintAbles.Id++;
 			H = 1;
 			W = 1;
+			Pos = pos;
 		}
 
-		public Box(int id, int x, int w, int y, int h, string text) {
+
+		public Box(int id, Coord pos, int w, int h, string text)
+		{
 			Id = id;
-			X = x;
 			W = w;
-			Y = y;
 			H = h;
 			Text = text;
-
+			Pos = pos;
 			Check();
 		}
 
 		public int Id { get; set; }
 
-		public Box Move(int x, int y) {
-			return new Box(Id, X + x, W, Y + y, H, Text);
-		}
-
 		public Box Move(Coord delta) {
-			return Move(delta.X, delta.Y);
+			return new Box(Id, Pos.Move(delta),  W, H, Text);
 		}
 
 		public IPaintable<object> Resize(Coord delta) {
@@ -636,7 +630,7 @@ namespace AsciiUml {
 		}
 
 		public Box Resize(int width, int height) {
-			return new Box(Id, X, W + width, Y, H + height, Text);
+			return new Box(Id, Pos, W + width, H + height, Text);
 		}
 
 		public void Check() {

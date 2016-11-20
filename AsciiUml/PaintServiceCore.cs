@@ -52,14 +52,7 @@ namespace AsciiUml {
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-
-				var newX = segment.Pos.X;
-				var newY = segment.Pos.Y;
-				if ((canvass.Lines[newY][newX] == '-' && c == '|') || (canvass.Lines[newY][newX] == '|' && c == '-'))
-					canvass.Paint(newX, newY, '+', slopedLine2.Id);
-				else
-					canvass.Paint(newX, newY, c, slopedLine2.Id);
-
+				PaintLineOrCross(canvass, segment.Pos, c, slopedLine2.Id);
 			}
 		}
 
@@ -94,25 +87,25 @@ namespace AsciiUml {
 				int direction;
 				direction = segment.From.X < segment.To.X ? 1 : -1;
 				for (int i = 0; i <= delta; i++) {
-					var newX = segment.From.X + (i*direction);
-					var newY = segment.From.Y;
-					if((canvass.Lines[newY][newX]=='-' && c == '|') || (canvass.Lines[newY][newX] == '|' && c == '-'))
-						canvass.Paint(newX, newY, '+', segment.Id);
-					else 
-						canvass.Paint(newX, newY, c, segment.Id);
+					var newPos = new Coord(segment.From.X + (i * direction), segment.From.Y);
+					PaintLineOrCross(canvass, newPos, c, segment.Id);
 				}
 
 				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
 				for (int i = 0; i <= delta; i++) {
-					var newX = segment.From.X;
-					var newY = segment.From.Y + (i*direction);
-					if ((canvass.Lines[newY][newX] == '-' && c == '|') || (canvass.Lines[newY][newX] == '|' && c == '-'))
-						canvass.Paint(newX, newY, '+', segment.Id);
-					else
-						canvass.Paint(newX, newY, c, segment.Id);
+					var newPos = new Coord(segment.From.X, segment.From.Y + (i * direction));
+					PaintLineOrCross(canvass, newPos, c, segment.Id);
 				}
 			}
+		}
+
+		private static void PaintLineOrCross(Canvass canvass, Coord newPos, char c, int id)
+		{
+			if ((canvass.GetCell(newPos) == '-' && c == '|') || (canvass.GetCell(newPos) == '|' && c == '-'))
+				canvass.Paint(newPos, '+', id);
+			else
+				canvass.Paint(newPos, c, id);
 		}
 
 		private static void PaintLabel(Canvass canvass, Label label) {
@@ -120,21 +113,14 @@ namespace AsciiUml {
 
 			switch (label.Direction) {
 				case LabelDirection.LeftToRight:
-					int extraY = 0;
-					foreach (var line in lines) {
-						for (int i = 0; i < line.Length; i++) {
-							canvass.Paint(label.X + i, label.Y + extraY, line[i], label.Id);
-						}
-						extraY++;
-					}
+					lines.Each((line, extraY) => Canvass.PaintString(canvass, line, label.X, label.Y+extraY, label.Id));
 					break;
 
 				case LabelDirection.TopDown:
 					int extraX = 0;
 					foreach (var line in lines) {
-						for (int i = 0; i < line.Length; i++) {
-							canvass.Paint(label.X + extraX, label.Y + i, line[i], label.Id);
-						}
+						for (int i = 0; i < line.Length; i++) 
+							canvass.Paint(new Coord(label.X + extraX, label.Y + i), line[i], label.Id);
 						extraX++;
 					}
 					break;
@@ -144,17 +130,12 @@ namespace AsciiUml {
 			}
 		}
 
-		public static void PaintString(Canvass c, string s, int x, int y, int objectId) {
-			for (int i = 0; i < s.Length; i++) {
-				c.Paint(x + i, y, s[i], objectId);
-			}
-		}
 
 		public static void PaintBox(Canvass c, Box b) {
 			b.GetFrameCoords().Each(pos => c.Paint(pos.X, pos.Y, '*', b.Id));
 
 			if (!string.IsNullOrWhiteSpace(b.Text)) {
-				b.Text.Split('\n').Each((text, i) => PaintString(c, text, b.X + 2, b.Y + 1 + i, b.Id));
+				b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + 2, b.Y + 1 + i, b.Id));
 			}
 		}
 
@@ -222,12 +203,12 @@ namespace AsciiUml {
 			for (; i < line.Count - 2; i++) {
 				coord = line[i];
 				var lineChar = CalculateDirectionLine(line[i - 1], coord, line[i + 1]);
-				c.Paint(coord.X, coord.Y, lineChar, l.Id);
+				c.Paint(coord, lineChar, l.Id);
 			}
 
 			// secondlast element is the arrow head
 			coord = line[i];
-			c.Paint(coord.X, coord.Y, CalculateDirectionArrowHead(line[i - 1], coord), l.Id);
+			c.Paint(coord, CalculateDirectionArrowHead(line[i - 1], coord), l.Id);
 		}
 
 		public static Coord[] CalculateBoxOutline(Coord b) {
