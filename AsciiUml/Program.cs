@@ -234,13 +234,13 @@ namespace AsciiUml {
 			model.Add(new Box(new Coord(19, 27)) { Text = "foo\nServer\nbazooka"});
 			model.Add(new Box(new Coord(13, 20)) { Text = "goo\nWeb\nServer"});
 			model.Add(new Line() {FromId = 0, ToId = 1});
-			model.Add(new Label(new Coord(5,5)) { Text = "Server\nClient\nAAA"});
+			model.Add(new Label(new Coord(5,5), "Server\nClient\nAAA"));
 		}
 
 		private static Option<Label> CreateLabel() {
 			Screen.SetConsoleGetInputColors();
 			Console.Write("Create a label. Text: ");
-			var res = CommandParser.TryReadLineWithCancel().Match(x => new Label() {Text = x}, () => Option<Label>.None);
+			var res = CommandParser.TryReadLineWithCancel().Match(x => new Label(x), () => Option<Label>.None);
 			Screen.SetConsoleStandardColor();
 			return res;
 		}

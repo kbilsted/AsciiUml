@@ -157,10 +157,10 @@ namespace AsciiUml {
 
 	public class LineSegment {
 		public int Id { get; }
-		public Coord From, To;
-		public SegmentType Type;
-		public LineDirection Direction;
-		public SlopedLine Origin;
+		public readonly Coord From, To;
+		public readonly SegmentType Type;
+		public readonly LineDirection Direction;
+		public readonly SlopedLine Origin;
 
 		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type)
 			: this(PaintAbles.Id++, l, from, to, type, Vector.GetDirection(from, to)) {
@@ -529,18 +529,18 @@ namespace AsciiUml {
 		public int Id { get; }
 		public int X => Pos.X;
 		public int Y => Pos.Y;
-		public string Text { get; set; }
+		public string Text { get; }
 		public Coord Pos { get; }
-		public LabelDirection Direction { get; set; }
+		public LabelDirection Direction { get; }
 
-		public Label()
+		public Label(string text) : this(new Coord(0,0), text)
 		{
-			Id = PaintAbles.Id++;
-			Pos = new Coord(0, 0);
 		}
-		public Label(Coord pos)
+
+		public Label(Coord pos, string text)
 		{
 			Id = PaintAbles.Id++;
+			Text = text;
 			Pos = pos;
 		}
 

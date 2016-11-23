@@ -7,7 +7,7 @@ namespace AsciiUmlTests {
 	public class LabelTests {
 		[Test]
 		public void NormalLine() {
-			var res = Paint(new Label() {Text = "abcde"});
+			var res = Paint(new Label("abcde"));
 
 			Assert.AreEqual(
 				@"
@@ -16,7 +16,7 @@ abcde", res);
 
 		[Test]
 		public void NormalLineRotatedx1() {
-			var res = Paint(new Label() {Text = "abcde"}.Rotate());
+			var res = Paint(new Label("abcde").Rotate());
 
 			Assert.AreEqual(
 				@"
@@ -29,7 +29,7 @@ e", res);
 
 		[Test]
 		public void NormalLineRotatedx2() {
-			var res = Paint(new Label() {Text = "abcde"}.Rotate().Rotate());
+			var res = Paint(new Label("abcde").Rotate().Rotate());
 
 			Assert.AreEqual(
 				@"
@@ -38,7 +38,7 @@ abcde", res);
 
 		[Test]
 		public void MultiLine() {
-			var res = Paint(new Label() {Text = "abcde\nfoobar"});
+			var res = Paint(new Label("abcde\nfoobar"));
 
 			Assert.AreEqual(
 				@"
@@ -48,7 +48,7 @@ foobar", res);
 
 		[Test]
 		public void MultiLineRotatedx1() {
-			var res = Paint(new Label() {Text = "abcde\nfoobar"}.Rotate());
+			var res = Paint(new Label("abcde\nfoobar").Rotate());
 
 			Assert.AreEqual(
 				@"
@@ -62,7 +62,7 @@ ea
 
 		[Test]
 		public void MultiLineRotatedx2() {
-			var res = Paint(new Label() {Text = "abcde\nfoobar"}.Rotate().Rotate());
+			var res = Paint(new Label("abcde\nfoobar").Rotate().Rotate());
 
 			Assert.AreEqual(
 				@"

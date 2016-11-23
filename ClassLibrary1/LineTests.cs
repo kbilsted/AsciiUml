@@ -74,7 +74,7 @@ namespace AsciiUmlTests {
 				new Box(new Coord(0,0)) {Id = 0, Text = "goo\nand\nbazooka"},
 				new Box(new Coord(6,10)) {Id = 1, Text = "Mango\nTango"},
 				new Line() {FromId = 0, ToId = 1},
-				new Label(new Coord(5,6)) { Text = "Server\nservice\noriented"}
+				new Label(new Coord(5,6), "Server\nservice\noriented")
 			);
 			Console.WriteLine(res);
 
