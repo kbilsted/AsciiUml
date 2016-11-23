@@ -601,13 +601,15 @@ namespace AsciiUml {
 			}
 		}
 
-		public Box(Coord pos) {
-			Id = PaintAbles.Id++;
+		public Box(Coord pos) : this(PaintAbles.Id++, pos)
+		{ }
+
+		public Box(int id, Coord pos) {
+			Id = id;
 			H = 1;
 			W = 1;
 			Pos = pos;
 		}
-
 
 		public Box(int id, Coord pos, int w, int h, string text)
 		{
@@ -619,7 +621,7 @@ namespace AsciiUml {
 			Check();
 		}
 
-		public int Id { get; set; }
+		public int Id { get; }
 
 		public Box Move(Coord delta) {
 			return new Box(Id, Pos.Move(delta),  W, H, Text);

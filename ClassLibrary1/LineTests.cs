@@ -28,8 +28,8 @@ namespace AsciiUmlTests {
 		[Test]
 		public void PaintEastArrowClose2Straight() {
 			var res = Paint(
-				new Box(new Coord(0,0)) {Id = 0, Text = "Foo"},
-				new Box(new Coord(9,0)) {Id = 1, Text = "Bar"},
+				new Box(0, new Coord(0,0)) {Text = "Foo"},
+				new Box(1, new Coord(9,0)) {Text = "Bar"},
 				new Line() {FromId = 0, ToId = 1});
 
 			Assert.AreEqual(
@@ -42,8 +42,8 @@ namespace AsciiUmlTests {
 		[Test]
 		public void PaintEastArrowStraight() {
 			var res = Paint(
-				new Box(new Coord(0,0)) {Id = 0, Text = "Foo"},
-				new Box(new Coord(16,0)) {Id = 1, Text = "Bar"},
+				new Box(0, new Coord(0,0))  {Text = "Foo"},
+				new Box(1, new Coord(16,0)) {Text = "Bar"},
 				new Line() {FromId = 0, ToId = 1});
 			Assert.AreEqual(
 				@"
@@ -55,8 +55,8 @@ namespace AsciiUmlTests {
 		[Test]
 		public void PaintEastArrow1Down() {
 			var res = Paint(
-				new Box(new Coord(0,0)) {Id = 0, Text = "Foo"},
-				new Box(new Coord(16,1)) {Id = 1, Text = "Bar"},
+				new Box(0, new Coord(0,0))  {Text = "Foo"},
+				new Box(1, new Coord(16,1)) {Text = "Bar"},
 				new Line() {FromId = 0, ToId = 1});
 
 			Assert.AreEqual(
@@ -71,8 +71,8 @@ namespace AsciiUmlTests {
 		[Test]
 		public void PaintLineCrossingLabel() {
 			var res = Paint(
-				new Box(new Coord(0,0)) {Id = 0, Text = "goo\nand\nbazooka"},
-				new Box(new Coord(6,10)) {Id = 1, Text = "Mango\nTango"},
+				new Box(0, new Coord(0,0))  {Text = "goo\nand\nbazooka"},
+				new Box(1, new Coord(6,10)) {Text = "Mango\nTango"},
 				new Line() {FromId = 0, ToId = 1},
 				new Label(new Coord(5,6), "Server\nservice\noriented")
 			);
@@ -100,8 +100,8 @@ namespace AsciiUmlTests {
 		[Test]
 		public void NySmarteKortesteVej() {
 			var res = Paint(
-				new Box(new Coord(0,0)) {Id = 0, Text = "a"},
-				new Box(new Coord(0,4)) {Id = 1, Text = "b"},
+				new Box(0, new Coord(0,0)) {Text = "a"},
+				new Box(1, new Coord(0,4)) {Text = "b"},
 				new Line() {FromId = 0, ToId = 1}
 			);
 			Console.WriteLine(res);
@@ -120,8 +120,8 @@ v
 		[Test]
 		public void NySmarteKortesteVej2() {
 			var res = Paint(
-				new Box(new Coord(0,0)) {Id = 0, Text = "a"},
-				new Box(new Coord(0,5)) {Id = 1, Text = "b"},
+				new Box(0, new Coord(0,0)) {Text = "a"},
+				new Box(1, new Coord(0,5)) {Text = "b"},
 				new Line() {FromId = 0, ToId = 1}
 			);
 			Console.WriteLine(res);
