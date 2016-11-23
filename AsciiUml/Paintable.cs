@@ -576,30 +576,13 @@ namespace AsciiUml {
 	}
 
 	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box> {
-		public int X { get { return Pos.X; } }
-		public int W { get; set; }
-		public int Y { get { return Pos.Y; } }
-		public int H { get; set; }
+		public int X => Pos.X;
+		public int W { get; }
+		public int Y => Pos.Y;
+		public int H { get; }
 		public Coord Pos { get; }
 
-		private string text;
-		public string Text {
-			get { return text; }
-			set {
-				text = value;
-				var rows = value.Split('\n');
-
-				var requiredWidth = rows.Select(x => x.Length).Max() + 4;
-				if (W < requiredWidth) {
-					W = requiredWidth;
-				}
-
-				var requiredHeight = 2 + rows.Length;
-				if (H < requiredHeight) {
-					H = requiredHeight;
-				}
-			}
-		}
+		public readonly string Text;
 
 		public Box(Coord pos) : this(PaintAbles.Id++, pos)
 		{ }
@@ -621,7 +604,23 @@ namespace AsciiUml {
 			Check();
 		}
 
+		public Box(Coord pos, int w, int h) : this(PaintAbles.Id++, pos, w,h,null)
+		{
+		}
+
 		public int Id { get; }
+
+		public Box SetText(string text) {
+			var rows = text.Split('\n');
+
+			var requiredWidth = rows.Select(x => x.Length).Max() + 4;
+			var w = W < requiredWidth? requiredWidth:W;
+
+			var requiredHeight = 2 + rows.Length;
+			var h = H < requiredHeight ? requiredHeight:H;
+
+			return new Box(Id, Pos, w, h, text);
+		}
 
 		public Box Move(Coord delta) {
 			return new Box(Id, Pos.Move(delta),  W, H, Text);
@@ -636,8 +635,8 @@ namespace AsciiUml {
 		}
 
 		public void Check() {
-			if (H < 3) {
-				throw new ArgumentException("Height must be at least 3");
+			if (H < 2) {
+				throw new ArgumentException("Height must be at least 2");
 			}
 			if (W < 2) {
 				throw new ArgumentException("Width must be at least 2");

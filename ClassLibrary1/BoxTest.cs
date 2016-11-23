@@ -15,13 +15,12 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void GetFrameParts1_1() {
-			var res = new Box(new Coord(1,1)) { H = 1, W = 1};
-			Assert.Throws<ArgumentException>(() => res.GetFrameParts());
+			Assert.Throws<ArgumentException>(() => new Box(new Coord(1, 1), 1, 1));
 		}
 
 		[Test]
 		public void GetFrameParts2_2() {
-			var res = new Box(new Coord(1,1)) {H = 2, W = 2}.GetFrameParts();
+			var res = new Box(new Coord(1,1), 2, 2).GetFrameParts();
 			Assert.AreEqual(new[] {
 					Tuple.Create(new Coord(1, 1), BoxFramePart.NWCorner),
 					Tuple.Create(new Coord(2, 1), BoxFramePart.NECorner),
@@ -33,7 +32,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void GetFrameParts2_3() {
-			var res = new Box(new Coord(1,1)) {H = 3, W = 2}.GetFrameParts();
+			var res = new Box(new Coord(1,1), 2,3 ).GetFrameParts();
 			Assert.AreEqual(new[] {
 					Tuple.Create(new Coord(1, 1), BoxFramePart.NWCorner),
 					Tuple.Create(new Coord(2, 1), BoxFramePart.NECorner),
@@ -47,7 +46,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void GetFrameParts3_3() {
-			var res = new Box(new Coord(1,1)) {H = 3, W = 3}.GetFrameParts();
+			var res = new Box(new Coord(1,1), 3, 3).GetFrameParts();
 			Assert.AreEqual(new[] {
 					Tuple.Create(new Coord(1, 1), BoxFramePart.NWCorner),
 					Tuple.Create(new Coord(3, 1), BoxFramePart.NECorner),
@@ -72,7 +71,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintBox() {
-			var res = Paint(new Box(new Coord(0,0)) { H = 3, W = 4});
+			var res = Paint(new Box(new Coord(0,0), 4, 3));
 
 			Assert.AreEqual(
 				@"
@@ -84,7 +83,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintTextBox() {
-			var res = Paint(new Box(new Coord(0,0)) {Text = "Foo"});
+			var res = Paint(new Box(new Coord(0,0)).SetText("Foo"));
 
 			Assert.AreEqual(
 				@"
@@ -95,7 +94,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintMultiTextBox() {
-			var res = Paint(new Box(new Coord(0,0)) {Text = "Foo\nbazooka"});
+			var res = Paint(new Box(new Coord(0,0)).SetText("Foo\nbazooka"));
 
 			Assert.AreEqual(
 				@"
@@ -108,7 +107,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintMultiTextBoxex() {
-			var res = Paint(new Box(new Coord(0,0)) {Text = "Foo\nbazooka"}, new Box(new Coord(14,1)) {Text = "Bar.."});
+			var res = Paint(new Box(new Coord(0,0)).SetText("Foo\nbazooka"), new Box(new Coord(14,1)).SetText("Bar.."));
 
 			Assert.AreEqual(
 				@"

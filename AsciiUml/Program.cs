@@ -229,10 +229,10 @@ namespace AsciiUml {
 		}
 
 		private static void TempModelForPlayingAround(List<IPaintable<object>> model) {
-			model.Add(new Box(new Coord(0,0)) {Text = "Foo\nMiddleware\nMW1"});
+			model.Add(new Box(new Coord(0,0)).SetText("Foo\nMiddleware\nMW1"));
 			//model.Add(new Box() {Y = 14, Text = "goo\nand\nbazooka"});
-			model.Add(new Box(new Coord(19, 27)) { Text = "foo\nServer\nbazooka"});
-			model.Add(new Box(new Coord(13, 20)) { Text = "goo\nWeb\nServer"});
+			model.Add(new Box(new Coord(19, 27)).SetText("foo\nServer\nbazooka"));
+			model.Add(new Box(new Coord(13, 20)).SetText("goo\nWeb\nServer"));
 			model.Add(new Line() {FromId = 0, ToId = 1});
 			model.Add(new Label(new Coord(5,5), "Server\nClient\nAAA"));
 		}
@@ -249,7 +249,7 @@ namespace AsciiUml {
 			Screen.SetConsoleGetInputColors();
 			Console.Write("Create box. Title: ");
 			var res = CommandParser.TryReadLineWithCancel()
-				.Match(x => new Box(cursor.Pos) {Text = x}, () => Option<Box>.None);
+				.Match(x => new Box(cursor.Pos).SetText(x), () => Option<Box>.None);
 			Screen.SetConsoleStandardColor();
 			return res;
 		}
