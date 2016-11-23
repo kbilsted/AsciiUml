@@ -14,11 +14,6 @@ namespace AsciiUml {
 	}
 
 	class Program {
-		public static readonly Coord DeltaNorth = new Coord(0, -1);
-		public static readonly Coord DeltaSouth = new Coord(0, 1);
-		public static readonly Coord DeltaEast = new Coord(1, 0);
-		public static readonly Coord DeltaWest = new Coord(-1, 0);
-
 		static void Main(string[] args) {
 			EnableCatchingShiftArrowPresses();
 
@@ -86,10 +81,10 @@ namespace AsciiUml {
 
 		private static Option<State> HandleKeys(State state, ConsoleKeyInfo key, int? selected, List<IPaintable<object>> model) {
 			switch (key.Key) {
-				case ConsoleKey.UpArrow: return MoveSelectedPaintable(state, DeltaNorth);
-				case ConsoleKey.DownArrow: return MoveSelectedPaintable(state, DeltaSouth);
-				case ConsoleKey.LeftArrow: return MoveSelectedPaintable(state, DeltaWest);
-				case ConsoleKey.RightArrow: return MoveSelectedPaintable(state, DeltaEast);
+				case ConsoleKey.UpArrow: return MoveSelectedPaintable(state, Vector.DeltaNorth);
+				case ConsoleKey.DownArrow: return MoveSelectedPaintable(state, Vector.DeltaSouth);
+				case ConsoleKey.LeftArrow: return MoveSelectedPaintable(state, Vector.DeltaWest);
+				case ConsoleKey.RightArrow: return MoveSelectedPaintable(state, Vector.DeltaEast);
 
 				case ConsoleKey.Spacebar:
 					if (selected.HasValue) 
@@ -163,10 +158,10 @@ namespace AsciiUml {
 				return null;
 
 			switch (key.Key) {
-				case ConsoleKey.UpArrow: return ResizeBox(state, DeltaNorth);
-				case ConsoleKey.DownArrow: return ResizeBox(state, DeltaSouth);
-				case ConsoleKey.LeftArrow: return ResizeBox(state, DeltaWest);
-				case ConsoleKey.RightArrow: return ResizeBox(state, DeltaEast);
+				case ConsoleKey.UpArrow: return ResizeBox(state, Vector.DeltaNorth);
+				case ConsoleKey.DownArrow: return ResizeBox(state, Vector.DeltaSouth);
+				case ConsoleKey.LeftArrow: return ResizeBox(state, Vector.DeltaWest);
+				case ConsoleKey.RightArrow: return ResizeBox(state, Vector.DeltaEast);
 			}
 			return null;
 		}
@@ -183,10 +178,10 @@ namespace AsciiUml {
 			PerformSelectObject(state, objectId.Value, false);
 
 			switch (key.Key) {
-				case ConsoleKey.UpArrow: return MoveSelectedPaintable(state, DeltaNorth);
-				case ConsoleKey.DownArrow: return MoveSelectedPaintable(state, DeltaSouth);
-				case ConsoleKey.LeftArrow: return MoveSelectedPaintable(state, DeltaWest);
-				case ConsoleKey.RightArrow: return MoveSelectedPaintable(state, DeltaEast);
+				case ConsoleKey.UpArrow: return MoveSelectedPaintable(state, Vector.DeltaNorth);
+				case ConsoleKey.DownArrow: return MoveSelectedPaintable(state, Vector.DeltaSouth);
+				case ConsoleKey.LeftArrow: return MoveSelectedPaintable(state, Vector.DeltaWest);
+				case ConsoleKey.RightArrow: return MoveSelectedPaintable(state, Vector.DeltaEast);
 			}
 			return null;
 		}

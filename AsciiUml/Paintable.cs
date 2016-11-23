@@ -99,6 +99,11 @@ namespace AsciiUml {
 					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
 			}
 		}
+
+		public static readonly Coord DeltaNorth = new Coord(0, -1);
+		public static readonly Coord DeltaSouth = new Coord(0, 1);
+		public static readonly Coord DeltaEast = new Coord(1, 0);
+		public static readonly Coord DeltaWest = new Coord(-1, 0);
 	}
 
 	public static class LineDirections {
@@ -207,26 +212,26 @@ namespace AsciiUml {
 				case EndpointKind.From:
 					switch (Direction) {
 						case LineDirection.North:
-							return new LineSegment(Id, Origin, new Coord(From.X, From.Y - 1), To, Type, Direction);
+							return new LineSegment(Id, Origin, From.Move(Vector.DeltaNorth), To, Type, Direction);
 						case LineDirection.South:
-							return new LineSegment(Id, Origin, new Coord(From.X, From.Y + 1), To, Type, Direction);
+							return new LineSegment(Id, Origin, From.Move(Vector.DeltaSouth), To, Type, Direction);
 						case LineDirection.East:
-							return new LineSegment(Id, Origin, new Coord(From.X + 1, From.Y), To, Type, Direction);
+							return new LineSegment(Id, Origin, From.Move(Vector.DeltaEast), To, Type, Direction);
 						case LineDirection.West:
-							return new LineSegment(Id, Origin, new Coord(From.X - 1, From.Y), To, Type, Direction);
+							return new LineSegment(Id, Origin, From.Move(Vector.DeltaWest), To, Type, Direction);
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
 				case EndpointKind.To:
 					switch (Direction) {
 						case LineDirection.North:
-							return new LineSegment(Id, Origin, From, new Coord(To.X, To.Y + 1), Type, Direction);
+							return new LineSegment(Id, Origin, From, To.Move(Vector.DeltaSouth), Type, Direction);
 						case LineDirection.South:
-							return new LineSegment(Id, Origin, From, new Coord(To.X, To.Y - 1), Type, Direction);
+							return new LineSegment(Id, Origin, From, To.Move(Vector.DeltaNorth), Type, Direction);
 						case LineDirection.East:
-							return new LineSegment(Id, Origin, From, new Coord(To.X - 1, To.Y), Type, Direction);
+							return new LineSegment(Id, Origin, From, To.Move(Vector.DeltaWest), Type, Direction);
 						case LineDirection.West:
-							return new LineSegment(Id, Origin, From, new Coord(To.X + 1, To.Y), Type, Direction);
+							return new LineSegment(Id, Origin, From, To.Move(Vector.DeltaEast), Type, Direction);
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
@@ -401,6 +406,7 @@ namespace AsciiUml {
 					var match = endpoints.First();
 					var deltaX = dragTo.X - dragFrom.X;
 					var deltaY = dragTo.Y - dragFrom.Y;
+					var delta = new Coord(deltaX, deltaY);
 
 					var currentSegment = newList[match.Item1];
 
@@ -423,8 +429,8 @@ namespace AsciiUml {
 
 						var directionFromBend = LineDirections.GetDirectionFromBend(currentSegment.Direction, match.Item2, deltaX, deltaY);
 						var newSegmentPos = match.Item2 == EndpointKind.From
-							? currentSegment.From.Move(deltaX, deltaY)
-							: currentSegment.To.Move(deltaX, deltaY);
+							? currentSegment.From.Move(delta)
+							: currentSegment.To.Move(delta);
 						newList.Insert(match.Item1, new LineSegment(this, newSegmentPos, newSegmentPos, SegmentType.Line, directionFromBend));
 					}
 					else {
@@ -512,10 +518,6 @@ namespace AsciiUml {
 
 		public Line() {
 			Id = PaintAbles.Id++;
-		}
-
-		public Line Move(int x, int y) {
-			throw new NotImplementedException();
 		}
 
 		public Line Move(Coord delta) {
