@@ -27,7 +27,7 @@ namespace AsciiUml {
 			return;
 		}
 
-		static State ResizeBox(State state, Coord delta) {
+		static State ResizeSelectedBox(State state, Coord delta) {
 			if (state.SelectedIndexInModel.HasValue) {
 				var box = state.Model[state.SelectedIndexInModel.Value] as IResizeable<object>;
 				if (box != null)
@@ -156,21 +156,34 @@ namespace AsciiUml {
 			return null;
 		}
 
+		public static State SelectTemporarily(State state, Func<State, State> code) {
+			if (state.SelectedId.HasValue) 
+				return code(state);
+
+			return SelectObject(state).Match(x => {
+					state = PerformSelectObject(state, x.Item1, x.Item2);
+					state = code(state);
+					return ClearSelection(state);
+				}, () => state);
+		}
+
 		private static Option<State> ControlKeys(State state, ConsoleKeyInfo key) {
 			if ((key.Modifiers & ConsoleModifiers.Control) == 0)
 				return null;
 
-			switch (key.Key) {
-				case ConsoleKey.UpArrow:
-					return ResizeBox(state, Vector.DeltaNorth);
-				case ConsoleKey.DownArrow:
-					return ResizeBox(state, Vector.DeltaSouth);
-				case ConsoleKey.LeftArrow:
-					return ResizeBox(state, Vector.DeltaWest);
-				case ConsoleKey.RightArrow:
-					return ResizeBox(state, Vector.DeltaEast);
-			}
-			return null;
+			return SelectTemporarily(state, x => {
+				switch (key.Key) {
+					case ConsoleKey.UpArrow:
+						return ResizeSelectedBox(x, Vector.DeltaNorth);
+					case ConsoleKey.DownArrow:
+						return ResizeSelectedBox(x, Vector.DeltaSouth);
+					case ConsoleKey.LeftArrow:
+						return ResizeSelectedBox(x, Vector.DeltaWest);
+					case ConsoleKey.RightArrow:
+						return ResizeSelectedBox(x, Vector.DeltaEast);
+				}
+				return null;
+			});
 		}
 
 		private static Option<State> ShiftKeys(State state, ConsoleKeyInfo key) {
