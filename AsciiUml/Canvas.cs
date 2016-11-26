@@ -23,8 +23,7 @@ namespace AsciiUml {
 			return occupants[pos.Y, pos.X];
 		}
 
-		public char GetCell(Coord pos)
-		{
+		public char GetCell(Coord pos) {
 			return lines[pos.Y][pos.X];
 		}
 
@@ -59,7 +58,7 @@ namespace AsciiUml {
 				occupants[y, x] = objectId;
 		}
 
-		public static void PaintString(Canvass c, string s, int x, int y, int objectId)  {
+		public static void PaintString(Canvass c, string s, int x, int y, int objectId) {
 			for (int i = 0; i < s.Length; i++)
 				c.Paint(new Coord(x + i, y), s[i], objectId);
 		}

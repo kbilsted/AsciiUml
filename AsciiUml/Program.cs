@@ -28,11 +28,10 @@ namespace AsciiUml {
 		}
 
 		static State ResizeBox(State state, Coord delta) {
-			if (state.SelectedIndexInModel.HasValue)
-			{
+			if (state.SelectedIndexInModel.HasValue) {
 				var box = state.Model[state.SelectedIndexInModel.Value] as IResizeable<object>;
 				if (box != null)
-					state.Model[state.SelectedIndexInModel.Value] = (IPaintable<object>)box.Resize(delta);
+					state.Model[state.SelectedIndexInModel.Value] = (IPaintable<object>) box.Resize(delta);
 			}
 
 			return state;
@@ -58,8 +57,8 @@ namespace AsciiUml {
 				}
 
 				var newState = ControlKeys(state, key)
-					.Match(s=>s, () => ShiftKeys(state, key))
-					.Match(s=>s, () => HandleKeys(state, key, selected, model))
+					.Match(s => s, () => ShiftKeys(state, key))
+					.Match(s => s, () => HandleKeys(state, key, selected, model))
 					.IfNone(() => state);
 				state = newState;
 			}
@@ -81,18 +80,22 @@ namespace AsciiUml {
 
 		private static Option<State> HandleKeys(State state, ConsoleKeyInfo key, int? selected, List<IPaintable<object>> model) {
 			switch (key.Key) {
-				case ConsoleKey.UpArrow: return MoveSelectedPaintable(state, Vector.DeltaNorth);
-				case ConsoleKey.DownArrow: return MoveSelectedPaintable(state, Vector.DeltaSouth);
-				case ConsoleKey.LeftArrow: return MoveSelectedPaintable(state, Vector.DeltaWest);
-				case ConsoleKey.RightArrow: return MoveSelectedPaintable(state, Vector.DeltaEast);
+				case ConsoleKey.UpArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaNorth);
+				case ConsoleKey.DownArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaSouth);
+				case ConsoleKey.LeftArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaWest);
+				case ConsoleKey.RightArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaEast);
 
 				case ConsoleKey.Spacebar:
-					if (selected.HasValue) 
+					if (selected.HasValue)
 						return ClearSelection(state);
 
 					var obj = SelectObject(state)
 						.Match(x => PerformSelectObject(state, x.Item1, x.Item2),
-						() => ClearSelection(state) );
+							() => ClearSelection(state));
 					return obj;
 
 				case ConsoleKey.S:
@@ -158,10 +161,14 @@ namespace AsciiUml {
 				return null;
 
 			switch (key.Key) {
-				case ConsoleKey.UpArrow: return ResizeBox(state, Vector.DeltaNorth);
-				case ConsoleKey.DownArrow: return ResizeBox(state, Vector.DeltaSouth);
-				case ConsoleKey.LeftArrow: return ResizeBox(state, Vector.DeltaWest);
-				case ConsoleKey.RightArrow: return ResizeBox(state, Vector.DeltaEast);
+				case ConsoleKey.UpArrow:
+					return ResizeBox(state, Vector.DeltaNorth);
+				case ConsoleKey.DownArrow:
+					return ResizeBox(state, Vector.DeltaSouth);
+				case ConsoleKey.LeftArrow:
+					return ResizeBox(state, Vector.DeltaWest);
+				case ConsoleKey.RightArrow:
+					return ResizeBox(state, Vector.DeltaEast);
 			}
 			return null;
 		}
@@ -178,10 +185,14 @@ namespace AsciiUml {
 			PerformSelectObject(state, objectId.Value, false);
 
 			switch (key.Key) {
-				case ConsoleKey.UpArrow: return MoveSelectedPaintable(state, Vector.DeltaNorth);
-				case ConsoleKey.DownArrow: return MoveSelectedPaintable(state, Vector.DeltaSouth);
-				case ConsoleKey.LeftArrow: return MoveSelectedPaintable(state, Vector.DeltaWest);
-				case ConsoleKey.RightArrow: return MoveSelectedPaintable(state, Vector.DeltaEast);
+				case ConsoleKey.UpArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaNorth);
+				case ConsoleKey.DownArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaSouth);
+				case ConsoleKey.LeftArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaWest);
+				case ConsoleKey.RightArrow:
+					return MoveSelectedPaintable(state, Vector.DeltaEast);
 			}
 			return null;
 		}
@@ -229,12 +240,12 @@ namespace AsciiUml {
 		}
 
 		private static void TempModelForPlayingAround(List<IPaintable<object>> model) {
-			model.Add(new Box(new Coord(0,0)).SetText("Foo\nMiddleware\nMW1"));
+			model.Add(new Box(new Coord(0, 0)).SetText("Foo\nMiddleware\nMW1"));
 			//model.Add(new Box() {Y = 14, Text = "goo\nand\nbazooka"});
 			model.Add(new Box(new Coord(19, 27)).SetText("foo\nServer\nbazooka"));
 			model.Add(new Box(new Coord(13, 20)).SetText("goo\nWeb\nServer"));
 			model.Add(new Line() {FromId = 0, ToId = 1});
-			model.Add(new Label(new Coord(5,5), "Server\nClient\nAAA"));
+			model.Add(new Label(new Coord(5, 5), "Server\nClient\nAAA"));
 		}
 
 		private static Option<Label> CreateLabel() {

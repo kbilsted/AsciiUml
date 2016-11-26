@@ -61,21 +61,20 @@ namespace AsciiUml {
 				int direction;
 				direction = segment.From.X < segment.To.X ? 1 : -1;
 				for (int i = 0; i <= delta; i++) {
-					var newPos = new Coord(segment.From.X + (i * direction), segment.From.Y);
+					var newPos = new Coord(segment.From.X + (i*direction), segment.From.Y);
 					PaintLineOrCross(canvass, newPos, c, segment.Id);
 				}
 
 				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
 				for (int i = 0; i <= delta; i++) {
-					var newPos = new Coord(segment.From.X, segment.From.Y + (i * direction));
+					var newPos = new Coord(segment.From.X, segment.From.Y + (i*direction));
 					PaintLineOrCross(canvass, newPos, c, segment.Id);
 				}
 			}
 		}
 
-		private static void PaintLineOrCross(Canvass canvass, Coord newPos, char c, int id)
-		{
+		private static void PaintLineOrCross(Canvass canvass, Coord newPos, char c, int id) {
 			if ((canvass.GetCell(newPos) == '-' && c == '|') || (canvass.GetCell(newPos) == '|' && c == '-'))
 				canvass.Paint(newPos, '+', id);
 			else
@@ -87,13 +86,13 @@ namespace AsciiUml {
 
 			switch (label.Direction) {
 				case LabelDirection.LeftToRight:
-					lines.Each((line, extraY) => Canvass.PaintString(canvass, line, label.X, label.Y+extraY, label.Id));
+					lines.Each((line, extraY) => Canvass.PaintString(canvass, line, label.X, label.Y + extraY, label.Id));
 					break;
 
 				case LabelDirection.TopDown:
 					int extraX = 0;
 					foreach (var line in lines) {
-						for (int i = 0; i < line.Length; i++) 
+						for (int i = 0; i < line.Length; i++)
 							canvass.Paint(new Coord(label.X + extraX, label.Y + i), line[i], label.Id);
 						extraX++;
 					}

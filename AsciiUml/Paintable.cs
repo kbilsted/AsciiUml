@@ -39,8 +39,7 @@ namespace AsciiUml {
 		public int X => Pos.X;
 		public int Y => Pos.Y;
 
-		public Cursor(Coord c)
-		{
+		public Cursor(Coord c) {
 			Pos = c;
 		}
 
@@ -63,9 +62,9 @@ namespace AsciiUml {
 	public static class Vector {
 		public static bool IsDirectionOpposite(LineDirection d1, LineDirection d2) {
 			return d1 == LineDirection.North && d2 == LineDirection.South
-				|| d1 == LineDirection.South && d2 == LineDirection.North
-				|| d1 == LineDirection.East && d2 == LineDirection.West
-				|| d1 == LineDirection.West && d2 == LineDirection.East;
+					|| d1 == LineDirection.South && d2 == LineDirection.North
+					|| d1 == LineDirection.East && d2 == LineDirection.West
+					|| d1 == LineDirection.West && d2 == LineDirection.East;
 		}
 
 		public static bool IsStraightLine(Coord from, Coord to) {
@@ -82,8 +81,7 @@ namespace AsciiUml {
 			return @from.Y < to.Y ? LineDirection.South : LineDirection.North;
 		}
 
-		public static bool IsOrthogonal(LineDirection d1, LineDirection d2)
-		{
+		public static bool IsOrthogonal(LineDirection d1, LineDirection d2) {
 			return d1 == LineDirection.East || d1 == LineDirection.West
 				? d2 == LineDirection.North || d2 == LineDirection.South
 				: d2 == LineDirection.East || d2 == LineDirection.West;
@@ -91,10 +89,14 @@ namespace AsciiUml {
 
 		public static LineDirection GetOppositeDirection(LineDirection direction) {
 			switch (direction) {
-				case LineDirection.North: return LineDirection.South;
-				case LineDirection.South: return LineDirection.North;
-				case LineDirection.East: return LineDirection.West;
-				case LineDirection.West: return LineDirection.East;
+				case LineDirection.North:
+					return LineDirection.South;
+				case LineDirection.South:
+					return LineDirection.North;
+				case LineDirection.East:
+					return LineDirection.West;
+				case LineDirection.West:
+					return LineDirection.East;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
 			}
@@ -110,8 +112,7 @@ namespace AsciiUml {
 		public static LineDirection GetDirectionFromBend(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
 			switch (kind) {
 				case EndpointKind.From:
-					switch (direction)
-					{
+					switch (direction) {
 						case LineDirection.North:
 						case LineDirection.South:
 							if (dragx > 0)
@@ -130,8 +131,7 @@ namespace AsciiUml {
 							throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
 					}
 				case EndpointKind.To:
-					switch (direction)
-					{
+					switch (direction) {
 						case LineDirection.North:
 						case LineDirection.South:
 							if (dragx > 0)
@@ -175,7 +175,7 @@ namespace AsciiUml {
 		}
 
 		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction) {
-			if(type==SegmentType.Slope && from!=to)
+			if (type == SegmentType.Slope && from != to)
 				throw new ArgumentException("Slopes can only be size 1");
 
 			Id = id;
@@ -205,7 +205,7 @@ namespace AsciiUml {
 		}
 
 		public LineSegment Reduce(EndpointKind kind) {
-			if(!IsReducable())
+			if (!IsReducable())
 				throw new ArgumentException("cannot reduce line of length 1");
 
 			switch (kind) {
@@ -270,21 +270,21 @@ namespace AsciiUml {
 			}
 		}
 
-		public enum LineSemantic
-		{
-			StartArrow, EndArrow,  Slope, LinePiece,
+		public enum LineSemantic {
+			StartArrow,
+			EndArrow,
+			Slope,
+			LinePiece,
 		}
 
 		public int Id { get; }
 		public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
 
-		public SlopedLine2 Drag(Coord dragFrom, Coord dragTo)
-		{
+		public SlopedLine2 Drag(Coord dragFrom, Coord dragTo) {
 			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
 		}
 
-		public LineDirection GetDirectionOf(int index)
-		{
+		public LineDirection GetDirectionOf(int index) {
 			if (index == 0) {
 				if (Segments.Count > 1)
 					return Vector.GetDirection(Segments[index].Pos, Segments[index + 1].Pos);
@@ -322,9 +322,9 @@ namespace AsciiUml {
 
 					int posAtInsert = Segments.Count - 1;
 					Segments.Add(new SlopedSegment2(dragTo, SegmentType.Line));
-					if (Vector.IsOrthogonal(GetDirectionOf(posAtInsert), GetDirectionOf(posAtInsert+1)))
+					if (Vector.IsOrthogonal(GetDirectionOf(posAtInsert), GetDirectionOf(posAtInsert + 1)))
 						Segments[posAtInsert].Type = SegmentType.Slope;
-					Segments[Segments.Count-1].Type = SegmentType.Line; // ensure to convert slopes to lines
+					Segments[Segments.Count - 1].Type = SegmentType.Line; // ensure to convert slopes to lines
 					return this;
 
 				case LineSemantic.Slope:
@@ -337,8 +337,7 @@ namespace AsciiUml {
 			return null;
 		}
 
-		private int GetLastNthLastPos<T>(List<T> colList, int last)
-		{
+		private int GetLastNthLastPos<T>(List<T> colList, int last) {
 			return colList.Count - 1 - last;
 		}
 
@@ -346,15 +345,14 @@ namespace AsciiUml {
 			int pos = Segments.FindIndex(x => x.Pos == coord);
 			if (pos == 0)
 				return LineSemantic.StartArrow;
-			if(pos == Segments.Count-1)
+			if (pos == Segments.Count - 1)
 				return LineSemantic.EndArrow;
 			if (Segments[pos].Type == SegmentType.Slope)
 				return LineSemantic.Slope;
 			return LineSemantic.LinePiece;
 		}
 
-		public SlopedLine AutoRoute()
-		{
+		public SlopedLine AutoRoute() {
 			return null; // return a new shortest path from start to end
 		}
 
@@ -413,13 +411,14 @@ namespace AsciiUml {
 					if (currentSegment.Type == SegmentType.Slope) {
 						newList.Insert(0, new LineSegment(this, dragTo, dragTo, SegmentType.Line));
 					}
-					else if (IsLineAtomic()) { //
+					else if (IsLineAtomic()) {
+						//
 						newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
 					}
 					else if (IsDragDiagonalOfLine(currentSegment, dragFrom, dragTo)) {
-						if(newList[match.Item1].IsReducable())
+						if (newList[match.Item1].IsReducable())
 							newList[match.Item1] = currentSegment.Reduce(match.Item2);
-						else 
+						else
 							newList.RemoveAt(match.Item1);
 
 						Coord slopePoint = match.Item2 == EndpointKind.From
@@ -435,14 +434,14 @@ namespace AsciiUml {
 					}
 					else {
 						if (currentSegment.SpanOneCell()) {
-							if(Vector.IsDirectionOpposite(currentSegment.Direction, Vector.GetDirection(dragFrom, dragTo)))
+							if (Vector.IsDirectionOpposite(currentSegment.Direction, Vector.GetDirection(dragFrom, dragTo)))
 								newList.RemoveAt(match.Item1);
 							else
 								newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
 						}
 						else {
 							for (int i = match.Item1; i < newList.Count; i++) {
-								if(newList[i].Type == SegmentType.Slope)
+								if (newList[i].Type == SegmentType.Slope)
 									break;
 								newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY, match.Item2);
 							}
@@ -469,7 +468,7 @@ namespace AsciiUml {
 		}
 
 		private bool IsDragDiagonalOfLine(LineSegment segment, Coord dragFrom, Coord dragTo) {
-			if (segment.Direction == LineDirection.East || segment.Direction == LineDirection.West) 
+			if (segment.Direction == LineDirection.East || segment.Direction == LineDirection.West)
 				return dragFrom.Y != dragTo.Y;
 
 			return dragFrom.X != dragTo.X;
@@ -533,19 +532,16 @@ namespace AsciiUml {
 		public Coord Pos { get; }
 		public LabelDirection Direction { get; }
 
-		public Label(string text) : this(new Coord(0,0), text)
-		{
+		public Label(string text) : this(new Coord(0, 0), text) {
 		}
 
-		public Label(Coord pos, string text)
-		{
+		public Label(Coord pos, string text) {
 			Id = PaintAbles.Id++;
 			Text = text;
 			Pos = pos;
 		}
 
-		public Label(int id, Coord pos , string text, LabelDirection direction)
-		{
+		public Label(int id, Coord pos, string text, LabelDirection direction) {
 			Id = id;
 			Text = text;
 			Pos = pos;
@@ -584,8 +580,8 @@ namespace AsciiUml {
 
 		public readonly string Text;
 
-		public Box(Coord pos) : this(PaintAbles.Id++, pos)
-		{ }
+		public Box(Coord pos) : this(PaintAbles.Id++, pos) {
+		}
 
 		public Box(int id, Coord pos) {
 			Id = id;
@@ -594,8 +590,7 @@ namespace AsciiUml {
 			Pos = pos;
 		}
 
-		public Box(int id, Coord pos, int w, int h, string text)
-		{
+		public Box(int id, Coord pos, int w, int h, string text) {
 			Id = id;
 			W = w;
 			H = h;
@@ -604,8 +599,7 @@ namespace AsciiUml {
 			Check();
 		}
 
-		public Box(Coord pos, int w, int h) : this(PaintAbles.Id++, pos, w,h,null)
-		{
+		public Box(Coord pos, int w, int h) : this(PaintAbles.Id++, pos, w, h, null) {
 		}
 
 		public int Id { get; }
@@ -614,16 +608,16 @@ namespace AsciiUml {
 			var rows = text.Split('\n');
 
 			var requiredWidth = rows.Select(x => x.Length).Max() + 4;
-			var w = W < requiredWidth? requiredWidth:W;
+			var w = W < requiredWidth ? requiredWidth : W;
 
 			var requiredHeight = 2 + rows.Length;
-			var h = H < requiredHeight ? requiredHeight:H;
+			var h = H < requiredHeight ? requiredHeight : H;
 
 			return new Box(Id, Pos, w, h, text);
 		}
 
 		public Box Move(Coord delta) {
-			return new Box(Id, Pos.Move(delta),  W, H, Text);
+			return new Box(Id, Pos.Move(delta), W, H, Text);
 		}
 
 		public IPaintable<object> Resize(Coord delta) {

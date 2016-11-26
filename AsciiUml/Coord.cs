@@ -10,8 +10,7 @@ namespace AsciiUml {
 			Y = y;
 		}
 
-		public Coord Move(Coord c)
-		{
+		public Coord Move(Coord c) {
 			return new Coord(X + c.X, Y + c.Y);
 		}
 
