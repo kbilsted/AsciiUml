@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using LanguageExt;
+using LanguageExt.SomeHelp;
+using Microsoft.Win32.SafeHandles;
 
 namespace AsciiUml {
 	public class State {
@@ -93,13 +95,13 @@ namespace AsciiUml {
 					if (selected.HasValue)
 						return ClearSelection(state);
 
-					var obj = SelectObject(state)
+					var obj = GetIdOfCursorPosOrAskUserForId(state)
 						.Match(x => PerformSelectObject(state, x.Item1, x.Item2),
 							() => ClearSelection(state));
 					return obj;
 
 				case ConsoleKey.S:
-					return PrintIdsAndLetUserSelectOpbejct(state)
+					return PrintIdsAndLetUserSelectObject(state)
 						.Match(x => PerformSelectObject(state, x, true), () => state);
 
 				case ConsoleKey.X:
@@ -127,12 +129,12 @@ namespace AsciiUml {
 				case ConsoleKey.C:
 					Console.WriteLine("Connect from objecgt: ");
 
-					var from = PrintIdsAndLetUserSelectOpbejct(state);
-					var to = PrintIdsAndLetUserSelectOpbejct(state);
-					@from.IfSome(ffrom => to.IfSome(tto => {
-						var line = new Line() {FromId = ffrom, ToId = tto};
-						model.Insert(0, line);
-					}));
+					PrintIdsAndLetUserSelectObject(state)
+						.IfSome(from => PrintIdsAndLetUserSelectObject(state)
+								.IfSome(to => {
+									var line = new Line() {FromId = from, ToId = to};
+									model.Insert(0, line);
+								}));
 					return state;
 
 				case ConsoleKey.T:
@@ -144,7 +146,7 @@ namespace AsciiUml {
 					}, () => state);
 
 				case ConsoleKey.R:
-					selected.ToOption().Match(x => {
+					selected.Match(x => {
 							if (model[x] is Label)
 								model[x] = ((Label) model[x]).Rotate();
 							else
@@ -157,14 +159,11 @@ namespace AsciiUml {
 		}
 
 		public static State SelectTemporarily(State state, Func<State, State> code) {
-			if (state.SelectedId.HasValue) 
-				return code(state);
-
-			return SelectObject(state).Match(x => {
-					state = PerformSelectObject(state, x.Item1, x.Item2);
-					state = code(state);
-					return ClearSelection(state);
-				}, () => state);
+			return state.SelectedId.Match(
+				_ => code(state),
+				() => state.Canvas.GetOccupants(state.TheCurser.Pos).Match(
+					x => ClearSelection(code(PerformSelectObject(state, x, false))),
+					() => state));
 		}
 
 		private static Option<State> ControlKeys(State state, ConsoleKeyInfo key) {
@@ -191,23 +190,22 @@ namespace AsciiUml {
 			if ((key.Modifiers & ConsoleModifiers.Shift) == 0)
 				return null;
 
-			var objectId = state.Canvas.GetOccupants(state.TheCurser.Pos);
-			if (!objectId.HasValue)
+			return SelectTemporarily(state, x => {
+				switch (key.Key)
+				{
+					case ConsoleKey.UpArrow:
+						return MoveSelectedPaintable(x, Vector.DeltaNorth);
+					case ConsoleKey.DownArrow:
+						return MoveSelectedPaintable(x, Vector.DeltaSouth);
+					case ConsoleKey.LeftArrow:
+						return MoveSelectedPaintable(x, Vector.DeltaWest);
+					case ConsoleKey.RightArrow:
+						return MoveSelectedPaintable(x, Vector.DeltaEast);
+				}
 				return null;
 
-			PerformSelectObject(state, objectId.Value, false);
+			});
 
-			switch (key.Key) {
-				case ConsoleKey.UpArrow:
-					return MoveSelectedPaintable(state, Vector.DeltaNorth);
-				case ConsoleKey.DownArrow:
-					return MoveSelectedPaintable(state, Vector.DeltaSouth);
-				case ConsoleKey.LeftArrow:
-					return MoveSelectedPaintable(state, Vector.DeltaWest);
-				case ConsoleKey.RightArrow:
-					return MoveSelectedPaintable(state, Vector.DeltaEast);
-			}
-			return null;
 		}
 
 		private static void EnableCatchingShiftArrowPresses() {
@@ -235,7 +233,7 @@ namespace AsciiUml {
 		private static void PaintTopMenu(State state) {
 			Screen.SetConsoleGetInputColors();
 			Console.WriteLine(
-				$"AsciiUml v1.0. Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser.X}, {state.TheCurser.Y}) Press \'h\' for help");
+				$"AsciiUml v1.0. Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}) Press \'h\' for help");
 			Screen.SetConsoleStandardColor();
 		}
 
@@ -253,27 +251,31 @@ namespace AsciiUml {
 		}
 
 		private static void TempModelForPlayingAround(List<IPaintable<object>> model) {
-			model.Add(new Box(new Coord(0, 0)).SetText("Foo\nMiddleware\nMW1"));
+			model.Add(new Box(new Coord(0, 0), "Foo\nMiddleware\nMW1"));
 			//model.Add(new Box() {Y = 14, Text = "goo\nand\nbazooka"});
-			model.Add(new Box(new Coord(19, 27)).SetText("foo\nServer\nbazooka"));
-			model.Add(new Box(new Coord(13, 20)).SetText("goo\nWeb\nServer"));
+			model.Add(new Box(new Coord(19, 27), "foo\nServer\nbazooka"));
+			model.Add(new Box(new Coord(13, 20), "goo\nWeb\nServer"));
 			model.Add(new Line() {FromId = 0, ToId = 1});
 			model.Add(new Label(new Coord(5, 5), "Server\nClient\nAAA"));
 		}
 
 		private static Option<Label> CreateLabel() {
-			Screen.SetConsoleGetInputColors();
-			Console.Write("Create a label. Text: ");
-			var res = CommandParser.TryReadLineWithCancel().Match(x => new Label(x), () => Option<Label>.None);
-			Screen.SetConsoleStandardColor();
-			return res;
+			return ConsoleInputColors(() => {
+				Console.Write("Create a label. Text: ");
+				return CommandParser.TryReadLineWithCancel().Match(x => new Label(x), () => null);
+			});
 		}
 
 		private static Option<Box> CreateBox(Cursor cursor) {
+			return ConsoleInputColors(() => {
+				Console.Write("Create box. Title: ");
+				return CommandParser.TryReadLineWithCancel().Match(x => new Box(cursor.Pos, x), () => null);
+			});
+		}
+
+		private static T ConsoleInputColors<T>(Func<T> code) {
 			Screen.SetConsoleGetInputColors();
-			Console.Write("Create box. Title: ");
-			var res = CommandParser.TryReadLineWithCancel()
-				.Match(x => new Box(cursor.Pos).SetText(x), () => Option<Box>.None);
+			var res = code();
 			Screen.SetConsoleStandardColor();
 			return res;
 		}
@@ -328,14 +330,13 @@ namespace AsciiUml {
 			Console.ReadKey();
 		}
 
-		private static Option<Tuple<int, bool>> SelectObject(State state) {
-			var occupant = state.Canvas.GetOccupants(state.TheCurser.Pos);
-			if (occupant != null)
-				return Tuple.Create(occupant.Value, false);
-			return PrintIdsAndLetUserSelectOpbejct(state).Select(x => Tuple.Create(x, true));
+		private static Option<Tuple<int, bool>> GetIdOfCursorPosOrAskUserForId(State state) {
+			return state.Canvas.GetOccupants(state.TheCurser.Pos).ToOption()
+				.Match(x => Tuple.Create(x, false), 
+					() => PrintIdsAndLetUserSelectObject(state).Select(x => Tuple.Create(x, true)));
 		}
 
-		private static Option<int> PrintIdsAndLetUserSelectOpbejct(State state) {
+		private static Option<int> PrintIdsAndLetUserSelectObject(State state) {
 			var cursorTop = Console.CursorTop;
 			Screen.SetConsoleGetInputColors();
 			PrintIdsOfModel(state.Model);

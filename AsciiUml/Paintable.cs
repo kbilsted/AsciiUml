@@ -50,6 +50,9 @@ namespace AsciiUml {
 		public Cursor Move(Coord delta) {
 			return new Cursor(Pos.Move(delta));
 		}
+		public override string ToString() {
+			return $"{X},{Y}";
+		}
 	}
 
 	public enum LineDirection {
@@ -581,6 +584,13 @@ namespace AsciiUml {
 		public readonly string Text;
 
 		public Box(Coord pos) : this(PaintAbles.Id++, pos) {
+		}
+
+		public Box(Coord pos, string text) : this(PaintAbles.Id++, pos) {
+			var tmp = SetText(text);
+			W = tmp.W;
+			H = tmp.H;
+			Text = text;
 		}
 
 		public Box(int id, Coord pos) {

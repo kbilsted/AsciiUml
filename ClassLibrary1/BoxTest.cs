@@ -83,7 +83,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintTextBox() {
-			var res = Paint(new Box(new Coord(0,0)).SetText("Foo"));
+			var res = Paint(new Box(new Coord(0,0), "Foo"));
 
 			Assert.AreEqual(
 				@"
@@ -94,7 +94,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintMultiTextBox() {
-			var res = Paint(new Box(new Coord(0,0)).SetText("Foo\nbazooka"));
+			var res = Paint(new Box(new Coord(0,0), "Foo\nbazooka"));
 
 			Assert.AreEqual(
 				@"
@@ -107,7 +107,7 @@ namespace AsciiUmlTests {
 
 		[Test]
 		public void PaintMultiTextBoxex() {
-			var res = Paint(new Box(new Coord(0,0)).SetText("Foo\nbazooka"), new Box(new Coord(14,1)).SetText("Bar.."));
+			var res = Paint(new Box(new Coord(0,0), "Foo\nbazooka"), new Box(new Coord(14,1), "Bar.."));
 
 			Assert.AreEqual(
 				@"
