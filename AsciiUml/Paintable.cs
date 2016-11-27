@@ -21,6 +21,10 @@ namespace AsciiUml {
 		Coord Pos { get; }
 	}
 
+	public interface IConnectable {
+		Coord[] GetFrameCoords();
+	}
+
 	public enum Direction {
 		North,
 		South,
@@ -527,7 +531,8 @@ namespace AsciiUml {
 		}
 	}
 
-	public class Label : IPaintable<Label>, ISelectable {
+	public class Label : IPaintable<Label>, ISelectable, IConnectable
+	{
 		public int Id { get; }
 		public int X => Pos.X;
 		public int Y => Pos.Y;
@@ -535,8 +540,7 @@ namespace AsciiUml {
 		public Coord Pos { get; }
 		public LabelDirection Direction { get; }
 
-		public Label(string text) : this(new Coord(0, 0), text) {
-		}
+		public Label(string text) : this(new Coord(0, 0), text) {}
 
 		public Label(Coord pos, string text) {
 			Id = PaintAbles.Id++;
@@ -558,6 +562,11 @@ namespace AsciiUml {
 		public Label Rotate() {
 			return new Label(Id, Pos, Text, (LabelDirection) ((1 + (int) Direction)%2));
 		}
+
+		public Coord[] GetFrameCoords() {
+			var strings = Text.Split('\n');
+			return RectangleHelper.GetFrameCoords(Pos.X, Pos.Y, strings.Length, strings.Max(x => x.Length));
+		}
 	}
 
 	public interface IResizeable<out T> {
@@ -574,7 +583,44 @@ namespace AsciiUml {
 		SECorner
 	}
 
-	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box> {
+	public static class RectangleHelper {
+		private static readonly Dictionary<string, Coord[]> CacheFrames = new Dictionary<string, Coord[]>();
+
+		public static Tuple<Coord, BoxFramePart>[] GetFrameParts(int x, int y, int h, int w) {
+			var coords = new List<Tuple<Coord, BoxFramePart>>(2*h*w) {
+				Tuple.Create(new Coord(x, y), BoxFramePart.NWCorner),
+				Tuple.Create(new Coord(x + w - 1, y), BoxFramePart.NECorner),
+				Tuple.Create(new Coord(x, y + h - 1), BoxFramePart.SWCorner),
+				Tuple.Create(new Coord(x + w - 1, y + h - 1), BoxFramePart.SECorner)
+			};
+
+			// top + bottom 
+			for (int i = 1; i < w - 1; i++) {
+				coords.Add(Tuple.Create(new Coord(x + i, y), BoxFramePart.Horizontal));
+				coords.Add(Tuple.Create(new Coord(x + i, y + h - 1), BoxFramePart.Horizontal));
+			}
+
+			// frame
+			for (int i = 1; i < h - 1; i++) {
+				coords.Add(Tuple.Create(new Coord(x, y + i), BoxFramePart.Vertical));
+				coords.Add(Tuple.Create(new Coord(x + w - 1, y + i), BoxFramePart.Vertical));
+			}
+
+			return coords.Where(c => !c.Item1.IsAnyNegative()).ToArray();
+		}
+
+
+		public static Coord[] GetFrameCoords(int x, int y, int h, int w) {
+			Coord[] res;
+			var key = "" + x + y + h + w;
+			if (!CacheFrames.TryGetValue(key, out res)) {
+				CacheFrames[key] = res = GetFrameParts(x, y, h, w).Select(c => c.Item1).ToArray();
+			}
+			return res;
+		}
+	}
+	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable {
+		public int Id { get; }
 		public int X => Pos.X;
 		public int W { get; }
 		public int Y => Pos.Y;
@@ -612,8 +658,6 @@ namespace AsciiUml {
 		public Box(Coord pos, int w, int h) : this(PaintAbles.Id++, pos, w, h, null) {
 		}
 
-		public int Id { get; }
-
 		public Box SetText(string text) {
 			var rows = text.Split('\n');
 
@@ -647,76 +691,38 @@ namespace AsciiUml {
 			}
 		}
 
-		private static Dictionary<string, Coord[]> CacheFrames = new Dictionary<string, Coord[]>();
+		//public static Coord[] CalcFrameCoords(int x, int y, int h, int w) {
+		//	if (h == 1 && w == 1) {
+		//		var coord = new Coord(x, y);
+		//		if (coord.IsAnyNegative()) {
+		//			return new Coord[0];
+		//		}
+		//		return new[] {coord};
+		//	}
 
-		public static Coord[] GetFrameCoords(int x, int y, int h, int w) {
-			Coord[] res;
-			var key = "" + x + y + h + w;
-			if (!CacheFrames.TryGetValue(key, out res)) {
-				CacheFrames[key] = res = CalcFrameCoords(x, y, h, w);
-			}
-			return res;
-		}
+		//	List<Coord> coords = new List<Coord>();
 
-		public static Tuple<Coord, BoxFramePart>[] GetFrameParts(int x, int y, int h, int w) {
-			if (h == 1 && w == 1) {
-				throw new ArgumentException("box too small to be painted");
-			}
+		//	// top + bottom 
+		//	for (int i = 0; i < w; i++) {
+		//		coords.Add(new Coord(x + i, y));
+		//		coords.Add(new Coord(x + i, y + h - 1));
+		//	}
 
-			List<Tuple<Coord, BoxFramePart>> coords = new List<Tuple<Coord, BoxFramePart>>();
+		//	// frame
+		//	for (int i = 1; i < h - 1; i++) {
+		//		coords.Add(new Coord(x, y + i));
+		//		coords.Add(new Coord(x + w - 1, y + i));
+		//	}
 
-			coords.Add(Tuple.Create(new Coord(x, y), BoxFramePart.NWCorner));
-			coords.Add(Tuple.Create(new Coord(x + w - 1, y), BoxFramePart.NECorner));
-			coords.Add(Tuple.Create(new Coord(x, y + h - 1), BoxFramePart.SWCorner));
-			coords.Add(Tuple.Create(new Coord(x + w - 1, y + h - 1), BoxFramePart.SECorner));
-
-			// top + bottom 
-			for (int i = 1; i < w - 1; i++) {
-				coords.Add(Tuple.Create(new Coord(x + i, y), BoxFramePart.Horizontal));
-				coords.Add(Tuple.Create(new Coord(x + i, y + h - 1), BoxFramePart.Horizontal));
-			}
-
-			// frame
-			for (int i = 1; i < h - 1; i++) {
-				coords.Add(Tuple.Create(new Coord(x, y + i), BoxFramePart.Vertical));
-				coords.Add(Tuple.Create(new Coord(x + w - 1, y + i), BoxFramePart.Vertical));
-			}
-
-			return coords.Where(c => !c.Item1.IsAnyNegative()).ToArray();
-		}
-
-		public static Coord[] CalcFrameCoords(int x, int y, int h, int w) {
-			if (h == 1 && w == 1) {
-				var coord = new Coord(x, y);
-				if (coord.IsAnyNegative()) {
-					return new Coord[0];
-				}
-				return new[] {coord};
-			}
-
-			List<Coord> coords = new List<Coord>();
-
-			// top + bottom 
-			for (int i = 0; i < w; i++) {
-				coords.Add(new Coord(x + i, y));
-				coords.Add(new Coord(x + i, y + h - 1));
-			}
-
-			// frame
-			for (int i = 1; i < h - 1; i++) {
-				coords.Add(new Coord(x, y + i));
-				coords.Add(new Coord(x + w - 1, y + i));
-			}
-
-			return coords.Where(c => !c.IsAnyNegative()).ToArray();
-		}
+		//	return coords.Where(c => !c.IsAnyNegative()).ToArray();
+		//}
 
 		public Coord[] GetFrameCoords() {
-			return Box.GetFrameCoords(X, Y, H, W);
+			return RectangleHelper.GetFrameCoords(X, Y, H, W);
 		}
 
 		public Tuple<Coord, BoxFramePart>[] GetFrameParts() {
-			return Box.GetFrameParts(X, Y, H, W);
+			return RectangleHelper.GetFrameParts(X, Y, H, W);
 		}
 	}
 }

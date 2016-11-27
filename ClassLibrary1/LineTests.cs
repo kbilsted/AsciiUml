@@ -15,11 +15,11 @@ namespace AsciiUmlTests {
 
 			Assert.AreEqual(new[] {
 				new Coord(2, 3),
+				new Coord(4, 3),
 				new Coord(2, 5),
+				new Coord(4, 5),
 				new Coord(3, 3),
 				new Coord(3, 5),
-				new Coord(4, 3),
-				new Coord(4, 5),
 				new Coord(2, 4),
 				new Coord(4, 4),
 			}, res);
@@ -71,25 +71,23 @@ namespace AsciiUmlTests {
 		[Test]
 		public void PaintLineCrossingLabel() {
 			var res = Paint(
-				new Box(0, new Coord(0,0))  .SetText("goo\nand\nbazooka"),
-				new Box(1, new Coord(6,10)) .SetText("Mango\nTango"),
+				new Box(0, new Coord(0,0)).SetText("goo\nand\nbazooka"),
+				new Box(1, new Coord(6,10)).SetText("Mango\nTango"),
 				new Line() {FromId = 0, ToId = 1},
 				new Label(new Coord(5,6), "Server\nservice\noriented")
 			);
-			Console.WriteLine(res);
-
 			Test.AssertString(
-				@"
+@"
 ***********
 * goo     *
 * and     *
 * bazooka *
 ***********
-      |
+          |
      Server
      service
      oriented
-      v
+          v
       *********
       * Mango *
       * Tango *

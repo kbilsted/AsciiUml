@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LanguageExt;
 using LanguageExt.SomeHelp;
-using Microsoft.Win32.SafeHandles;
 
 namespace AsciiUml {
 	public class State {
@@ -233,7 +232,7 @@ namespace AsciiUml {
 		private static void PaintTopMenu(State state) {
 			Screen.SetConsoleGetInputColors();
 			Console.WriteLine(
-				$"AsciiUml v1.0. Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}) Press \'h\' for help");
+				$"AsciiUml v0.1 Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}) Press \'h\' for help");
 			Screen.SetConsoleStandardColor();
 		}
 

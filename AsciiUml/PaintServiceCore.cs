@@ -13,15 +13,18 @@ namespace AsciiUml {
 		public static Canvass PaintModel(List<IPaintable<object>> model) {
 			var c = new Canvass();
 
-			model.OfType<Box>().Each(x => PaintBox(c, x));
+			foreach (var x in model) {
+				if (x is Box) 
+					PaintBox(c, x as Box);
+				if(x is Line)
+					PaintLine2(c, x as Line, model);
+				if(x is Label)
+					PaintLabel(c, x as Label);
+			}
 
 			// lines may not cross boxes, hence drawn afterwards
-			//model.OfType<Line>().Each(x => PaintLine(c, x, model));
-			model.OfType<Line>().Each(x => PaintLine2(c, x, model));
 			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x));
 			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));
-			// labels may cross lines and be printed over lines
-			model.OfType<Label>().Each(x => PaintLabel(c, x));
 
 			return c;
 		}
@@ -74,11 +77,10 @@ namespace AsciiUml {
 			}
 		}
 
-		private static void PaintLineOrCross(Canvass canvass, Coord newPos, char c, int id) {
-			if ((canvass.GetCell(newPos) == '-' && c == '|') || (canvass.GetCell(newPos) == '|' && c == '-'))
-				canvass.Paint(newPos, '+', id);
-			else
-				canvass.Paint(newPos, c, id);
+		private static void PaintLineOrCross(Canvass canvass, Coord pos, char c, int id) {
+			if ((canvass.GetCell(pos) == '-' && c == '|') || (canvass.GetCell(pos) == '|' && c == '-'))
+				c = '+';
+			canvass.Paint(pos, c, id);
 		}
 
 		private static void PaintLabel(Canvass canvass, Label label) {
@@ -148,10 +150,10 @@ namespace AsciiUml {
 			return previous.X < point.X ? '>' : '<';
 		}
 
-		public static void PaintLine2(Canvass c, Line l, List<IPaintable<object>> model) {
-			var fromBox = (Box) model.First(x => x.Id == l.FromId);
-			var toBox = (Box) model.First(x => x.Id == l.ToId);
-			var smallestDist = CalcStartAndEndSmallestDist(fromBox, toBox);
+		public static void PaintLine2(Canvass c, Line lineArg, List<IPaintable<object>> model) {
+			var from = (IConnectable) model.First(x => x.Id == lineArg.FromId);
+			var to = (IConnectable) model.First(x => x.Id == lineArg.ToId);
+			var smallestDist = CalcSmallestDist(from.GetFrameCoords(), to.GetFrameCoords());
 
 			var line = ShortestPathFinder.Calculate(smallestDist.Min, smallestDist.Max, c);
 			if (line.Count < 2) {
@@ -165,27 +167,16 @@ namespace AsciiUml {
 			for (; i < line.Count - 2; i++) {
 				coord = line[i];
 				var lineChar = CalculateDirectionLine(line[i - 1], coord, line[i + 1]);
-				c.Paint(coord, lineChar, l.Id);
+				c.Paint(coord, lineChar, lineArg.Id);
 			}
 
 			// secondlast element is the arrow head
 			coord = line[i];
-			c.Paint(coord, CalculateDirectionArrowHead(line[i - 1], coord), l.Id);
-		}
-
-		public static Coord[] CalculateBoxOutline(Coord b) {
-			return Box.GetFrameCoords(b.X - 1, b.Y - 1, 3, 3);
+			c.Paint(coord, CalculateDirectionArrowHead(line[i - 1], coord), lineArg.Id);
 		}
 
 		public static Coord[] CalculateBoxOutline(Box b) {
-			return Box.GetFrameCoords(b.X - 1, b.Y - 1, b.H + 2, b.W + 2);
-		}
-
-		public static Range<Coord> CalcStartAndEndSmallestDist(Box fromBox, Box toBox) {
-			var froms = fromBox.GetFrameCoords();
-			var tos = toBox.GetFrameCoords();
-
-			return CalcSmallestDist(froms, tos);
+			return RectangleHelper.GetFrameCoords(b.X - 1, b.Y - 1, b.H + 2, b.W + 2);
 		}
 
 		public static int ManhattenDistance(Coord a, Coord b) {
