@@ -10,7 +10,9 @@ module Figures =
     type Figure = {Type: FigureType; Position:Coord; Size:Size}
 
     type Cursor = Coord
-    type Model = {Figures : Figure list; Cursor:Cursor}
+    type Figures = Figure list
+    type ViewModel = { Cursor: Cursor; Size: Size}
+    type State = { Model: Figures; ViewModel: ViewModel}
 
     let label s (x,y) : Figure =
         let l = Label {Text=s; }
@@ -36,10 +38,10 @@ module Canvas =
                     if x = 1 || x = ft.Size.W then canvas.[ft.Position.Y + y - 1].[ft.Position.X+x-1] <- b.BorderChar
             b.Text |> Seq.iteri (fun i x -> canvas.[ft.Position.Y+1].[ft.Position.X + 1 + i] <- x)
 
-    let Print canvasSizeX canvasSizeY (model:Model) =
-        let canvas = Array.init canvasSizeY (fun _ -> Array.init canvasSizeX (fun _ -> new char()))
-        model.Figures |> Seq.iter (printFigure canvas)
-        canvas.[model.Cursor.Y].[model.Cursor.X] <- '@'
+    let Print (model: State) =
+        let canvas = Array.init model.ViewModel.Size.H (fun _ -> Array.init model.ViewModel.Size.W (fun _ -> new char()))
+        model.Model |> Seq.iter (printFigure canvas)
+        canvas.[model.ViewModel.Cursor.Y].[model.ViewModel.Cursor.X] <- '@'
 
         let sb = new StringBuilder()
         canvas 
