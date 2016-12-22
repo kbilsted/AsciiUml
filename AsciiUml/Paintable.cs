@@ -94,8 +94,15 @@ namespace AsciiUml {
 				: d2 == LineDirection.East || d2 == LineDirection.West;
 		}
 
-		public static LineDirection GetOppositeDirection(LineDirection direction) {
-			switch (direction) {
+		// slet først efter en artikel omkring at man kan lave kode for svær at læse
+		// ved at den bliver mere abstarkt.. færre linier kode..
+		// det er fint med flere linier kode hvis man har mange små variationer over samme tema
+		// feks integration med 3jepart hvor der er en masse felter og hvor kun 90% af 
+		// felterne skal udfyldes, men hvor hvilke felter der skal udfyldes varierer fra kald til kald
+		public static LineDirection GetOppositeDirection(LineDirection direction)
+		{
+			switch (direction)
+			{
 				case LineDirection.North:
 					return LineDirection.South;
 				case LineDirection.South:
@@ -159,6 +166,29 @@ namespace AsciiUml {
 				default:
 					throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
 			}
+		}
+
+		public static LineDirection GetDirectionDragginFromPart(LineDirection direction, int dragx, int dragy) {
+			switch (direction)
+			{
+				case LineDirection.North:
+				case LineDirection.South:
+					if (dragx > 0)
+						return LineDirection.West;
+					return dragx < 0 ? LineDirection.East : direction;
+				case LineDirection.East:
+				case LineDirection.West:
+					if (dragy > 0)
+						return LineDirection.North;
+					return dragy < 0 ? LineDirection.South : direction;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+			}
+
+		}
+		public static LineDirection GetDirectionFromBend2(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
+			var resultingDirection = GetDirectionDragginFromPart(direction, dragx, dragy);
+			return kind == EndpointKind.From ? resultingDirection : Vector.GetOppositeDirection(resultingDirection);
 		}
 	}
 
@@ -587,6 +617,9 @@ namespace AsciiUml {
 		private static readonly Dictionary<string, Coord[]> CacheFrames = new Dictionary<string, Coord[]>();
 
 		public static Tuple<Coord, BoxFramePart>[] GetFrameParts(int x, int y, int h, int w) {
+			if (h == 1 && w == 1)
+				return new[] {Tuple.Create(new Coord(x, y), BoxFramePart.NWCorner)};
+
 			var coords = new List<Tuple<Coord, BoxFramePart>>(2*h*w) {
 				Tuple.Create(new Coord(x, y), BoxFramePart.NWCorner),
 				Tuple.Create(new Coord(x + w - 1, y), BoxFramePart.NECorner),

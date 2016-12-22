@@ -5,6 +5,14 @@ using static AsciiUmlTests.Test;
 
 namespace AsciiUmlTests {
 	public class LabelTests {
+
+		[Test]
+		public void GetLabelOutline() {
+			var l = new Label(new Coord(1, 1), "a");
+			var outline = l.GetFrameCoords();
+			Assert.AreEqual(new[] {new Coord(1,1) }, outline);
+		}
+
 		[Test]
 		public void NormalLine() {
 			var res = Paint(new Label("abcde"));
