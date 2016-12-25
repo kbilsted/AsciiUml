@@ -9,10 +9,7 @@ module Figures =
     type FigureType = | Label of Label | Box of Box
     type Figure = {Type: FigureType; Position:Coord; Size:Size}
 
-    type Cursor = Coord
     type Figures = Figure list
-    type ViewModel = { Cursor: Cursor; Size: Size}
-    type State = { Model: Figures; ViewModel: ViewModel}
 
     let label s (x,y) : Figure =
         let l = Label {Text=s; }
@@ -22,11 +19,48 @@ module Figures =
         let b = Box {BorderChar='*'; Text=s; }
         {Type=b; Position = {X=x;Y=y}; Size={H=3; W=s.Length+2} }
 
+
+module Cursor =
+    open Figures
+
+    type Cursor = Coord
+
+    let create() =
+        { X = 0; Y = 0 }
+
+    let moveLeft cursor =
+        { cursor with X = cursor.X - 1 }
+
+    let moveRight cursor =
+        { cursor with X = cursor.X + 1 }
+
+    let moveDown cursor =
+        { cursor with X = cursor.Y + 1 }
+
+    let moveUp cursor =
+        { cursor with X = cursor.Y - 1 }
+
+module ViewModel =
+    open Figures
+    open Cursor
+
+    type ViewModel = { Cursor: Cursor; Size: Size }
+
+    let create cursor size =
+        { Cursor = cursor; Size = size }
+
+module State =
+    open Figures
+
+    type State = { Model: Figures; ViewModel: ViewModel.ViewModel}
+
+
 module Canvas = 
     open Microsoft.FSharp.Collections
     open System
     open System.Text
     open Figures
+    open State
 
     let printFigure (canvas : char[][]) ft  =
         match ft.Type with
