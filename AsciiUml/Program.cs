@@ -268,15 +268,13 @@ namespace AsciiUml {
 
 		private static Option<Label> CreateLabel() {
 			return ConsoleInputColors(() => {
-				Console.Write("Create a label. Text: ");
-				return CommandParser.TryReadLineWithCancel().Match(x => new Label(x), () => null);
+				return CommandParser.TryReadLineWithCancel("Create a label. Text: ").Match(x => new Label(x), () => null);
 			});
 		}
 
 		private static Option<Box> CreateBox(Cursor cursor) {
 			return ConsoleInputColors(() => {
-				Console.Write("Create box. Title: ");
-				return CommandParser.TryReadLineWithCancel().Match(x => new Box(cursor.Pos, x), () => null);
+				return CommandParser.TryReadLineWithCancel("Create box. Title: ").Match(x => new Box(cursor.Pos, x), () => null);
 			});
 		}
 

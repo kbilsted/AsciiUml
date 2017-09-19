@@ -88,8 +88,7 @@ namespace AsciiUml {
 
 	public static class CommandParser {
 		public static Option<int> ReadInt(Range<int> range, string text) {
-			Console.Write(text);
-			var input = TryReadLineWithCancel();
+			var input = TryReadLineWithCancel(text);
 			return input.Match(x => {
 				int result;
 				if (!int.TryParse(x, out result))
@@ -102,10 +101,12 @@ namespace AsciiUml {
 			}, () => Option<int>.None);
 		}
 
-		public static Option<string> TryReadLineWithCancel() {
-			var sb = new StringBuilder();
+		public static Option<string> TryReadLineWithCancel(string explanation) {
+            Console.WriteLine("ESC to abort input. RETURN to finish input. SHIFT+RETURN for muliline input");
+            Console.Write(explanation);
 
-			do {
+            var sb = new StringBuilder();
+           do {
 				var key = Console.ReadKey(true);
 				if (key.Key == ConsoleKey.Enter)
 					return sb.ToString();
