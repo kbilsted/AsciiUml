@@ -2,19 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using LanguageExt;
-using LanguageExt.SomeHelp;
 
-namespace AsciiUml {
-	public class State {
-		public readonly List<IPaintable<object>> Model = new List<IPaintable<object>>();
-		public Cursor TheCurser;
-		public Canvass Canvas;
-		public int? SelectedIndexInModel { get; set; }
-		public int? SelectedId { get; set; }
-		public int? CursorHoverId { get; set; }
-	}
-
-	class Program {
+namespace AsciiUml
+{
+    class Program {
 		static void Main(string[] args) {
 			EnableCatchingShiftArrowPresses();
 
