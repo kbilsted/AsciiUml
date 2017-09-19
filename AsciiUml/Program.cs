@@ -126,14 +126,22 @@ namespace AsciiUml {
 					return state;
 
 				case ConsoleKey.C:
-					Console.WriteLine("Connect from objecgt: ");
+					Console.WriteLine("Connect from object: ");
 
 					PrintIdsAndLetUserSelectObject(state)
-						.IfSome(from => PrintIdsAndLetUserSelectObject(state)
-								.IfSome(to => {
-									var line = new Line() {FromId = from, ToId = to};
-									model.Insert(0, line);
-								}));
+						.IfSome(from =>
+                                {
+                                    Console.WriteLine("");
+                                    Console.WriteLine("to object: ");
+                                    PrintIdsAndLetUserSelectObject(state)
+                                    .IfSome(to =>
+                                    {
+                                        var line = new Line() { FromId = from, ToId = to };
+                                        model.Insert(0, line);
+                                        state.SelectedId = null;
+                                        state.SelectedIndexInModel = null;
+                                    });
+                                });
 					return state;
 
 				case ConsoleKey.T:
