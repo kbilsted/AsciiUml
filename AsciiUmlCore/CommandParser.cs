@@ -1,26 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using LanguageExt;
 using LanguageExt.SomeHelp;
 
 namespace AsciiUml {
-
-	public class Range<T> {
-		public T Min, Max;
-
-		public Range(T min, T max) {
-			Min = min;
-			Max = max;
-		}
-
-		public override string ToString() {
-			return $"{Min} - {Max}";
-		}
-	}
-
-	public static class CommandParser {
+    public static class CommandParser {
 		public static Option<int> ReadInt(Range<int> range, string text) {
 			var input = TryReadLineWithCancel(text);
 			return input.Match(x => {
