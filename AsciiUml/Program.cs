@@ -299,11 +299,11 @@ namespace AsciiUml {
 			Console.WriteLine("");
 			Console.WriteLine("");
 			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.WriteLine("* *  ****  *     ****    ");
-			Console.WriteLine("* *  *     *     *  *    ");
-			Console.WriteLine("***  **    *     ****    ");
-			Console.WriteLine("* *  *     *     *       ");
-			Console.WriteLine("* *  ****  ****  *       ");
+			Console.WriteLine("*  *  ****  *     ****    ");
+			Console.WriteLine("*  *  *     *     *  *    ");
+			Console.WriteLine("****  **    *     ****    ");
+			Console.WriteLine("*  *  *     *     *       ");
+			Console.WriteLine("*  *  ****  ****  *       ");
 			Console.WriteLine("*************************");
 			Screen.SetConsoleStandardColor();
 			Console.WriteLine("space ................ (un)select object at cursor or choose object");
