@@ -331,6 +331,7 @@ namespace AsciiUml {
 			// TODO change arrow style
 			// TODO change arrow head + bottom
 			// Todo change z orderof object by moving place in the model
+            // TODO all changes to the model must be arise from an event, thus enabling us to persist the model and run test-runs
 
 			Console.ReadKey();
 		}
@@ -355,7 +356,7 @@ namespace AsciiUml {
 		}
 
 		private static Option<int> GetISelectableElement(List<IPaintable<object>> model) {
-			return CommandParser.ReadInt(new Range<int>(0, model.Count - 1), "Select object: ")
+			return CommandParser.ReadInt(model.MinMax(x => x.Id), "Select object: ")
 				.Bind(x => {
 					if (model[x] is ISelectable)
 						return x;

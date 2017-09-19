@@ -40,6 +40,20 @@ namespace AsciiUml {
 				code(c, i++);
 			}
 		}
+
+        public static Range<int> MinMax<T>(this IEnumerable<T> coll, Func<T, int> selector)
+        {
+            int min = int.MaxValue, max = int.MinValue;
+            foreach(var c in coll) {
+                var val = selector(c);
+                if (val < min)
+                    min = val;
+                if (val > max)
+                    max = val;
+            }
+            return new Range<int>(min, max);
+        }
+
 	}
 
 	public class Range<T> {
