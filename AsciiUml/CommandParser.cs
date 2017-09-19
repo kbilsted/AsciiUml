@@ -6,37 +6,6 @@ using LanguageExt;
 using LanguageExt.SomeHelp;
 
 namespace AsciiUml {
-	//public struct May<T> {
-	//	public readonly T Value;
-	//	public readonly bool HasValue;
-
-	//	public static readonly May<T> None = new May<T>(false);
-
-	//	private May(bool secret)
-	//	{
-	//		HasValue = false;
-	//		Value = default(T);
-	//	} 
-
-	//	public May(T value) {
-	//		Value = value;
-	//		HasValue = true;
-	//	}
-
-	//	public static implicit operator May<T>(T value) => ReferenceEquals(null, value) ? None : new May<T>(value);
-
-	//	public May<T> Bind(Func<T> code) {
-	//		return HasValue ? new May<T>(code()) : this;
-	//	}
-
-	//	public void Then(Func<T> someCode, Action noneCode) {
-	//		if (HasValue) someCode();
-	//		else 
-	//			noneCode();
-	//	}
-
-	//}
-
 	public static class Ext {
 		public static T FirstOrDefault<T>(this IEnumerable<T> collection, Func<T, bool> filter,
 			Action<int> foundActionWithPosition) {
