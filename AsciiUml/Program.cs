@@ -22,7 +22,7 @@ namespace AsciiUml {
 			var state = new State();
 			state.TheCurser = new Cursor(new Coord(0, 0));
 
-			TempModelForPlayingAround(state.Model);
+			//TempModelForPlayingAround(state.Model);
 
 			state = ReadKeyboardEvalLoop(state);
 			return;
@@ -358,7 +358,7 @@ namespace AsciiUml {
 		private static Option<int> GetISelectableElement(List<IPaintable<object>> model) {
 			return CommandParser.ReadInt(model.MinMax(x => x.Id), "Select object: ")
 				.Bind(x => {
-					if (model[x] is ISelectable)
+					if (model.SingleOrDefault(b => b.Id == x) is ISelectable)
 						return x;
 					PrintErrorAndWaitKey("Not a selectable object");
 					return GetISelectableElement(model);
