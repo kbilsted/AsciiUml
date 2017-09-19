@@ -106,13 +106,18 @@ namespace AsciiUml {
             Console.Write(explanation);
 
             var sb = new StringBuilder();
-           do {
+            do {
 				var key = Console.ReadKey(true);
 				if (key.Key == ConsoleKey.Enter)
-					return sb.ToString();
-				if (key.Key == ConsoleKey.Escape)
+                {
+                    if (key.Modifiers == ConsoleModifiers.Shift)
+                        sb.Append("\n");
+                    else
+                        return sb.ToString();
+                }
+                else if (key.Key == ConsoleKey.Escape)
 					return null;
-				if (key.Key == ConsoleKey.Backspace) {
+				else if (key.Key == ConsoleKey.Backspace) {
 					if (sb.Length > 0) {
 						sb.Remove(sb.Length - 1, 1);
 						Console.Write("\b \b");
