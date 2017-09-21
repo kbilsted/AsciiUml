@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="2.1.21" />
+    <PackageReference Include="StatePrinter" Version="3.0.1" />
   </ItemGroup>
 
 </Project>
