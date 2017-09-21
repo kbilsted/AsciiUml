@@ -16,5 +16,14 @@ namespace AsciiUml.UI {
 			Console.BackgroundColor = ConsoleColor.DarkYellow;
 			Console.ForegroundColor = ConsoleColor.Yellow;
 		}
+
+	    public static void PrintErrorAndWaitKey(string text)
+	    {
+	        Console.ForegroundColor = ConsoleColor.Red;
+	        Console.BackgroundColor = ConsoleColor.White;
+	        Console.WriteLine(text);
+	        Screen.SetConsoleStandardColor();
+	        Console.ReadKey();
+	    }
 	}
 }

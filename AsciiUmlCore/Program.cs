@@ -141,12 +141,12 @@ namespace AsciiUml
 					    {
 					        if (model[x] is Label)
 					            return Lst(new RotateSelectedElement(x));
-					        PrintErrorAndWaitKey("Only labels can be rotated");
+					        Screen.PrintErrorAndWaitKey("Only labels can be rotated");
                             return Noop;
 					    },
 						() =>
 						{
-                            PrintErrorAndWaitKey("Nothing is selected");
+						    Screen.PrintErrorAndWaitKey("Nothing is selected");
                             return Noop;
 						});
 			}
@@ -259,14 +259,6 @@ namespace AsciiUml
 			return res;
 		}
 
-		public static void PrintErrorAndWaitKey(string text) {
-			Console.ForegroundColor = ConsoleColor.Red;
-			Console.BackgroundColor = ConsoleColor.White;
-			Console.WriteLine(text);
-			Screen.SetConsoleStandardColor();
-			Console.ReadKey();
-		}
-
 		private static Option<Tuple<int, bool>> GetIdOfCursorPosOrAskUserForId(State state) {
 			return state.Canvas.GetOccupants(state.TheCurser.Pos).ToOption()
 				.Match(x => Tuple.Create(x, false), 
@@ -291,7 +283,7 @@ namespace AsciiUml
 				.Bind(x => {
 					if (model.SingleOrDefault(b => b.Id == x) is ISelectable)
 						return x;
-					PrintErrorAndWaitKey("Not a selectable object");
+			        Screen.PrintErrorAndWaitKey("Not a selectable object");
 					return GetISelectableElement(model);
 				});
 		}
@@ -302,5 +294,5 @@ namespace AsciiUml
 				Console.Write(selectable.Id);
 			}
 		}
-	}
+    }
 }

@@ -126,6 +126,7 @@ namespace AsciiUml.Geo {
 			}
 
 		}
+
 		public static LineDirection GetDirectionFromBend2(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
 			var resultingDirection = GetDirectionDragginFromPart(direction, dragx, dragy);
 			return kind == EndpointKind.From ? resultingDirection : Vector.GetOppositeDirection(resultingDirection);

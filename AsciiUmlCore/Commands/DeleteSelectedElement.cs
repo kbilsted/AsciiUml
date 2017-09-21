@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AsciiUml.Commands;
+using AsciiUml.UI;
 
 namespace AsciiUml
 {
@@ -14,7 +15,7 @@ namespace AsciiUml
                 return Program.ClearSelection(state);
             }
 
-            Program.PrintErrorAndWaitKey("Error. You must select an object before you can delete.");
+            Screen.PrintErrorAndWaitKey("Error. You must select an object before you can delete.");
             return state;
         }
     }
