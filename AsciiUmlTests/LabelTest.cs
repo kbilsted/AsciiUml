@@ -1,4 +1,5 @@
 ﻿using AsciiUml;
+using AsciiUml.Geo;
 using NUnit.Framework;
 using static LanguageExt.Prelude;
 using static AsciiUmlTests.Test;

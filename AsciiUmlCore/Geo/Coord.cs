@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace AsciiUml {
+namespace AsciiUml.Geo {
 	public class Coord : IEquatable<Coord> {
 		public readonly int X, Y;
 

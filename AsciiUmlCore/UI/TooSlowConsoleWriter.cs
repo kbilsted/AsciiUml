@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AsciiUml {
+﻿namespace AsciiUml.UI {
 	public static class TooSlowConsoleWriter {
 		//public static void Write(Canvass canvass, int? selected) {
 		//	bool cursorUsingStdColors = true;

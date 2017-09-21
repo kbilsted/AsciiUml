@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AsciiUml;
+using AsciiUml.Geo;
 using LanguageExt;
 using NUnit.Framework;
 using static LanguageExt.Prelude;

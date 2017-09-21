@@ -1,5 +1,7 @@
 using System.Linq;
 using AsciiUml;
+using AsciiUml.Geo;
+using AsciiUml.UI;
 using NUnit.Framework;
 
 namespace AsciiUmlTests {

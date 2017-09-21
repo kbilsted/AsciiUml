@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AsciiUml {
+namespace AsciiUml.UI {
 	static class Screen {
 		public static void SetConsoleGetInputColors() {
 			Console.BackgroundColor = ConsoleColor.DarkGreen;

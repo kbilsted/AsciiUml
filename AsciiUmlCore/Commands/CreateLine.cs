@@ -1,5 +1,6 @@
 ﻿using System;
 using AsciiUml.Commands;
+using AsciiUml.Geo;
 
 namespace AsciiUml
 {

@@ -1,4 +1,4 @@
-﻿namespace AsciiUml
+﻿namespace AsciiUml.Geo
 {
     public class Range<T> {
 		public T Min, Max;

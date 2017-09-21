@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AsciiUml.Commands;
+using AsciiUml.Geo;
 
 namespace AsciiUml
 {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AsciiUml.Commands;
+using AsciiUml.Geo;
+using AsciiUml.UI;
 using LanguageExt;
 using StatePrinting.Configurations;
 using StatePrinting.OutputFormatters;

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AsciiUml.UI;
 
-namespace AsciiUml {
+namespace AsciiUml.Geo {
 	static class ShortestPathFinder {
 		const int WeightOfTurn = 1;
 		const int StepLength = 1;

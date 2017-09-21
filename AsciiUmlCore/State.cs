@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using AsciiUml.Geo;
+using AsciiUml.UI;
 
 namespace AsciiUml
 {

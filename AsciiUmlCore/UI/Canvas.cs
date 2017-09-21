@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AsciiUml.Geo;
 
-namespace AsciiUml {
+namespace AsciiUml.UI {
 	public class Canvass {
 		readonly int?[,] occupants = new int?[40, 80];
 

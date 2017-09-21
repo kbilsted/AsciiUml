@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AsciiUml.Geo;
 
-namespace AsciiUml {
+namespace AsciiUml.UI {
 	public static class PaintServiceCore {
 		public static Canvass Paint(State state, params IPaintable<object>[] model) {
 			var canvas = PaintModel(model.Concat(state.Model).ToList());

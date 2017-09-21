@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using LanguageExt;
-using LanguageExt.SomeHelp;
-using AsciiUml;
 
-namespace AsciiUml {
+namespace AsciiUml.Geo {
 	static class PaintAbles {
 		public static int Id { get; set; }
 	}
