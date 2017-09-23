@@ -62,7 +62,7 @@ namespace AsciiUml.Geo {
 		West = 8,
 	}
 
-    public static class LineDirections {
+	public static class LineDirections {
 		public static LineDirection GetDirectionFromBend(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
 			switch (kind) {
 				case EndpointKind.From:
@@ -133,7 +133,7 @@ namespace AsciiUml.Geo {
 		}
 	}
 
-    public enum SegmentType {
+	public enum SegmentType {
 		Line = 1,
 		Slope = 2,
 	}
@@ -144,7 +144,7 @@ namespace AsciiUml.Geo {
 	}
 
 
-    public class Line : IPaintable<Line> {
+	public class Line : IPaintable<Line> {
 		public int Id { get; }
 
 		public int FromId { get; set; }
