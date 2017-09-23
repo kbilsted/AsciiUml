@@ -18,7 +18,7 @@ namespace AsciiUml.Commands
 			var box = new Box(pos, text);
 			state.Model.Add(box);
 			state.SelectedId = box.Id;
-			state.SelectedIndexInModel = state.Model.Count-1;
+			state.SelectedIndexInModel = state.Model.Count - 1;
 			return state;
 		}
 	}
