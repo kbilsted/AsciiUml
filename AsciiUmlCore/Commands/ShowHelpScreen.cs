@@ -29,6 +29,7 @@ namespace AsciiUml
             Console.WriteLine("");
             Console.WriteLine("b .................... Create a Box");
             Console.WriteLine("c .................... Create a connection between boxes");
+            Console.WriteLine("d .................... Create a Database");
             Console.WriteLine("t .................... Create a text label");
             Console.WriteLine("x .................... Delete selected object");
             Console.WriteLine("Delete ............... Delete selected object");

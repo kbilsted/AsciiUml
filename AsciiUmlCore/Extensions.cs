@@ -58,16 +58,6 @@ namespace AsciiUml
 			return coll.Any() ? coll : func();
 		}
 
-		//public static List<ICommand> Lst(ICommand vals)
-		//{
-		//	return new List<ICommand>(){vals};
-		//}
-
-		//public static List<ICommand> Lst(ICommand val1, ICommand val2)
-		//{
-		//	return new List<ICommand>() { val1, val2 };
-		//}
-
 		public static List<ICommand> Lst(params ICommand[] vals)
 		{
 			return vals.Cast<ICommand>().ToList();

@@ -125,6 +125,9 @@ namespace AsciiUml
 				case ConsoleKey.Delete:
 					return Lst(new DeleteSelectedElement());
 
+				case ConsoleKey.D:
+					return Lst(new CreateDatabase(state.TheCurser.Pos));
+
 				case ConsoleKey.H:
 					return Lst(new ShowHelpScreen());
 
@@ -178,7 +181,6 @@ namespace AsciiUml
 						}
 						return Noop;
 					}, () => Noop);
-
 			}
 			return Noop;
 		}
