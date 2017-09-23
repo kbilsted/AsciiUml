@@ -1,12 +1,10 @@
-﻿using System;
-using AsciiUml.Commands;
-using AsciiUml.Geo;
+﻿using AsciiUml.Geo;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
     internal class RotateSelectedElement : ICommand
     {
-        private readonly int id;
+        public readonly int id;
 
         public RotateSelectedElement(int id)
         {

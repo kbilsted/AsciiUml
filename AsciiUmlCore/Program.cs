@@ -5,9 +5,9 @@ using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
 using LanguageExt;
-using StatePrinting.Configurations;
-using StatePrinting.OutputFormatters;
+using Newtonsoft.Json;
 using static AsciiUml.Extensions;
+
 namespace AsciiUml
 {
 	class Program {
@@ -43,9 +43,9 @@ namespace AsciiUml
 						return state;
 					}
 
-					var commands = ControlKeys(state, key)
+					var commands = ControlKeys(state, key, commandLog)
 						.IfEmpty(() => ShiftKeys(state, key))
-						.IfEmpty(() => HandleKeys(state, key))
+						.IfEmpty(() => HandleKeys(state, key, commandLog))
 						.ToList();
 
 					commandLog.Add(commands);
@@ -67,11 +67,19 @@ namespace AsciiUml
 
 		private static void PrintCommandLog(List<List<ICommand>> commandLog)
 		{
-			var configuration = ConfigurationHelper.GetStandardConfiguration();
-			var stateprinter =
-				new StatePrinting.Stateprinter(
-					configuration.SetOutputFormatter(new JsonStyle(configuration)));
-			Console.WriteLine("To recreate the error do the following " + stateprinter.PrintObject(commandLog));
+			//var configuration = ConfigurationHelper.GetStandardConfiguration();
+			//var stateprinter =
+			//	new StatePrinting.Stateprinter(
+			//		configuration.SetOutputFormatter(new JsonStyle(configuration)));
+			//Console.WriteLine("To recreate the error do the following " + stateprinter.PrintObject(commandLog));
+			//Console.WriteLine("To recreate the error do the following " + JsonConvert);
+			var ser = new JsonSerializer() {
+				TypeNameHandling = TypeNameHandling.Auto,
+			};
+			
+			ser.Serialize(Console.Out, commandLog);
+			Console.WriteLine("press a key");
+			Console.ReadKey(true);
 		}
 
 		private static bool IsCtrlCPressed(ConsoleKeyInfo key)
@@ -79,7 +87,7 @@ namespace AsciiUml
 			return (key.Modifiers & ConsoleModifiers.Control) != 0 && key.KeyChar == '\u0003';
 		}
 
-		private static List<ICommand> HandleKeys(State state, ConsoleKeyInfo key) {
+		private static List<ICommand> HandleKeys(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog) {
 			var model = state.Model;
 			var selected = state.SelectedIndexInModel;
 			switch (key.Key) {
@@ -157,6 +165,18 @@ namespace AsciiUml
 							Screen.PrintErrorAndWaitKey("Nothing is selected");
 							return Noop;
 						});
+
+				case ConsoleKey.Enter:
+					var cmd = CommandParser.TryReadLineWithCancel("Enter command: ");
+					return cmd.Match(x => {
+						switch (x) {
+							case "dump":
+								PrintCommandLog(commandLog);
+								break;
+						}
+						return Noop;
+					}, () => Noop);
+
 			}
 			return Noop;
 		}
@@ -170,10 +190,30 @@ namespace AsciiUml
 					() => Noop));
 		}
 
-		private static List<ICommand> ControlKeys(State state, ConsoleKeyInfo key) {
+		private static List<ICommand> ControlKeys(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog) {
 			if ((key.Modifiers & ConsoleModifiers.Control) == 0)
 				return Noop;
 
+			switch (key.Key) {
+					case ConsoleKey.UpArrow:
+					case ConsoleKey.DownArrow:
+					case ConsoleKey.LeftArrow:
+					case ConsoleKey.RightArrow:
+						return ControlCursor(state, key);
+
+
+				case ConsoleKey.S:
+					PrintCommandLog(commandLog);
+					return Noop;
+
+				default:
+					return Noop;
+
+
+			}
+		}
+
+		private static List<ICommand> ControlCursor(State state, ConsoleKeyInfo key) {
 			return SelectTemporarily(state, x => {
 				switch (key.Key) {
 					case ConsoleKey.UpArrow:
@@ -184,8 +224,9 @@ namespace AsciiUml
 						return Lst(new ResizeSelectedBox(Vector.DeltaWest));
 					case ConsoleKey.RightArrow:
 						return Lst(new ResizeSelectedBox(Vector.DeltaEast));
+					default:
+						return Noop;
 				}
-				return new List<ICommand>();
 			});
 		}
 

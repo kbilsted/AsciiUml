@@ -1,12 +1,11 @@
-﻿using AsciiUml.Commands;
-using AsciiUml.Geo;
+﻿using AsciiUml.Geo;
 using LanguageExt;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
 	class MoveSelectedPaintable : ICommand
 	{
-		readonly Coord delta;
+		public readonly Coord delta;
 
 		public MoveSelectedPaintable(Coord delta)
 		{
@@ -23,7 +22,7 @@ namespace AsciiUml
 
 	class MoveCursor : ICommand
 	{
-		readonly Coord delta;
+		public readonly Coord delta;
 
 		public MoveCursor(Coord delta)
 		{

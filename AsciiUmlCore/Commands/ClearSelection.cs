@@ -1,6 +1,4 @@
-﻿using AsciiUml.Commands;
-
-namespace AsciiUml
+﻿namespace AsciiUml.Commands
 {
 	internal class ClearSelection : ICommand
 	{

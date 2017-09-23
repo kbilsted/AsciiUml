@@ -1,11 +1,10 @@
-﻿using AsciiUml.Commands;
-using AsciiUml.Geo;
+﻿using AsciiUml.Geo;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
     class ResizeSelectedBox : ICommand
     {
-        readonly Coord delta;
+        public readonly Coord delta;
 
         public ResizeSelectedBox(Coord delta)
         {

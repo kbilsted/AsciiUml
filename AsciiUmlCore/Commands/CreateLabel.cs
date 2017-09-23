@@ -1,13 +1,11 @@
-﻿using System;
-using AsciiUml.Commands;
-using AsciiUml.Geo;
+﻿using AsciiUml.Geo;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
     internal class CreateLabel : ICommand
     {
-        private readonly Coord pos;
-        private readonly string text;
+        public readonly Coord pos;
+        public readonly string text;
 
         public CreateLabel(Coord pos, string text)
         {

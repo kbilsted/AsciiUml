@@ -1,13 +1,11 @@
-﻿using System;
-using AsciiUml.Commands;
-using AsciiUml.Geo;
+﻿using AsciiUml.Geo;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
     internal class CreateLine : ICommand
     {
-        private readonly int @from;
-        private readonly int to;
+        public readonly int @from;
+        public readonly int to;
 
         public CreateLine(int @from, int to)
         {

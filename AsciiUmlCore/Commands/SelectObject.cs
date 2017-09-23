@@ -1,12 +1,11 @@
-﻿using AsciiUml.Commands;
-using AsciiUml.Geo;
+﻿using AsciiUml.Geo;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
     internal class SelectObject : ICommand
     {
-        private readonly int id;
-        private readonly bool moveCursor;
+        public readonly int id;
+        public readonly bool moveCursor;
 
         public SelectObject(int id, bool moveCursor)
         {

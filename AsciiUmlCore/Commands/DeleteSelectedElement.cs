@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using AsciiUml.Commands;
-using AsciiUml.UI;
+﻿using AsciiUml.UI;
 
-namespace AsciiUml
+namespace AsciiUml.Commands
 {
     internal class DeleteSelectedElement : ICommand
     {
