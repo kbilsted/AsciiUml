@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using AsciiUml.Geo;
 
 namespace AsciiUml.UI {
 	public class Canvass {
-		readonly int?[,] occupants = new int?[40, 80];
+		readonly int?[,] occupants = new int?[State.MaxY, State.MaxX];
 
 		readonly List<char[]> lines = new List<char[]>();
 
 		public Canvass() {
-			for (int i = 0; i < 39; i++) {
-				lines.Add(new char[80]);
+			for (int i = 0; i < State.MaxY-1; i++) {
+				lines.Add(new char[State.MaxX]);
 			}
 		}
 

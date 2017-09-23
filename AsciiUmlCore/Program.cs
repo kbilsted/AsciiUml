@@ -10,10 +10,10 @@ using StatePrinting.OutputFormatters;
 using static AsciiUml.Extensions;
 namespace AsciiUml
 {
-    class Program {
-        static readonly List<ICommand> Noop = new List<ICommand>();
+	class Program {
+		static readonly List<ICommand> Noop = new List<ICommand>();
 
-        static void Main(string[] args) {
+		static void Main(string[] args) {
 			EnableCatchingShiftArrowPresses();
 
 			Console.SetWindowSize(90, 50);
@@ -22,75 +22,83 @@ namespace AsciiUml
 
 			//TempModelForPlayingAround(state.Model);
 
-            state = ReadKeyboardEvalLoop(state);
+			state = ReadKeyboardEvalLoop(state);
 			return;
 		}
 
-        private static State ReadKeyboardEvalLoop(State state)
-        {
-            var commandLog = new List<List<ICommand>>();
+		private static State ReadKeyboardEvalLoop(State state)
+		{
+			var commandLog = new List<List<ICommand>>();
 
-            try
-            {
-                while (true)
-                {
-                    state.Canvas = PrintToScreen(state);
+			try
+			{
+				while (true)
+				{
+					state.Canvas = PrintToScreen(state);
 
-                    var key = Console.ReadKey(true);
+					var key = Console.ReadKey(true);
 
-                    if (IsCtrlCPressed(key))
-                    {
-                        return state;
-                    }
+					if (IsCtrlCPressed(key))
+					{
+						return state;
+					}
 
-                    var commands = ControlKeys(state, key)
-                        .IfEmpty(() => ShiftKeys(state, key))
-                        .IfEmpty(() => HandleKeys(state, key))
-                        .ToList();
+					var commands = ControlKeys(state, key)
+						.IfEmpty(() => ShiftKeys(state, key))
+						.IfEmpty(() => HandleKeys(state, key))
+						.ToList();
 
-                    commandLog.Add(commands);
+					commandLog.Add(commands);
 
-                    foreach (var command in commands)
-                    {
-                        state = command.Execute(state);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("something unexpected happened " + e.Message + " :: " + e.StackTrace);
+					foreach (var command in commands)
+					{
+						state = command.Execute(state);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("something unexpected happened " + e.Message + " :: " + e.StackTrace);
 
-                PrintCommandLog(commandLog);
-                throw;
-            }
-        }
+				PrintCommandLog(commandLog);
+				throw;
+			}
+		}
 
-        private static void PrintCommandLog(List<List<ICommand>> commandLog)
-        {
-            var configuration = ConfigurationHelper.GetStandardConfiguration();
-            var stateprinter =
-                new StatePrinting.Stateprinter(
-                    configuration.SetOutputFormatter(new JsonStyle(configuration)));
-            Console.WriteLine("To recreate the error do the following " + stateprinter.PrintObject(commandLog));
-        }
+		private static void PrintCommandLog(List<List<ICommand>> commandLog)
+		{
+			var configuration = ConfigurationHelper.GetStandardConfiguration();
+			var stateprinter =
+				new StatePrinting.Stateprinter(
+					configuration.SetOutputFormatter(new JsonStyle(configuration)));
+			Console.WriteLine("To recreate the error do the following " + stateprinter.PrintObject(commandLog));
+		}
 
-        private static bool IsCtrlCPressed(ConsoleKeyInfo key)
-        {
-            return (key.Modifiers & ConsoleModifiers.Control) != 0 && key.KeyChar == '\u0003';
-        }
+		private static bool IsCtrlCPressed(ConsoleKeyInfo key)
+		{
+			return (key.Modifiers & ConsoleModifiers.Control) != 0 && key.KeyChar == '\u0003';
+		}
 
-        private static List<ICommand> HandleKeys(State state, ConsoleKeyInfo key) {
-            var model = state.Model;
-            var selected = state.SelectedIndexInModel;
-            switch (key.Key) {
+		private static List<ICommand> HandleKeys(State state, ConsoleKeyInfo key) {
+			var model = state.Model;
+			var selected = state.SelectedIndexInModel;
+			switch (key.Key) {
 				case ConsoleKey.UpArrow:
-					return Lst(new MoveSelectedPaintable(Vector.DeltaNorth));
+					if(state.TheCurser.Pos.Y > 0)
+						return Lst(new MoveSelectedPaintable(Vector.DeltaNorth));
+					break;
 				case ConsoleKey.DownArrow:
-					return Lst(new MoveSelectedPaintable(Vector.DeltaSouth));
+					if(state.TheCurser.Pos.Y < State.MaxY-2)
+						return Lst(new MoveSelectedPaintable(Vector.DeltaSouth));
+					break;
 				case ConsoleKey.LeftArrow:
-					return Lst(new MoveSelectedPaintable(Vector.DeltaWest));
+					if (state.TheCurser.Pos.X > 0)
+						return Lst(new MoveSelectedPaintable(Vector.DeltaWest));
+					break;
 				case ConsoleKey.RightArrow:
-					return Lst(new MoveSelectedPaintable(Vector.DeltaEast));
+					if(state.TheCurser.Pos.X < State.MaxX-2)
+						return Lst(new MoveSelectedPaintable(Vector.DeltaEast));
+					break;
 
 				case ConsoleKey.Spacebar:
 					if (selected.HasValue)
@@ -107,62 +115,62 @@ namespace AsciiUml
 
 				case ConsoleKey.X:
 				case ConsoleKey.Delete:
-				    return Lst(new DeleteSelectedElement());
+					return Lst(new DeleteSelectedElement());
 
 				case ConsoleKey.H:
 					return Lst(new ShowHelpScreen());
 
 				case ConsoleKey.B:
 					return ConsoleInputColors(() => 
-                        CommandParser.TryReadLineWithCancel("Create box. Title: ")
-					    .Match(x => Lst(new CreateBox(state.TheCurser.Pos, x)), () => Noop));
+						CommandParser.TryReadLineWithCancel("Create box. Title: ")
+						.Match(x => Lst(new CreateBox(state.TheCurser.Pos, x)), () => Noop));
 					
 				case ConsoleKey.C:
 					Console.WriteLine("Connect from object: ");
 
-                    var cmds = Noop;
+					var cmds = Noop;
 					PrintIdsAndLetUserSelectObject(state)
 						.IfSome(from =>
-                                {
-                                    Console.WriteLine("");
-                                    Console.WriteLine("to object: ");
-                                    PrintIdsAndLetUserSelectObject(state)
-                                    .IfSome(to => { cmds.Add(new CreateLine(from, to)); });
-                                });
+								{
+									Console.WriteLine("");
+									Console.WriteLine("to object: ");
+									PrintIdsAndLetUserSelectObject(state)
+									.IfSome(to => { cmds.Add(new CreateLine(from, to)); });
+								});
 					return cmds;
 
 				case ConsoleKey.T:
-				    return ConsoleInputColors(() => 
-                        CommandParser.TryReadLineWithCancel("Create a label. Text: ")
-				        .Match(x => Lst(new CreateLabel(state.TheCurser.Pos, x)), () => Noop));
+					return ConsoleInputColors(() => 
+						CommandParser.TryReadLineWithCancel("Create a label. Text: ")
+						.Match(x => Lst(new CreateLabel(state.TheCurser.Pos, x)), () => Noop));
 
 				case ConsoleKey.R:
 					return selected.Match(x =>
-					    {
-					        if (model[x] is Label)
-					            return Lst(new RotateSelectedElement(x));
-					        Screen.PrintErrorAndWaitKey("Only labels can be rotated");
-                            return Noop;
-					    },
+						{
+							if (model[x] is Label)
+								return Lst(new RotateSelectedElement(x));
+							Screen.PrintErrorAndWaitKey("Only labels can be rotated");
+							return Noop;
+						},
 						() =>
 						{
-						    Screen.PrintErrorAndWaitKey("Nothing is selected");
-                            return Noop;
+							Screen.PrintErrorAndWaitKey("Nothing is selected");
+							return Noop;
 						});
 			}
 			return Noop;
-        }
+		}
 
-        public static List<ICommand> SelectTemporarily(State state, Func<State, List<ICommand>> code)
-        {
-            return state.SelectedId.Match(
-                _ => code(state),
-                () => state.Canvas.GetOccupants(state.TheCurser.Pos).Match(
-                    x=>Lst(new SelectObject(x, false)).Append(code(state)).Append(Lst(new ClearSelection())).ToList(),
-                    () => Noop));
-        }
+		public static List<ICommand> SelectTemporarily(State state, Func<State, List<ICommand>> code)
+		{
+			return state.SelectedId.Match(
+				_ => code(state),
+				() => state.Canvas.GetOccupants(state.TheCurser.Pos).Match(
+					x=>Lst(new SelectObject(x, false)).Append(code(state)).Append(Lst(new ClearSelection())).ToList(),
+					() => Noop));
+		}
 
-        private static List<ICommand> ControlKeys(State state, ConsoleKeyInfo key) {
+		private static List<ICommand> ControlKeys(State state, ConsoleKeyInfo key) {
 			if ((key.Modifiers & ConsoleModifiers.Control) == 0)
 				return Noop;
 
@@ -177,8 +185,8 @@ namespace AsciiUml
 					case ConsoleKey.RightArrow:
 						return Lst(new ResizeSelectedBox(Vector.DeltaEast));
 				}
-			    return new List<ICommand>();
-            });
+				return new List<ICommand>();
+			});
 		}
 
 		private static List<ICommand> ShiftKeys(State state, ConsoleKeyInfo key) {
@@ -252,7 +260,7 @@ namespace AsciiUml
 			model.Add(new Label(new Coord(5, 5), "Server\nClient\nAAA"));
 		}
 
-        private static T ConsoleInputColors<T>(Func<T> code) {
+		private static T ConsoleInputColors<T>(Func<T> code) {
 			Screen.SetConsoleGetInputColors();
 			var res = code();
 			Screen.SetConsoleStandardColor();
@@ -283,7 +291,7 @@ namespace AsciiUml
 				.Bind(x => {
 					if (model.SingleOrDefault(b => b.Id == x) is ISelectable)
 						return x;
-			        Screen.PrintErrorAndWaitKey("Not a selectable object");
+					Screen.PrintErrorAndWaitKey("Not a selectable object");
 					return GetISelectableElement(model);
 				});
 		}
@@ -294,5 +302,5 @@ namespace AsciiUml
 				Console.Write(selectable.Id);
 			}
 		}
-    }
+	}
 }
