@@ -85,19 +85,19 @@ namespace AsciiUml
 			switch (key.Key) {
 				case ConsoleKey.UpArrow:
 					if(state.TheCurser.Pos.Y > 0)
-						return Lst(new MoveSelectedPaintable(Vector.DeltaNorth));
+						return Lst(new MoveCursor(Vector.DeltaNorth), new MoveSelectedPaintable(Vector.DeltaNorth));
 					break;
 				case ConsoleKey.DownArrow:
 					if(state.TheCurser.Pos.Y < State.MaxY-2)
-						return Lst(new MoveSelectedPaintable(Vector.DeltaSouth));
+						return Lst(new MoveCursor(Vector.DeltaSouth), new MoveSelectedPaintable(Vector.DeltaSouth));
 					break;
 				case ConsoleKey.LeftArrow:
 					if (state.TheCurser.Pos.X > 0)
-						return Lst(new MoveSelectedPaintable(Vector.DeltaWest));
+						return Lst(new MoveCursor(Vector.DeltaWest), new MoveSelectedPaintable(Vector.DeltaWest));
 					break;
 				case ConsoleKey.RightArrow:
 					if(state.TheCurser.Pos.X < State.MaxX-2)
-						return Lst(new MoveSelectedPaintable(Vector.DeltaEast));
+						return Lst(new MoveCursor(Vector.DeltaEast), new MoveSelectedPaintable(Vector.DeltaEast));
 					break;
 
 				case ConsoleKey.Spacebar:
@@ -197,13 +197,13 @@ namespace AsciiUml
 				switch (key.Key)
 				{
 					case ConsoleKey.UpArrow:
-						return Lst(new MoveSelectedPaintable(Vector.DeltaNorth));
+						return Lst(new MoveCursor(Vector.DeltaNorth), new MoveSelectedPaintable(Vector.DeltaNorth));
 					case ConsoleKey.DownArrow:
-						return Lst(new MoveSelectedPaintable(Vector.DeltaSouth));
+						return Lst(new MoveCursor(Vector.DeltaNorth), new MoveSelectedPaintable(Vector.DeltaSouth));
 					case ConsoleKey.LeftArrow:
-						return Lst(new MoveSelectedPaintable(Vector.DeltaWest));
+						return Lst(new MoveCursor(Vector.DeltaNorth), new MoveSelectedPaintable(Vector.DeltaWest));
 					case ConsoleKey.RightArrow:
-						return Lst(new MoveSelectedPaintable(Vector.DeltaEast));
+						return Lst(new MoveCursor(Vector.DeltaNorth), new MoveSelectedPaintable(Vector.DeltaEast));
 				}
 				return Noop;
 			});

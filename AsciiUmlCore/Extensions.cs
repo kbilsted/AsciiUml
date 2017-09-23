@@ -6,7 +6,7 @@ using AsciiUml.Geo;
 
 namespace AsciiUml
 {
-    public static class Extensions {
+	public static class Extensions {
 		public static T FirstOrDefault<T>(this IEnumerable<T> collection, Func<T, bool> filter, Action<int> foundActionWithPosition) {
 			int pos = 0;
 
@@ -40,27 +40,37 @@ namespace AsciiUml
 			}
 		}
 
-        public static Range<int> MinMax<T>(this IEnumerable<T> coll, Func<T, int> selector)
-        {
-            int min = int.MaxValue, max = int.MinValue;
-            foreach(var c in coll) {
-                var val = selector(c);
-                if (val < min)
-                    min = val;
-                if (val > max)
-                    max = val;
-            }
-            return new Range<int>(min, max);
-        }
+		public static Range<int> MinMax<T>(this IEnumerable<T> coll, Func<T, int> selector)
+		{
+			int min = int.MaxValue, max = int.MinValue;
+			foreach(var c in coll) {
+				var val = selector(c);
+				if (val < min)
+					min = val;
+				if (val > max)
+					max = val;
+			}
+			return new Range<int>(min, max);
+		}
 
-        public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> coll, Func<IEnumerable<T>> func)
-        {
-            return coll.Any() ? coll : func();
-        }
+		public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> coll, Func<IEnumerable<T>> func)
+		{
+			return coll.Any() ? coll : func();
+		}
 
-        public static List<ICommand> Lst<T>(params T[] vals) where T : ICommand
-        {
-            return vals.Cast<ICommand>().ToList();
-        }
-    }
+		//public static List<ICommand> Lst(ICommand vals)
+		//{
+		//	return new List<ICommand>(){vals};
+		//}
+
+		//public static List<ICommand> Lst(ICommand val1, ICommand val2)
+		//{
+		//	return new List<ICommand>() { val1, val2 };
+		//}
+
+		public static List<ICommand> Lst(params ICommand[] vals)
+		{
+			return vals.Cast<ICommand>().ToList();
+		}
+	}
 }
