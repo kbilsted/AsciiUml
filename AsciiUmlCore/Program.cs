@@ -213,12 +213,6 @@ namespace AsciiUml
 			Console.TreatControlCAsInput = true;
 		}
 
-		public static State ClearSelection(State state) {
-			state.SelectedIndexInModel = null;
-			state.SelectedId = null;
-			return state;
-		}
-
 		private static Canvass PrintToScreen(State state) {
 			Console.Clear();
 			PaintTopMenu(state);

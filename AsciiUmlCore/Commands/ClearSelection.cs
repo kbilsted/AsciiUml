@@ -2,11 +2,11 @@
 
 namespace AsciiUml
 {
-    internal class ClearSelection : ICommand
-    {
-        public State Execute(State state)
-        {
-            return Program.ClearSelection(state);
-        }
-    }
+	internal class ClearSelection : ICommand
+	{
+		public State Execute(State state)
+		{
+			return State.ClearSelection(state);
+		}
+	}
 }

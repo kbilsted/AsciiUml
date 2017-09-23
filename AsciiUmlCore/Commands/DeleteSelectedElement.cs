@@ -12,7 +12,7 @@ namespace AsciiUml
             if (selected.HasValue)
             {
                 state.Model.RemoveAt(state.Model.FindIndex(x => x.Id == selected));
-                return Program.ClearSelection(state);
+                return State.ClearSelection(state);
             }
 
             Screen.PrintErrorAndWaitKey("Error. You must select an object before you can delete.");
