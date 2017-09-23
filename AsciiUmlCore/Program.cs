@@ -173,6 +173,8 @@ namespace AsciiUml
 							case "dump":
 								PrintCommandLog(commandLog);
 								break;
+							case "database":
+								return Lst(new CreateDatabase(state.TheCurser.Pos));
 						}
 						return Noop;
 					}, () => Noop);
@@ -201,15 +203,12 @@ namespace AsciiUml
 					case ConsoleKey.RightArrow:
 						return ControlCursor(state, key);
 
-
 				case ConsoleKey.S:
 					PrintCommandLog(commandLog);
 					return Noop;
 
 				default:
 					return Noop;
-
-
 			}
 		}
 

@@ -15,6 +15,8 @@ namespace AsciiUml.UI {
 			var c = new Canvass();
 
 			foreach (var x in model) {
+				if(x is Database)
+					PaintDatabase(c, x as Database);
 				if (x is Box) 
 					PaintBox(c, x as Box);
 				if(x is Line)
@@ -111,6 +113,12 @@ namespace AsciiUml.UI {
 			const int padX = 2, padY = 1; // TODO make padding configurable pr. box
 			if (!string.IsNullOrWhiteSpace(b.Text)) {
 				b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + padX, b.Y + padY + i, b.Id));
+			}
+		}
+
+		public static void PaintDatabase(Canvass c, Database d) {
+			foreach (var t in d.Paint()) {
+				c.Paint(t.Item1, t.Item2, t.Item3);
 			}
 		}
 
