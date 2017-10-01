@@ -1,68 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using AsciiUml.Geo;
 
 namespace AsciiUml.UI {
-	public class Canvass {
-		readonly int?[,] occupants = new int?[State.MaxY, State.MaxX];
+    public class Canvass {
+		readonly int?[,] occupants = new int?[State.MaxY, State.MaxX]; // TODO there can be more than one object on the same pixel
 
-		readonly List<char[]> lines = new List<char[]>();
+        public readonly Pixel[][] Catode = new Pixel[State.MaxY][];
 
 		public Canvass() {
-			for (int i = 0; i < State.MaxY-1; i++) {
-				lines.Add(new char[State.MaxX]);
+			for (int i = 0; i < State.MaxY; i++) {
+				Catode[i] = new Pixel[State.MaxX];
 			}
 		}
 
 		public Tuple<int, int> GetSize() {
-			return Tuple.Create(lines.Count, lines.First().Length);
+			return Tuple.Create(State.MaxX, State.MaxY);
 		}
 
-		public int? GetOccupants(Coord pos) {
-			return occupants[pos.Y, pos.X];
+		public int? GetOccupants(Coord pos)
+		{
+		    var occupant = occupants[pos.Y, pos.X];
+		    return occupant;
 		}
 
-		public char GetCell(Coord pos) {
-			return lines[pos.Y][pos.X];
+		public char? GetCell(Coord pos)
+		{
+		    var pixel = Catode[pos.Y][pos.X];
+		    return pixel?.Char;
 		}
 
 		public bool IsCellFree(Coord pos) {
 			int x = pos.X, y = pos.Y;
-			if (y > lines.Count)
+			if (y > Catode.Length)
 				return false; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
 
-			var line = lines[y];
-			if (x > line.Length)
+            if(x > Catode[0].Length)
 				return false; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
 
 			//Console.WriteLine($"{x},{y}::{(int)line[x]}");
-			return line[x] != '*'; // TODO change semantics so we know what occupies the cell..ie. box/label/..
+		    var cell = Catode[y][x];
+		    return cell == null || cell.Char != '*'; // TODO change semantics so we know what occupies the cell..ie. box/label/..
 		}
 
 		public void Paint(Coord pos, char c, int objectId) {
-			Paint(pos.X, pos.Y, c, objectId);
+			Paint(pos.X, pos.Y, c, objectId, ConsoleColor.Black, ConsoleColor.Gray);
 		}
 
-		public void Paint(int x, int y, char c, int objectId) {
-			if (y > lines.Count || y < 0)
+		public void Paint(int x, int y, char c, int objectId, ConsoleColor backgroundColor, ConsoleColor foregroundColor) {
+			if (y > Catode.Length || y < 0)
 				return; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
 
-			var line = lines[y];
-			if (x > line.Length || x < 0)
+			if (x > Catode[0].Length || x < 0)
 				return; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
 
-			lines[y][x] = c;
+			Catode[y][x] = new Pixel() {Char = c, BackGroundColor = backgroundColor, ForegroundColor = foregroundColor};
 			var isCursor = objectId == -1;
 			if (!isCursor)
 				occupants[y, x] = objectId;
 		}
 
-		public static void PaintString(Canvass c, string s, int x, int y, int objectId) {
+        public void RawPaintString(string s, int x, int y, ConsoleColor background, ConsoleColor foreground)
+        {
+            PaintString(this, s, x, y, -1, background, foreground);
+        }
+
+        public void RawPaintString(string s, Coord pos, ConsoleColor background, ConsoleColor foreground)
+        {
+            PaintString(this, s, pos.X, pos.Y, -1, background, foreground);
+        }
+
+        public static void PaintString(Canvass c, string s, int x, int y, int objectId) {
+			PaintString(c, s, x, y, objectId, ConsoleColor.Black, ConsoleColor.Gray);
+		}
+
+		public static void PaintString(Canvass c, string s, int x, int y, int objectId, ConsoleColor backgroundColor, ConsoleColor foregroundColor)
+		{
 			for (int i = 0; i < s.Length; i++)
-				c.Paint(new Coord(x + i, y), s[i], objectId);
+				c.Paint(x + i, y, s[i], objectId, backgroundColor, foregroundColor);
 		}
 
 		public static string NilToSpace(char[] c) {
@@ -71,12 +87,12 @@ namespace AsciiUml.UI {
 
 		public override string ToString() {
 			var sb = new StringBuilder();
-			lines.Each(x => sb.AppendLine(NilToSpace(x)));
+			Catode.Each(x => sb.AppendLine(NilToSpace(x.Select(y=>y.Char).ToArray())));
 			return sb.ToString();
 		}
 
 		public string TrimEndToString() {
-			var asLines = lines.Select(x => NilToSpace(x)).ToList();
+			var asLines = Catode.Select(row => NilToSpace(row.Select(y => y==null? ' ' : y.Char).ToArray())).ToList();
 			var lastLineWithContent = asLines.FindLastIndex(x => x.Trim().Any());
 
 			var sb = new StringBuilder();

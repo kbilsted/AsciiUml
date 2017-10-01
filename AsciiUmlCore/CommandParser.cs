@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using AsciiUml.Geo;
 using LanguageExt;
@@ -6,17 +7,23 @@ using LanguageExt.SomeHelp;
 
 namespace AsciiUml {
 	public static class CommandParser {
-		public static Option<int> ReadInt(Range<int> range, string text) {
-			var input = TryReadLineWithCancel(text);
+		public static Option<int> ReadInt(int[] onlyAllowedValues, string text)
+		{
+		    Range<int> range = onlyAllowedValues.MinMax(x => x);
+
+            var input = TryReadLineWithCancel(text);
 			return input.Match(x => {
 				int result;
 				if (!int.TryParse(x, out result))
-					return ReadInt(range, "\nNot a number. Try again: ");
+					return ReadInt(onlyAllowedValues, "\nNot a number. Try again: ");
 
 				if (result < range.Min || result > range.Max)
-					return ReadInt(range, $"\nNot in range {range}: ");
+					return ReadInt(onlyAllowedValues, $"\nNot in range {range}: ");
 
-				return result.ToSome();
+                if(onlyAllowedValues.All(y => y != result))
+                    return ReadInt(onlyAllowedValues, $"\nNot a valid id. ");
+
+                return result.ToSome();
 			}, () => Option<int>.None);
 		}
 

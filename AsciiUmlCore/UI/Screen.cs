@@ -12,11 +12,6 @@ namespace AsciiUml.UI {
 			Console.ForegroundColor = ConsoleColor.Gray;
 		}
 
-		public static void SetConsoleSelectColor() {
-			Console.BackgroundColor = ConsoleColor.DarkYellow;
-			Console.ForegroundColor = ConsoleColor.Yellow;
-		}
-
 	    public static void PrintErrorAndWaitKey(string text)
 	    {
 	        Console.ForegroundColor = ConsoleColor.Red;
@@ -26,4 +21,11 @@ namespace AsciiUml.UI {
 	        Console.ReadKey();
 	    }
 	}
+
+	//           _____  _____ ______ _____   _    _ __  __ _      
+	//     /\   / ____|/ ____|__   _|_   _| | |  | |  \/  | |     
+	//    /  \  | (___ | |      | |   | |   | |  | | \  / | |     
+	//   / /\ \  \___ \| |      | |   | |   | |  | | |\/| | |     
+	//  / ____ \ ____) | |____ _| |_ _| |_  | |__| | |  | | |____ 
+	// /_/    \_\_____/ \_____|_____|_____|  \____/|_|  |_|______|
 }
