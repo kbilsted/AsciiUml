@@ -20,7 +20,8 @@ namespace AsciiUml
 
 	    public Option<IPaintable<object>> GetSelected()
 	    {
-	        return Model.Where(x => x.Id == SelectedId).ToOption();
+	        var selected = Model.Where(x => x.Id == SelectedId).ToOption();
+	        return selected;
 	    }
 
 		public static State ClearSelection(State state)

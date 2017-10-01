@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using AsciiUml;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
@@ -208,7 +207,7 @@ ctrl+c ............... Exit program");
     {
         return SelectTemporarily(state, x =>
         {
-            return x.GetSelected().Bind(el=>
+            return x.GetSelected().Match(el=>
             {
                 if (el is Box)
                 {
@@ -229,18 +228,18 @@ ctrl+c ............... Exit program");
                     switch (key.Key)
                     {
                         case ConsoleKey.UpArrow:
-                            return Lst(new ResizeSelectedBox(Vector.DeltaNorth));
+                            return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaNorth), new MoveCursor(Vector.DeltaNorth));
                         case ConsoleKey.DownArrow:
-                            return Lst(new ResizeSelectedBox(Vector.DeltaSouth));
+                            return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaSouth), new MoveCursor(Vector.DeltaSouth));
                         case ConsoleKey.LeftArrow:
-                            return Lst(new ResizeSelectedBox(Vector.DeltaWest));
+                            return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaWest), new MoveCursor(Vector.DeltaWest));
                         case ConsoleKey.RightArrow:
-                            return Lst(new ResizeSelectedBox(Vector.DeltaEast));
+                            return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaEast), new MoveCursor(Vector.DeltaEast));
                     }
                 }
                 return Noop;
 
-            }).ToList();
+            }, ()=> Noop).ToList();
             
         });
     }
@@ -323,16 +322,23 @@ ctrl+c ............... Exit program");
 
     public static Option<List<ICommand>> SelectTemporarily(State state, Func<State, List<ICommand>> code)
     {
-        return state.SelectedId.Match(
-            _ => code(state),
-            () => state.Canvas.GetOccupants(state.TheCurser.Pos).Match(
-                x =>
-                {
-                    var commands = code(state);
-                    return commands.Count==0?Option<List<ICommand>>.None: 
-                    Lst(new SelectObject(x, false)).Append(commands).Append(Lst(new ClearSelection()))
-                        .ToList();
-                },
-                () => Noop));
+        if (state.SelectedId.HasValue)
+            return code(state);
+
+        var occupants = state.Canvas.GetOccupants(state.TheCurser.Pos);
+        if (!occupants.HasValue)
+            return Noop;
+
+        state.SelectedId = occupants;
+
+        var commands = code(state);
+        var result = commands.Count == 0
+            ? Noop
+            : Lst(new SelectObject(occupants.Value, false))
+                .Append(commands)
+                .Append(Lst(new ClearSelection()))
+                .ToList();
+        state.SelectedId = null;
+        return result;
     }
 }

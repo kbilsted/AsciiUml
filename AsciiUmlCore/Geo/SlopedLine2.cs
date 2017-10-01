@@ -7,7 +7,7 @@ namespace AsciiUml.Geo
     /// <summary>
     /// A line implementation where each pixel is stored rather than vectors
     /// </summary>
-    public class SlopedLine2 : IPaintable<SlopedLine2> {
+    public class SlopedLine2 : IPaintable<SlopedLine2> , ISelectable{
         public class SlopedSegment2 {
             public Coord Pos;
             public SegmentType Type;
@@ -26,7 +26,14 @@ namespace AsciiUml.Geo
         }
 
         public int Id { get; }
+        public Coord Pos { get; }
         public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
+
+        public SlopedLine2(Coord pos)
+        {
+            Id = PaintAbles.Id++;
+            Segments.Add(new SlopedSegment2(pos, SegmentType.Line));            
+        }
 
         public SlopedLine2 Drag(Coord dragFrom, Coord dragTo) {
             return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
@@ -42,7 +49,7 @@ namespace AsciiUml.Geo
         }
 
         public Option<SlopedLine2> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
-            LineSemantic s = FindOnLine(dragFrom);
+            LineSemantic s = GetSemantic(dragFrom);
             switch (s) {
                 case LineSemantic.StartArrow:
                     if (Segments.Count > 1 && Segments[1].Pos == dragTo) {
@@ -61,11 +68,16 @@ namespace AsciiUml.Geo
                     return this;
 
                 case LineSemantic.EndArrow:
-                    int nthlastPos = GetLastNthLastPos(Segments, 1);
-                    if (Segments.Count > 1 && Segments[nthlastPos].Pos == dragTo) {
-                        Segments.RemoveAt(Segments.Count - 1);
-                        Segments[Segments.Count - 1].Type = SegmentType.Line; // ensure to convert slopes to lines
-                        return this;
+                    int? nthlastPos = GetLastNthLastPos(Segments, 1);
+                    if (nthlastPos.HasValue)
+                    {
+                        var isDragBackwards = Segments[nthlastPos.Value].Pos == dragTo;
+                        if (isDragBackwards)
+                        {
+                            Segments.RemoveAt(Segments.Count - 1);
+                            Segments[Segments.Count - 1].Type = SegmentType.Line; // ensure to convert slopes to lines
+                            return this;
+                        }
                     }
 
                     int posAtInsert = Segments.Count - 1;
@@ -85,11 +97,15 @@ namespace AsciiUml.Geo
             return null;
         }
 
-        private int GetLastNthLastPos<T>(List<T> colList, int last) {
-            return colList.Count - 1 - last;
+        private int? GetLastNthLastPos<T>(List<T> colList, int last)
+        {
+            var pos = colList.Count - 1 - last;
+            if (pos < 0)
+                return null;
+            return pos;
         }
 
-        private LineSemantic FindOnLine(Coord coord) {
+        private LineSemantic GetSemantic(Coord coord) {
             int pos = Segments.FindIndex(x => x.Pos == coord);
             if (pos == 0)
                 return LineSemantic.StartArrow;

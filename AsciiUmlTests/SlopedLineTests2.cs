@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AsciiUml.Geo;
 using NUnit.Framework;
 using static AsciiUmlTests.Test;
@@ -214,11 +215,11 @@ namespace AsciiUmlTests {
 		// todo drag lines up/down
 
 		private static SlopedLine2 GetLine(params Coord[] from) {
-			var l1 = new SlopedLine2();
-			foreach (var coord in from) {
-				l1.Segments.Add(new SlopedLine2.SlopedSegment2(coord, SegmentType.Line));
+			var line = new SlopedLine2(from.First());
+			foreach (var coord in from.Skip(1)) {
+				line.Segments.Add(new SlopedLine2.SlopedSegment2(coord, SegmentType.Line));
 			}
-			return l1;
+			return line;
 		}
 
 		private static SlopedLine2 GetLine2_0() {

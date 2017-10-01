@@ -1,4 +1,5 @@
-﻿using AsciiUml.Geo;
+﻿using System;
+using AsciiUml.Geo;
 
 namespace AsciiUml.Commands
 {
@@ -23,6 +24,4 @@ namespace AsciiUml.Commands
             return state;
         }
     }
-
-    
 }

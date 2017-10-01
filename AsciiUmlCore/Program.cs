@@ -45,6 +45,7 @@ namespace AsciiUml
 
 	    private static State TempModelForPlayingAround(State state) {
 	        var model = state.Model;
+            model.Add(new SlopedLine2(new Coord(10,10)));
    //         model.Add(new Box(new Coord(0, 0), "Foo\nMiddleware\nMW1"));
    //         //model.Add(new Box() { Y = 14, Text = "goo\nand\nbazooka" });
    //         model.Add(new Box(new Coord(19, 27), "foo\nServer\nbazooka"));
