@@ -17,7 +17,16 @@ namespace AsciiUml.Geo {
 			return $"x:{X}, y:{Y}";
 		}
 
-		public static bool operator ==(Coord a, Coord b) {
+	    public static Coord operator +(Coord a, Coord b)
+	    {
+	        return new Coord(a.X + b.X, a.Y + b.Y);
+	    }
+	    public static Coord operator -(Coord a, Coord b)
+	    {
+	        return new Coord(a.X - b.X, a.Y - b.Y);
+	    }
+
+        public static bool operator ==(Coord a, Coord b) {
 			return a.Equals(b);
 		}
 

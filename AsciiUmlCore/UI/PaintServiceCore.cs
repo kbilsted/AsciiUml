@@ -7,7 +7,14 @@ namespace AsciiUml.UI {
 	public static class PaintServiceCore {
 		public static Canvass Paint(State state, params IPaintable<object>[] model) {
 			var canvas = PaintModel(model.Concat(state.Model).ToList());
+			canvas = PaintCursor(canvas, state.TheCurser);
+			return canvas;
+		}
 
+	    private static Canvass PaintCursor(Canvass canvas, Cursor cursor) {
+			var pixel = canvas.Catode[cursor.Y][cursor.X] ?? (canvas.Catode[cursor.Y][cursor.X] = new Pixel());
+			pixel.BackGroundColor = ConsoleColor.DarkYellow;
+			pixel.ForegroundColor = ConsoleColor.Yellow;
 			return canvas;
 		}
 
@@ -91,7 +98,7 @@ namespace AsciiUml.UI {
 
 			switch (label.Direction) {
 				case LabelDirection.LeftToRight:
-					lines.Each((line, extraY) => Canvass.PaintString(canvass, line, label.X, label.Y + extraY, label.Id));
+					lines.Each((line, extraY) => Canvass.PaintString(canvass, line, label.X, label.Y + extraY, label.Id, ConsoleColor.Black, ConsoleColor.Gray));
 					break;
 
 				case LabelDirection.TopDown:
@@ -112,7 +119,7 @@ namespace AsciiUml.UI {
 			b.GetFrameCoords().Each(pos => c.Paint(pos, '*', b.Id));
 			const int padX = 2, padY = 1; // TODO make padding configurable pr. box
 			if (!string.IsNullOrWhiteSpace(b.Text)) {
-				b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + padX, b.Y + padY + i, b.Id));
+				b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + padX, b.Y + padY + i, b.Id, ConsoleColor.Black, ConsoleColor.Gray));
 			}
 		}
 
