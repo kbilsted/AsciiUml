@@ -52,19 +52,25 @@ namespace AsciiUml.Geo
             LineSemantic s = GetSemantic(dragFrom);
             switch (s) {
                 case LineSemantic.StartArrow:
-                    if (Segments.Count > 1 && Segments[1].Pos == dragTo) {
-                        Segments.RemoveAt(0);
-                        return this;
+                    if (Segments.Count == 1) {
+                        Segments.Add(new SlopedSegment2(dragTo, SegmentType.Line));
+                    }
+                    else {
+                        if (Segments[1].Pos == dragTo)
+                        {
+                            Segments.RemoveAt(0);
+                            return this;
+                        }
+
+                        var directionDragFrom = GetDirectionOf(0);
+
+                        Segments.Insert(0, new SlopedSegment2(dragTo, SegmentType.Line));
+                        var directionDragTo = GetDirectionOf(0);
+
+                        if (Vector.IsOrthogonal(directionDragFrom, directionDragTo))
+                            Segments[1].Type = SegmentType.Slope;
                     }
 
-                    bool insertWhenSingularLine = Segments.Count == 1;
-                    var directionDragFrom = GetDirectionOf(0);
-
-                    Segments.Insert(0, new SlopedSegment2(dragTo, SegmentType.Line));
-                    var directionDragTo = GetDirectionOf(0);
-
-                    if (Vector.IsOrthogonal(directionDragFrom, directionDragTo) && !insertWhenSingularLine)
-                        Segments[1].Type = SegmentType.Slope;
                     return this;
 
                 case LineSemantic.EndArrow:
