@@ -26,10 +26,14 @@ namespace AsciiUml.UI {
 					PaintDatabase(c, x as Database);
 				if (x is Box) 
 					PaintBox(c, x as Box);
-				if(x is Line)
-					PaintLine2(c, x as Line, model);
 				if(x is Label)
 					PaintLabel(c, x as Label);
+			}
+
+			// draw lines after boxes and labels so the shortest path does not intersect those objects
+			foreach (var x in model) {
+				if (x is Line)
+					PaintLine2(c, x as Line, model);
 			}
 
 			// lines may not cross boxes, hence drawn afterwards

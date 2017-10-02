@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AsciiUml.UI;
+using Priority_Queue;
 
 namespace AsciiUml.Geo {
 	static class ShortestPathFinder {
@@ -53,11 +54,11 @@ namespace AsciiUml.Geo {
 		public static List<Coord> Calculate(Coord from, Coord to, Canvass c) {
 			var size = c.GetSize();
 			var solutions = new Solution[size.Item1, size.Item2];
-			var unHandled = new Stack<UnhandledField>();
-			unHandled.Push(new UnhandledField(from, new List<Coord>(), 0));
+			var unHandled = new SimplePriorityQueue<UnhandledField>();
+			unHandled.Enqueue(new UnhandledField(@from, new List<Coord>(), 0), 0);
 
 			while (unHandled.Count > 0) {
-				var current = unHandled.Pop();
+				var current = unHandled.Dequeue();
 
 				var pathForPosition = new List<Coord>(current.Path.Count + 1);
 				pathForPosition.AddRange(current.Path);
@@ -65,29 +66,23 @@ namespace AsciiUml.Geo {
 
 				var solution = new Solution(pathForPosition, current.Distance);
 
-				var ifNoOrWeakerSolution = solutions[current.Position.Y, current.Position.X] == null
-											|| solution.Distance < solutions[current.Position.Y, current.Position.X].Distance;
+				var ifNoOrWeakerSolution =  solution.Distance < (solutions[current.Position.Y, current.Position.X]?.Distance ?? int.MaxValue);
 				if (ifNoOrWeakerSolution) {
 					solutions[current.Position.Y, current.Position.X] = solution;
 
-					var currentBestSolutionAtDestination = solutions[to.Y, to.X] == null
-						? int.MaxValue
-						: solutions[to.Y, to.X].Distance;
-
+					var currentBestSolutionAtDestination = solutions[to.Y, to.X]?.Distance ?? int.MaxValue;
 					var neighbours = CalculateNSEW(current.Position);
-
 					var potentials = neighbours
 						.Where(x => x == to || c.IsCellFree(x))
 						.Select(x =>
 							new {
 								Neighbour = x,
-								EstimatedDist = PaintServiceCore.ManhattenDistance(x, to) + (Vector.IsStraightLine(from, to) ? 0 : WeightOfTurn)
+								EstimatedDistance = PaintServiceCore.ManhattenDistance(x, to) + (Vector.IsStraightLine(x, to) ? 0 : WeightOfTurn),
+								Unhandled = new UnhandledField(x, pathForPosition, current.Distance + StepLength)
 							})
-						.Where(x => current.Distance + x.EstimatedDist + StepLength < currentBestSolutionAtDestination)
-						.OrderByDescending(x => x.EstimatedDist)
-						.Select(x => new UnhandledField(x.Neighbour, pathForPosition, current.Distance + StepLength));
+						.Where(x => current.Distance + x.EstimatedDistance + StepLength < currentBestSolutionAtDestination);
 
-					potentials.Each(x => unHandled.Push(x));
+					potentials.Each(x => unHandled.Enqueue(x.Unhandled, x.EstimatedDistance));
 				}
 			}
 
@@ -95,18 +90,18 @@ namespace AsciiUml.Geo {
 			return shortestPath == null ? new List<Coord>() : shortestPath.Path;
 		}
 
-		private static Coord[] CalculateNSEW(Coord coord) {
+		private static List<Coord> CalculateNSEW(Coord coord) {
 			List<Coord> result = new List<Coord>(4);
 			if (coord.X > 0)
 				result.Add(new Coord(coord.X - 1, coord.Y));
 			if (coord.Y > 0)
 				result.Add(new Coord(coord.X, coord.Y - 1));
-			if (coord.X < 80)
+			if (coord.X < State.MaxX)
 				result.Add(new Coord(coord.X + 1, coord.Y));
-			if (coord.Y < 40)
+			if (coord.Y < State.MaxY)
 				result.Add(new Coord(coord.X, coord.Y + 1));
 
-			return result.ToArray();
+			return result;
 		}
 	}
 }

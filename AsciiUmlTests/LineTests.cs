@@ -71,15 +71,16 @@ namespace AsciiUmlTests {
 
 
 		[Test]
-		public void PaintLineCrossingLabel() {
+		public void PaintLineCrossingLabel()
+		{
 			var res = Paint(
-				new Box(0, new Coord(0,0)).SetText("goo\nand\nbazooka"),
-				new Box(1, new Coord(6,10)).SetText("Mango\nTango"),
-				new Line() {FromId = 0, ToId = 1},
-				new Label(new Coord(5,6), "Server\nservice\noriented")
+				new Box(0, new Coord(0, 0)).SetText("goo\nand\nbazooka"),
+				new Box(1, new Coord(6, 10)).SetText("Mango\nTango"),
+				new Line() { FromId = 0, ToId = 1 },
+				new Label(new Coord(5, 6), "Server\nservice\noriented")
 			);
 			Test.AssertString(
-@"
+				@"
 ***********
 * goo     *
 * and     *
@@ -94,6 +95,38 @@ namespace AsciiUmlTests {
       * Mango *
       * Tango *
       *********", res);
+		}
+
+
+		[Test]
+		public void PaintLineAroundBox()
+		{
+			var res = Paint(
+				new Box(0, new Coord(6, 0)).SetText("a"),
+				new Box(1, new Coord(6, 15)).SetText("b"),
+				new Box(2, new Coord(6, 7)).SetText("c"),
+				new Line() { FromId = 0, ToId = 1 }
+			);
+			Test.AssertString(
+				@"
+*****
+      * a *
+      *****
+      |
+      |
+      |
+     ++
+     |*****
+     |* c *
+     |*****
+     |
+     |
+     |
+     |
+     |
+     v*****
+      * b *
+      *****", res);
 		}
 
 
