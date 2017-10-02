@@ -16,7 +16,7 @@ namespace AsciiUml.UI {
 		}
 
 		public Tuple<int, int> GetSize() {
-			return Tuple.Create(State.MaxX, State.MaxY);
+			return Tuple.Create(State.MaxY, State.MaxX);
 		}
 
 		public int? GetOccupants(Coord pos)
@@ -33,10 +33,14 @@ namespace AsciiUml.UI {
 
 		public bool IsCellFree(Coord pos) {
 			int x = pos.X, y = pos.Y;
-			if (y > Catode.Length)
+
+			if (x < 0 || y < 0)
+				return false;
+
+			if (y >= Catode.Length)
 				return false; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
 
-            if(x > Catode[0].Length)
+            if(x >= Catode[0].Length)
 				return false; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
 
 			//Console.WriteLine($"{x},{y}::{(int)line[x]}");
@@ -63,12 +67,12 @@ namespace AsciiUml.UI {
 
         public void RawPaintString(string s, int x, int y, ConsoleColor background, ConsoleColor foreground)
         {
-            PaintString(this, s, x, y, -1, background, foreground);
+            PaintString(this, s, x, y, -10, background, foreground);
         }
 
         public void RawPaintString(string s, Coord pos, ConsoleColor background, ConsoleColor foreground)
         {
-            PaintString(this, s, pos.X, pos.Y, -1, background, foreground);
+            PaintString(this, s, pos.X, pos.Y, -10, background, foreground);
         }
 
         public static void PaintString(Canvass c, string s, int x, int y, int objectId) {

@@ -40,7 +40,7 @@ namespace AsciiUml.UI.GuiLib
         {
             var c = new Canvass();
             var focusMarker = (IsFocused?">": " ");
-            Canvass.PaintString(c, " " + focusMarker + buttonText + "  ", 0, 0, -1, backgroundColor, foregroundColor);
+            Canvass.PaintString(c, " " + focusMarker + buttonText + "  ", 0, 0, -10, backgroundColor, foregroundColor);
             return c;
         }
 

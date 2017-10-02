@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LanguageExt;
 
 namespace AsciiUml.Geo
@@ -26,7 +27,7 @@ namespace AsciiUml.Geo
         }
 
         public int Id { get; }
-        public Coord Pos { get; }
+        public Coord Pos { get { return Segments.First().Pos; } }
         public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
 
         public SlopedLine2(Coord pos)
