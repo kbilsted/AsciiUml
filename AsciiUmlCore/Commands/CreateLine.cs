@@ -31,10 +31,8 @@ namespace AsciiUml.Commands
                     state.SelectedId = null;
                     state.SelectedIndexInModel = null;
                     return state;
-                    break;
                 case LineKind.Sloped:
                     throw new NotImplementedException();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
