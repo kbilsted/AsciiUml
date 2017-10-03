@@ -20,8 +20,8 @@ To save a picture simply select the text and press copy.
   * Boxes
   * Labels
   * Arrows (shortest path, turn minimization)
+  * Free style arrows
   * Move objects
-  * Z-dimension index
   * Resize objects
 
 

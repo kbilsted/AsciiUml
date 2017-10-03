@@ -121,10 +121,10 @@ shift + cursor ....... move object under cursor
 r .................... rotate selected object (only text label)
 ctrl + cursor ........ move selected object (only box)
 b .................... Create a Box
-c .................... Create a connection between boxes
+c .................... Create a connection line between boxes
 d .................... Create a Database
 t .................... Create a text label
-l .................... Create a free style line
+l .................... Create a free-style line
 x / Del............... Delete selected object
 Esc .................. Abort input
 ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround = titled.BackGround};

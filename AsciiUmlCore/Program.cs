@@ -27,9 +27,9 @@ namespace AsciiUml
 
 			var man = new WindowManager("AsciiUML (c) Kasper B. Graversen 2016-");
 			var topmenu = new TopMenu(man, state);
-			//var umlWindow = new UmlWindow(topmenu);
-			var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
-			umlWindow.Focus();
+            var umlWindow = new UmlWindow(topmenu, state);
+            //var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
+            umlWindow.Focus();
 
 		    ShowLogo(umlWindow);
 
