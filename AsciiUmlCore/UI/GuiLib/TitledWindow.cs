@@ -49,6 +49,11 @@ namespace AsciiUml.UI.GuiLib
             return c;
         }
 
+        public override void RemoveChild(GuiComponent child)
+        {
+            RemoveMeAndChildren();
+        }
+
         public override Coord GetInnerCanvasTopLeft()
         {
             return new Coord(0, 1);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
+using AsciiUml.UI;
 using Newtonsoft.Json;
 
 namespace AsciiUml
@@ -29,10 +30,29 @@ namespace AsciiUml
 			//var umlWindow = new UmlWindow(topmenu);
 			var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
 			umlWindow.Focus();
+
+		    ShowLogo(umlWindow);
+
 			man.Start();
 		}
 
-		public static void PrintCommandLog(List<List<ICommand>> commandLog)
+	    private static void ShowLogo(UmlWindow umlWindow)
+	    {
+	        var logo = new PopupNoButton(umlWindow, @"
+          _____  _____ ______ _____   _    _ __  __ _      
+    /\   / ____|/ ____|__   _|_   _| | |  | |  \/  | |     
+   /  \  | (___ | |      | |   | |   | |  | | \  / | |     
+  / /\ \  \___ \| |      | |   | |   | |  | | |\/| | |     
+ / ____ \ ____) | |____ _| |_ _| |_  | |__| | |  | | |____ 
+/_/    \_\_____/ \_____|_____|_____|  \____/|_|  |_|______|
+                                     by Kasper B. Graversen
+")
+	        {
+	            BackGround = ConsoleColor.Black
+	        };
+	    }
+
+	    public static void PrintCommandLog(List<List<ICommand>> commandLog)
 		{
 			var ser = new JsonSerializer() {
 				TypeNameHandling = TypeNameHandling.Auto,

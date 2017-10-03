@@ -26,7 +26,6 @@ namespace AsciiUml.UI.GuiLib
             {
                 if (key.Key == ConsoleKey.Spacebar || key.Key == ConsoleKey.Enter || key.Key==ConsoleKey.Escape)
                 {
-                    Remove();
                     onClick();
                 }
                 if (key.Key==ConsoleKey.Tab)

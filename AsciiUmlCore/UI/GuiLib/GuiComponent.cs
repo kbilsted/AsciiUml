@@ -13,6 +13,13 @@ namespace AsciiUml
         public readonly GuiComponent Parent;
         public readonly List<GuiComponent> Children = new List<GuiComponent>();
 
+        public bool IsDisposing = false;
+
+        public virtual void RemoveChild(GuiComponent child)
+        {
+            Children.Remove(child);
+        }
+
         public ConsoleColor BackGround = ConsoleColor.DarkBlue;
         public ConsoleColor Foreground = ConsoleColor.White;
 
@@ -24,6 +31,8 @@ namespace AsciiUml
         public GuiDimensions Dimensions;
 
         protected readonly WindowManager Manager;
+
+        public Action OnClosing = () => { };
 
         protected GuiComponent(WindowManager manager)
         {
@@ -81,11 +90,16 @@ namespace AsciiUml
         {
         }
 
-        public virtual void Remove()
+        public virtual void RemoveMeAndChildren()
         {
+            if(IsDisposing)
+                return;
+            IsDisposing = true;
+            foreach (var child in Children.ToArray())
+                RemoveChild(child);
             Manager.Remove(this);
-            Parent.Children.Remove(this);
             Parent.Focus();
+            Parent.RemoveChild(this);
         }
 
         public bool IsFocused => Manager.Focus == this;

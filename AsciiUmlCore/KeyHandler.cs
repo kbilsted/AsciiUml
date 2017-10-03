@@ -127,7 +127,7 @@ t .................... Create a text label
 l .................... Create a free style line
 x / Del............... Delete selected object
 Esc .................. Abort input
-ctrl+c ............... Exit program");
+ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround = titled.BackGround};
         return Noop;
     }
 

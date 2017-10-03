@@ -9,7 +9,6 @@ namespace AsciiUml
     public class WindowManager
     {
         private readonly string title;
-
         private GuiComponent focus;
         public GuiComponent Focus
         {
