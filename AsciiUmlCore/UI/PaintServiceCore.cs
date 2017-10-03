@@ -26,8 +26,6 @@ namespace AsciiUml.UI {
 					PaintDatabase(c, x as Database);
 				if (x is Box) 
 					PaintBox(c, x as Box);
-				if(x is Label)
-					PaintLabel(c, x as Label);
 			}
 
 			// draw lines after boxes and labels so the shortest path does not intersect those objects
@@ -36,8 +34,16 @@ namespace AsciiUml.UI {
 					PaintLine2(c, x as Line, model);
 			}
 
-			// lines may not cross boxes, hence drawn afterwards
-			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x));
+            // labels may go above lines
+		    foreach (var x in model)
+		    {
+		        if (x is Label)
+		            PaintLabel(c, x as Label);
+            }
+
+
+            // lines may not cross boxes, hence drawn afterwards
+            model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x));
 			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));
 
 			return c;
