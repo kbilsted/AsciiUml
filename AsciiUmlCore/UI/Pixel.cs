@@ -22,5 +22,12 @@ namespace AsciiUml.UI
                 return bIsEmpty;
             return !bIsEmpty && a.Equals(b);
         }
+
+        public override int GetHashCode()
+        {
+            return Char.GetHashCode() 
+                ^ ForegroundColor.GetHashCode() 
+                ^ BackGroundColor.GetHashCode();
+        }
     }
 }
