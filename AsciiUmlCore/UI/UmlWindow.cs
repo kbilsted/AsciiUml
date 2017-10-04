@@ -28,6 +28,9 @@ namespace AsciiUml
                 state = command.Execute(state);
             }
 
+            if(commands.Any(x=>x is TmpForceRepaint))
+                TemporarilyForceRepaint();
+
             return commands.Any();
         }
 

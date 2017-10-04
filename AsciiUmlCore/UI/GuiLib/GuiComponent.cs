@@ -23,6 +23,10 @@ namespace AsciiUml
         public ConsoleColor BackGround = ConsoleColor.DarkBlue;
         public ConsoleColor Foreground = ConsoleColor.White;
 
+        protected void TemporarilyForceRepaint()
+        {
+            Manager.TemporarilyForceRepaint();
+        }
         /// <summary>
         /// How much your canvas will be shifted upon merging with the other canvases
         /// </summary>

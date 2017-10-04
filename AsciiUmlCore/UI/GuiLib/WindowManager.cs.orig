@@ -227,7 +227,10 @@ namespace AsciiUml
 
         public void TemporarilyForceRepaint()
         {
+<<<<<<< HEAD
+=======
             Console.BackgroundColor = ConsoleColor.Black;
+>>>>>>> introduce TmpForceRepaint
             Console.Clear();
             previousPaint = new Canvass();
         }

@@ -12,6 +12,7 @@ using static AsciiUml.Extensions;
 static internal class KeyHandler
 {
     private static List<ICommand> Noop => new List<ICommand>();
+    private static List<ICommand> NoopForceRepaint => new List<ICommand>(){new TmpForceRepaint()};
 
     public static List<ICommand> HandleKeyPress(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog, UmlWindow umlWindow)
     {
@@ -64,7 +65,7 @@ static internal class KeyHandler
             case ConsoleKey.B:
                 return ConsoleInputColors(() =>
                     CommandParser.TryReadLineWithCancel("Create box. Title: ")
-                    .Match(x => Lst(new CreateBox(state.TheCurser.Pos, x)), () => Noop));
+                    .Match(x => Lst(new CreateBox(state.TheCurser.Pos, x), new TmpForceRepaint()), () => NoopForceRepaint));
 
             case ConsoleKey.C:
                 return ConnectObjects(state);
@@ -74,7 +75,7 @@ static internal class KeyHandler
             case ConsoleKey.T:
                 return ConsoleInputColors(() =>
                     CommandParser.TryReadLineWithCancel("Create a label. Text: ")
-                    .Match(x => Lst(new CreateLabel(state.TheCurser.Pos, x)), () => Noop));
+                    .Match(x => Lst(new CreateLabel(state.TheCurser.Pos, x), new TmpForceRepaint()), () => NoopForceRepaint));
 
             case ConsoleKey.R:
                 return Rotate(selected, model);
@@ -135,7 +136,7 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
     {
         Console.WriteLine("Connect from object: ");
 
-        var cmds = Noop;
+        var cmds = NoopForceRepaint;
         PrintIdsAndLetUserSelectObject(state)
             .IfSome(from =>
             {
@@ -160,8 +161,8 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
                 case "database":
                     return Lst(new CreateDatabase(state.TheCurser.Pos));
             }
-            return Noop;
-        }, () => Noop);
+            return NoopForceRepaint;
+        }, () => NoopForceRepaint);
     }
 
     private static List<ICommand> Rotate(int? selected, List<IPaintable<object>> model)
@@ -171,12 +172,12 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
                 if (model[x] is Label)
                     return Lst(new RotateSelectedElement(x));
                 Screen.PrintErrorAndWaitKey("Only labels can be rotated");
-                return Noop;
+                return NoopForceRepaint;
             },
             () =>
             {
                 Screen.PrintErrorAndWaitKey("Nothing is selected");
-                return Noop;
+                return NoopForceRepaint;
             });
     }
 
@@ -196,7 +197,7 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
 
             case ConsoleKey.S:
                 Program.PrintCommandLog(commandLog);
-                return Noop;
+                return NoopForceRepaint;
 
             default:
                 return Option<List<ICommand>>.None;
