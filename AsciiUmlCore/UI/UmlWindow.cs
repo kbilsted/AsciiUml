@@ -21,7 +21,7 @@ namespace AsciiUml
         {
             var commands = KeyHandler.HandleKeyPress(state, key, commandLog, this);
 
-            commandLog.Add(commands);
+            AddToCommandLog(commands);
 
             foreach (var command in commands)
             {
@@ -32,6 +32,12 @@ namespace AsciiUml
                 TemporarilyForceRepaint();
 
             return commands.Any();
+        }
+
+        private void AddToCommandLog(List<ICommand> commands)
+        {
+            if(commands.Any())
+                commandLog.Add(commands);
         }
 
         public override Canvass Paint()
@@ -50,7 +56,7 @@ namespace AsciiUml
         {
             Console.WriteLine("something unexpected happened " + e.Message + " :: " + e.StackTrace);
 
-            Program.PrintCommandLog(commandLog);
+            Program.Serialize(commandLog);
         }
     }
 }

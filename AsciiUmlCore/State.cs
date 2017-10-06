@@ -17,7 +17,13 @@ namespace AsciiUml
 		public int? SelectedIndexInModel { get; set; }
 		public int? SelectedId { get; set; }
 		public int? CursorHoverId { get; set; }
+	    public Configuration Config { get; set; }
 
+	    public State()
+	    {
+	        Config=new Configuration();
+	        Config.SaveFilename = @"c:\temp\asciiuml.txt";
+	    }
 	    public Option<IPaintable<object>> GetSelected()
 	    {
 	        var selected = Model.Where(x => x.Id == SelectedId).ToOption();
@@ -31,4 +37,9 @@ namespace AsciiUml
 			return state;
 		}
 	}
+
+    public class Configuration
+    {
+        public string SaveFilename { get; set; }
+    }
 }

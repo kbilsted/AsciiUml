@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
@@ -17,6 +18,7 @@ namespace AsciiUml
 	// TODO change arrow style
 	// TODO change arrow head + bottom
 	// Todo change z orderof object by moving place in the model
+    // TODO transitive select using hotkey such that a graph is easily selected
 
 	class Program {
 		static void Main(string[] args) {
@@ -52,15 +54,15 @@ namespace AsciiUml
 	        };
 	    }
 
-	    public static void PrintCommandLog(List<List<ICommand>> commandLog)
+	    public static string Serialize(object o)
 		{
 			var ser = new JsonSerializer() {
 				TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented,
 			};
-			
-			ser.Serialize(Console.Out, commandLog);
-			Console.WriteLine("press a key");
-			Console.ReadKey(true);
+		    var w = new StringWriter();
+            ser.Serialize(w, o);
+		    return w.ToString();
 		}
 
 		private static State TempModelForPlayingAround(State state) {

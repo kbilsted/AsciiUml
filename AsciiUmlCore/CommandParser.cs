@@ -7,6 +7,7 @@ using LanguageExt.SomeHelp;
 
 namespace AsciiUml {
 	public static class CommandParser {
+        // TODO replace with input box from the gui lib
 		public static Option<int> ReadInt(int[] onlyAllowedValues, string text)
 		{
 		    Range<int> range = onlyAllowedValues.MinMax(x => x);
@@ -27,6 +28,7 @@ namespace AsciiUml {
 			}, () => Option<int>.None);
 		}
 
+        // TODO replace with input box from the gui lib
 		public static Option<string> TryReadLineWithCancel(string explanation) {
 			Console.WriteLine("ESC to abort input. RETURN to finish input. SHIFT+RETURN for multiline input");
 			Console.Write(explanation);

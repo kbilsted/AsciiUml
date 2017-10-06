@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AsciiUml;
 using AsciiUml.Commands;
@@ -127,6 +128,7 @@ d .................... Create a Database
 t .................... Create a text label
 l .................... Create a free-style line
 x / Del............... Delete selected object
+enter ................ Enter command mode
 Esc .................. Abort input
 ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround = titled.BackGround};
         return Noop;
@@ -150,16 +152,27 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
 
     private static List<ICommand> CommandMode(State state, List<List<ICommand>> commandLog)
     {
-        var cmd = CommandParser.TryReadLineWithCancel("Enter command: ");
+        var cmd = CommandParser.TryReadLineWithCancel("Enter command (save-file,database,set-save-filename): ");
 
         return cmd.Match(x => {
             switch (x)
             {
-                case "dump":
-                    Program.PrintCommandLog(commandLog);
+                case "set-save-filename":
+                    CommandParser.TryReadLineWithCancel("filename:").Bind(file => state.Config.SaveFilename = file);
+                    break;
+                case "save-file":
+                    var log = Program.Serialize(commandLog);
+                    var logname = state.Config.SaveFilename+".log";
+                    File.WriteAllText(logname, log);
+
+                    var model = Program.Serialize(state.Model);
+                    File.WriteAllText(state.Config.SaveFilename, model);
+
+                    Console.WriteLine($"file saved to \'{logname}\'");
+                    Console.ReadKey(true);
                     break;
                 case "database":
-                    return Lst(new CreateDatabase(state.TheCurser.Pos));
+                    return Lst(new CreateDatabase(state.TheCurser.Pos), new TmpForceRepaint());
             }
             return NoopForceRepaint;
         }, () => NoopForceRepaint);
@@ -195,8 +208,8 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
             case ConsoleKey.RightArrow:
                 return ControlCursor(state, key);
 
-            case ConsoleKey.S:
-                Program.PrintCommandLog(commandLog);
+            case ConsoleKey.W:
+                Program.Serialize(commandLog);
                 return NoopForceRepaint;
 
             default:
