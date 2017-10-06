@@ -297,7 +297,7 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
         var cursorTop = Console.CursorTop;
         Screen.SetConsoleGetInputColors();
         PrintIdsOfModel(state.Model);
-        Console.SetCursorPosition(0, cursorTop);
+        WindowManager.SetCursorPosition(cursorTop, 0);
 
         var res = GetISelectableElement(state.Model);
 
@@ -329,7 +329,7 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
     {
         foreach (var selectable in model.OfType<ISelectable>())
         {
-            Console.SetCursorPosition(selectable.Pos.X, selectable.Pos.Y + 1);
+            Console.SetCursorPosition(selectable.Pos.Y + 1, selectable.Pos.X);
             Console.Write(selectable.Id);
         }
     }

@@ -49,7 +49,7 @@ namespace AsciiUml
 
         public override Coord GetInnerCanvasTopLeft()
         {
-            return new Coord(0,0);
+            return Parent.GetInnerCanvasTopLeft();
         }
 
         public override void OnException(Exception e)

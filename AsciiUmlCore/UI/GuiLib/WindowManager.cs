@@ -169,7 +169,7 @@ namespace AsciiUml
 
         private static void Print(Canvass previousPaint, Canvass catode)
         {
-            Console.SetCursorPosition(0, 0);
+            int cx = Console.CursorLeft, cy = Console.CursorTop;
 
             for (int y = 0; y < previousPaint.Catode.Length - 1; y++)
             {
@@ -178,6 +178,8 @@ namespace AsciiUml
                     PrintPixel(previousPaint, catode, y, x);
                 }
             }
+
+            SetCursorPosition(cy, cx);
         }
 
         private static void Merge(Canvass finalResult, Canvass newComponent, Coord canvasDelta)
@@ -204,7 +206,7 @@ namespace AsciiUml
             var oldPixel = previousPaint.Catode[y][x];
             if (!Pixel.Compare(newpixel, oldPixel))
             {
-                Console.SetCursorPosition(x, y);
+                SetCursorPosition(y, x);
 
                 if (newpixel == null)
                 {
@@ -230,6 +232,15 @@ namespace AsciiUml
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
             previousPaint = new Canvass();
+        }
+
+        public static void SetCursorPosition(int y, int x)
+        {
+            Console.SetCursorPosition(x, y);
+        }
+        public static void SetCursorPosition(Coord c)
+        {
+            Console.SetCursorPosition(c.X, c.Y);
         }
     }
 }

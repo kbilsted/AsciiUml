@@ -62,13 +62,24 @@ namespace AsciiUml
             Manager.Focus = this;
         }
             
-        public void FocusNextChild(GuiComponent currentComponent)
+        public void FocusNextChild(GuiComponent onComponent)
         {
-            int index = Children.FindIndex(x => x == currentComponent);
+            int index = Children.FindIndex(x => x == onComponent);
             for (int i = 1; i < Children.Count; i++)
             {
                 var child = Children[(i + index) % Children.Count];
                 if(child.IsVisible)
+                    child.Focus();
+            }
+        }
+
+        public void FocusPrevChild(GuiComponent onComponent)
+        {
+            int index = Children.FindIndex(x => x == onComponent);
+            for (int i = 1; i < Children.Count; i++)
+            {
+                var child = Children[(index-i) % Children.Count];
+                if (child.IsVisible)
                     child.Focus();
             }
         }
