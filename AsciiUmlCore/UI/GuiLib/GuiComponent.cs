@@ -10,6 +10,8 @@ namespace AsciiUml
     {
         /// <summary> if true the component may be rendered on the screen </summary>
         public bool IsVisible = true;
+        public bool IsFocusable = true;
+
         public readonly GuiComponent Parent;
         public readonly List<GuiComponent> Children = new List<GuiComponent>();
 
@@ -57,30 +59,43 @@ namespace AsciiUml
             parent.RegisterChildComponent(this);
         }
 
-        public void Focus()
+        protected GuiComponent(GuiComponent parent, Coord position) : this(parent)
         {
-            Manager.Focus = this;
+            Position = parent.GetInnerCanvasTopLeft() + parent.Position + position;
+        }
+
+
+        public virtual void Focus()
+        {
+            if(IsFocusable)
+                Manager.Focus = this;
         }
             
-        public void FocusNextChild(GuiComponent onComponent)
+        public void FocusNextChild(GuiComponent currentComponent)
         {
-            int index = Children.FindIndex(x => x == onComponent);
+            int index = Children.FindIndex(x => x == currentComponent);
             for (int i = 1; i < Children.Count; i++)
             {
                 var child = Children[(i + index) % Children.Count];
-                if(child.IsVisible)
+                if (child.IsVisible && child.IsFocusable)
+                {
                     child.Focus();
+                    return;
+                }
             }
         }
 
-        public void FocusPrevChild(GuiComponent onComponent)
+        public void FocusPrevChild(GuiComponent currentComponent)
         {
-            int index = Children.FindIndex(x => x == onComponent);
+            int index = Children.FindIndex(x => x == currentComponent);
             for (int i = 1; i < Children.Count; i++)
             {
                 var child = Children[(index-i) % Children.Count];
-                if (child.IsVisible)
+                if (child.IsVisible && child.IsFocusable)
+                {
                     child.Focus();
+                    return;
+                }
             }
         }
 
