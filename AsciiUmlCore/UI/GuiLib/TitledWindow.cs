@@ -9,6 +9,7 @@ namespace AsciiUml.UI.GuiLib
     class TitledWindow : GuiComponent
     {
         private readonly string title;
+        const string CloseButton = " [x] ";
 
         public TitledWindow(WindowManager manager, string title) : base(manager)
         {
@@ -38,7 +39,7 @@ namespace AsciiUml.UI.GuiLib
                 Position = Parent.GetInnerCanvasTopLeft();
             }
 
-            var titleline = title.PadRight(size.Width.Pixels - 4) + "[x] ";
+            var titleline = title.PadRight(size.Width.Pixels - CloseButton.Length) + CloseButton;
 
             var c = new Canvass();
             c.RawPaintString(titleline, 0, 0, ConsoleColor.DarkGray, ConsoleColor.Gray);
