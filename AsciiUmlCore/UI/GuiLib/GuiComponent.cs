@@ -142,5 +142,51 @@ namespace AsciiUml
         }
 
         public bool IsFocused => Manager.Focus == this;
+
+        /// <summary>
+        /// Get the size such that dynamic sized components can resize according to their children
+        /// </summary>
+        public virtual GuiDimensions GetSize()
+        {
+            if (Dimensions.IsFullyFixed())
+            {
+                return Dimensions;
+            }
+            // TODO semi fixed need semi calculations
+            Coord upperLeft = Position;
+            GuiDimensions dimension = new GuiDimensions(new Size(0),new Size(0));
+            foreach (var child in Children)
+            {
+                if (child.Position.X < upperLeft.X)
+                {
+                    var dist = upperLeft.X - child.Position.X;
+                    dimension.Width.Pixels += dist;
+                    upperLeft = new Coord(child.Position.X, upperLeft.Y);
+                }
+                if (child.Position.X > upperLeft.X)
+                {
+                    var dist = child.Position.X - upperLeft.X;
+                    dimension.Width.Pixels += dist;
+                    upperLeft = new Coord(child.Position.X, upperLeft.Y);
+                }
+                var childSize = child.GetSize();
+                dimension.Width.Pixels = Math.Max(dimension.Width.Pixels, childSize.Width.Pixels);
+
+                if (child.Position.Y < upperLeft.Y)
+                {
+                    var dist = upperLeft.Y - child.Position.Y;
+                    dimension.Height.Pixels += dist;
+                    upperLeft = new Coord(upperLeft.X, child.Position.Y);
+                }
+                if (child.Position.Y > upperLeft.Y)
+                {
+                    var dist = child.Position.Y - upperLeft.Y;
+                    dimension.Height.Pixels += dist;
+                    upperLeft = new Coord(upperLeft.X, child.Position.Y);
+                }
+                dimension.Height.Pixels = Math.Max(dimension.Height.Pixels, childSize.Height.Pixels);
+            }
+            return dimension;
+        }
     }
 }

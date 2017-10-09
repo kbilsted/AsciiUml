@@ -31,8 +31,10 @@ namespace AsciiUml.UI.GuiLib
             var size = Dimensions;
             if (Dimensions.IsFullyAutosize())
             {
-                size = Children.Single().Dimensions+GetInnerCanvasTopLeft();
-                Position = Children.Single().Position - GetInnerCanvasTopLeft();
+                Position = Children.Single().Position - GetInnerCanvasTopLeft(); // todo find max spanning area of all children
+                var childrensSize = GetSize();
+                var mySize = new GuiDimensions(new Size(title.Length + CloseButton.Length), childrensSize.Height);
+                size = GuiDimensions.Max(childrensSize, mySize);
             }
             else
             {
@@ -58,6 +60,13 @@ namespace AsciiUml.UI.GuiLib
         public override Coord GetInnerCanvasTopLeft()
         {
             return new Coord(0, 1);
+        }
+
+        public override GuiDimensions GetSize()
+        {
+            var size = base.GetSize();
+            size.Height.Pixels += 1;
+            return size;
         }
     }
 }
