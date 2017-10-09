@@ -42,6 +42,30 @@ namespace AsciiUml
 
             throw new ArgumentException("Cannot add auto with fixed size");
         }
+
+        public static bool operator <(GuiDimensions a, GuiDimensions b)
+        {
+            if (a.IsFullyFixed() && b.IsFullyFixed())
+                return a.Width.Pixels < b.Width.Pixels && a.Height.Pixels < b.Height.Pixels;
+            throw new ArgumentException("Cannot add auto with fixed size");
+        }
+
+        public static bool operator >(GuiDimensions a, GuiDimensions b)
+        {
+            if (a.IsFullyFixed() && b.IsFullyFixed())
+                return a.Width.Pixels > b.Width.Pixels && a.Height.Pixels > b.Height.Pixels;
+            throw new ArgumentException("Cannot add auto with fixed size");
+        }
+
+        public static GuiDimensions Max(GuiDimensions a, GuiDimensions b)
+        {
+            return a > b ? a : b;
+        }
+
+        public override string ToString()
+        {
+            return $"H: {Height} W: {Width}";
+        }
     }
 
     public enum SizeKind
@@ -74,6 +98,11 @@ namespace AsciiUml
         {
             Kind = SizeKind.Fixed;
             this.pixels = pixels;
+        }
+
+        public override string ToString()
+        {
+            return pixels.ToString() + Kind.ToString();
         }
     }
 }

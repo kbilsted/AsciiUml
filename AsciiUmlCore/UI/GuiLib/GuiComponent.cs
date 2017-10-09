@@ -8,9 +8,19 @@ namespace AsciiUml
 {
     public abstract class GuiComponent
     {
-        /// <summary> if true the component may be rendered on the screen </summary>
-        public bool IsVisible = true;
         public bool IsFocusable = true;
+
+        /// <summary> if true the component may be rendered on the screen </summary>
+        public bool IsVisible { get; private set; } = true;
+
+        public void SetVisibility(bool isVisible)
+        {
+            IsVisible = isVisible;
+            foreach (var child in Children)
+            {
+                child.SetVisibility(isVisible);
+            }
+        }
 
         public readonly GuiComponent Parent;
         public readonly List<GuiComponent> Children = new List<GuiComponent>();
@@ -63,7 +73,6 @@ namespace AsciiUml
         {
             Position = parent.GetInnerCanvasTopLeft() + parent.Position + position;
         }
-
 
         public virtual void Focus()
         {
