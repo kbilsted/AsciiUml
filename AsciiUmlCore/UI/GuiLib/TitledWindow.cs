@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AsciiUml.Geo;
 
 namespace AsciiUml.UI.GuiLib
@@ -33,8 +31,8 @@ namespace AsciiUml.UI.GuiLib
             {
                 Position = Children.Single().Position - GetInnerCanvasTopLeft(); // todo find max spanning area of all children
                 var childrensSize = GetSize();
-                var mySize = new GuiDimensions(new Size(title.Length + CloseButton.Length), childrensSize.Height);
-                size = GuiDimensions.Max(childrensSize, mySize);
+                var width = Math.Max(childrensSize.Width.Pixels, title.Length + CloseButton.Length);
+                size = new GuiDimensions(new Size(width), childrensSize.Height);
             }
             else
             {
