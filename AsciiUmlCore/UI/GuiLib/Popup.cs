@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using AsciiUml.Geo;
 using AsciiUml.UI.GuiLib;
 
@@ -8,20 +6,20 @@ namespace AsciiUml.UI
 {
     public class Popup : GuiComponent
     {
-        private readonly string[] msglines;
-
-        private Canvass c;
         private readonly Button ok;
 
         public Popup(GuiComponent parent, string message) : base(parent)
         {
-            msglines = message.Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
-            Dimensions.Height.Pixels = msglines.Length + 5;
-            Dimensions.Width.Pixels = msglines.Max(x => x.Length) + 6;
+            var label = new TextLabel(this, message, new Coord(4,0));
+
+            Dimensions = label.GetSize();
+            Dimensions.Height.Pixels += 5;
+            Dimensions.Width.Pixels += 6;
 
             Position = new Coord((State.MaxX - Dimensions.Width.Pixels) / 2, ((State.MaxY - Dimensions.Height.Pixels) / 2) - 1);
+            label.SetPosition(new Coord(4,0));
 
-            var screenCenter = new Coord(Dimensions.Width.Pixels / 2, Position.Y + msglines.Length + 3);
+            var screenCenter = new Coord(Dimensions.Width.Pixels / 2, Position.Y + label.Height + 3);
             ok = new Button(this, "OK", () => { RemoveMeAndChildren(); })
             {
                 Position = screenCenter
@@ -42,10 +40,7 @@ namespace AsciiUml.UI
 
         public override Canvass Paint()
         {
-            c = new Canvass();
-            for (int y = 0; y < msglines.Length; y++)
-                c.RawPaintString("   " + msglines[y], 0, y, BackGround, Foreground);
-
+            var c = new Canvass();
             return c;
         }
 
