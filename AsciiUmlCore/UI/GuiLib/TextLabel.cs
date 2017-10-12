@@ -1,18 +1,24 @@
 ﻿using System;
+using System.Linq;
 using AsciiUml.Geo;
 
 namespace AsciiUml.UI.GuiLib
 {
     public class TextLabel : GuiComponent
     {
+        private string[] splittedText ;
         private string text;
+        public int Height { get; private set; }
         public string Text
         {
             get => text;
             set
             {
-                text = value; 
-                Dimensions = new GuiDimensions(new Size(text.Length), new Size(1));
+                text = value;
+                splittedText = text.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+                var maxLineLength = splittedText.Any() ? splittedText.Max(x => x.Length) : 0;
+                Height = Math.Max(1, splittedText.Length);
+                Dimensions = new GuiDimensions(new Size(maxLineLength), new Size(Height));
             }
         }
 
@@ -30,7 +36,10 @@ namespace AsciiUml.UI.GuiLib
         public override Canvass Paint()
         {
             var c = new Canvass();
-            c.RawPaintString(Text, 0, 0, BackGround, Foreground);
+            for (int i = 0; i < splittedText.Length; i++)
+            {
+                c.RawPaintString(splittedText[i], 0, i, BackGround, Foreground);
+            }
             return c;
         }
 
