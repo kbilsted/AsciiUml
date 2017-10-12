@@ -71,7 +71,16 @@ namespace AsciiUml
 
         protected GuiComponent(GuiComponent parent, Coord position) : this(parent)
         {
-            Position = parent.GetInnerCanvasTopLeft() + parent.Position + position;
+            SetPosition(position);
+        }
+
+        /// <summary>
+        /// used in dynamic positioned windows since the position of the parent may be determined after the 
+        /// calling of this components ctor
+        /// </summary>
+        public void SetPosition(Coord position)
+        {
+            Position = Parent.GetInnerCanvasTopLeft() + Parent.Position + position;
         }
 
         public virtual void Focus()

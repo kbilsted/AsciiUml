@@ -100,6 +100,11 @@ namespace AsciiUml
             this.pixels = pixels;
         }
 
+        public static Size operator +(Size a, Size b)
+        {
+            return new Size(a.pixels+b.Pixels);
+        }
+
         public override string ToString()
         {
             return pixels.ToString() + Kind.ToString();
