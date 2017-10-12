@@ -99,7 +99,8 @@ namespace AsciiUml
             int index = Children.FindIndex(x => x == currentComponent);
             for (int i = 1; i < Children.Count; i++)
             {
-                var child = Children[(index-i) % Children.Count];
+                var idx = (Math.Abs(index+Children.Count-i)) % Children.Count;
+                var child = Children[idx];
                 if (child.IsVisible && child.IsFocusable)
                 {
                     child.Focus();
