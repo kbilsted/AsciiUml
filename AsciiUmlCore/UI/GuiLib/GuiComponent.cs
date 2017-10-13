@@ -44,6 +44,8 @@ namespace AsciiUml
         /// </summary>
         public Coord Position;
 
+        private Coord RelativePositionToParent;
+
         public GuiDimensions Dimensions;
 
         protected readonly WindowManager Manager;
@@ -71,16 +73,17 @@ namespace AsciiUml
 
         protected GuiComponent(GuiComponent parent, Coord position) : this(parent)
         {
-            SetPosition(position);
+            RelativePositionToParent = position;
+            AdjustWhenParentsReposition();
         }
 
         /// <summary>
         /// used in dynamic positioned windows since the position of the parent may be determined after the 
         /// calling of this components ctor
         /// </summary>
-        public void SetPosition(Coord position)
+        public void AdjustWhenParentsReposition()
         {
-            Position = Parent.GetInnerCanvasTopLeft() + Parent.Position + position;
+            Position = Parent.GetInnerCanvasTopLeft() + Parent.Position + RelativePositionToParent;
         }
 
         public virtual void Focus()

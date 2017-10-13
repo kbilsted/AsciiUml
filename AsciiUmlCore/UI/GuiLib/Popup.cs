@@ -17,7 +17,7 @@ namespace AsciiUml.UI
             Dimensions.Width.Pixels += 6;
 
             Position = new Coord((State.MaxX - Dimensions.Width.Pixels) / 2, ((State.MaxY - Dimensions.Height.Pixels) / 2) - 1);
-            label.SetPosition(new Coord(4,0));
+            label.AdjustWhenParentsReposition();
 
             var screenCenter = new Coord(Dimensions.Width.Pixels / 2, Position.Y + label.Height + 3);
             ok = new Button(this, "OK", () => { RemoveMeAndChildren(); })
