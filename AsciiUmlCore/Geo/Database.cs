@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml.Geo {
 	public class Database : IPaintable<Database>, ISelectable {

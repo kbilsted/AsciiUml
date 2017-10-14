@@ -4,6 +4,7 @@ using System.Linq;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
+using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml
 {

@@ -5,6 +5,7 @@ using System.Reflection;
 using AsciiUml;
 using AsciiUml.Geo;
 using AsciiUml.UI;
+using AsciiUml.UI.GuiLib;
 using NUnit.Framework;
 using static LanguageExt.Prelude;
 using static AsciiUmlTests.Test;

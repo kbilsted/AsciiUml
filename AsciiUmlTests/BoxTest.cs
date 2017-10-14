@@ -2,6 +2,7 @@
 using System.Linq;
 using AsciiUml;
 using AsciiUml.Geo;
+using AsciiUml.UI.GuiLib;
 using NUnit.Framework;
 using static AsciiUmlTests.Test;
 

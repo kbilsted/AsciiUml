@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using AsciiUml.Geo;
 
 namespace AsciiUml.UI.GuiLib
 {
-    class TitledWindow : GuiComponent
+    public class TitledWindow : GuiComponent
     {
         private readonly string title;
         const string CloseButton = " [x] ";

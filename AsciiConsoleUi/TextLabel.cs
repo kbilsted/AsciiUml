@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using AsciiUml.Geo;
 
 namespace AsciiUml.UI.GuiLib
 {

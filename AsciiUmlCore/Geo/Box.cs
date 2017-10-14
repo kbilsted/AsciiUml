@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml.Geo {
 	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable {

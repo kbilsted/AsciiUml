@@ -1,5 +1,4 @@
 ﻿using System;
-using AsciiUml.Geo;
 
 namespace AsciiUml.UI.GuiLib
 {

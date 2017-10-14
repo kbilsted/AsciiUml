@@ -13,4 +13,8 @@
     <PackageReference Include="OptimizedPriorityQueue" Version="4.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AsciiConsoleUi\AsciiConsoleUi.csproj" />
+  </ItemGroup>
+
 </Project>

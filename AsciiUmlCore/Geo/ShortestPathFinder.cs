@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AsciiUml.UI;
+using AsciiUml.UI.GuiLib;
 using Priority_Queue;
 
 namespace AsciiUml.Geo {

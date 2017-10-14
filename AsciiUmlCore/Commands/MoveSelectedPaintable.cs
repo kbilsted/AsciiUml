@@ -1,4 +1,5 @@
 ﻿using AsciiUml.Geo;
+using AsciiUml.UI.GuiLib;
 using LanguageExt;
 
 namespace AsciiUml.Commands

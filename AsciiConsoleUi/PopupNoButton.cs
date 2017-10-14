@@ -1,38 +1,26 @@
 ﻿using System;
-using AsciiUml.Geo;
 using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml.UI
 {
-    public class Popup : GuiComponent
+    public class PopupNoButton : GuiComponent
     {
-        private readonly Button ok;
-
-        public Popup(GuiComponent parent, string message) : base(parent)
+        public PopupNoButton(GuiComponent parent, string message) : base(parent)
         {
-            var label = new TextLabel(this, message, new Coord(4,0));
-
+            var label = new TextLabel(this, message, new Coord(0, 4)){BackGround = ConsoleColor.Black};
             Dimensions = label.GetSize();
-            Dimensions.Height.Pixels += 5;
-            Dimensions.Width.Pixels += 6;
+            Dimensions.Width.Pixels +=  6;
 
             Position = new Coord((State.MaxX - Dimensions.Width.Pixels) / 2, ((State.MaxY - Dimensions.Height.Pixels) / 2) - 1);
             label.AdjustWhenParentsReposition();
-
-            var screenCenter = new Coord(Dimensions.Width.Pixels / 2, Position.Y + label.Height + 3);
-            ok = new Button(this, "OK", () => { RemoveMeAndChildren(); })
-            {
-                Position = screenCenter
-            };
-            ok.Focus();
+            this.Focus();
         }
 
         public override bool HandleKey(ConsoleKeyInfo key)
         {
             if (IsFocused)
             {
-                if(key.Key== ConsoleKey.Tab)
-                    ok.Focus();
+                RemoveMeAndChildren();
                 return true;
             }
             return false;

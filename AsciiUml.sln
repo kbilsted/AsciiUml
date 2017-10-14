@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiUml", "AsciiUmlCore\AsciiUml.csproj", "{0AFD1EE0-E78B-4831-A30C-F95335387F00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiUmlTests", "AsciiUmlTests\AsciiUmlTests.csproj", "{5F132DFF-0D0D-4A9F-94BB-4EFCACEF0998}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiConsoleUi", "AsciiConsoleUi\AsciiConsoleUi.csproj", "{10939CB7-5AB6-4A49-82CE-624AF4F8E661}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5F132DFF-0D0D-4A9F-94BB-4EFCACEF0998}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F132DFF-0D0D-4A9F-94BB-4EFCACEF0998}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F132DFF-0D0D-4A9F-94BB-4EFCACEF0998}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10939CB7-5AB6-4A49-82CE-624AF4F8E661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10939CB7-5AB6-4A49-82CE-624AF4F8E661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10939CB7-5AB6-4A49-82CE-624AF4F8E661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10939CB7-5AB6-4A49-82CE-624AF4F8E661}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

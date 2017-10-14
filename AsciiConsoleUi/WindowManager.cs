@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using AsciiUml.UI;
 using System.Linq;
-using AsciiUml.Geo;
 
-namespace AsciiUml
+namespace AsciiUml.UI.GuiLib
 {
     public class WindowManager
     {
         private readonly string title;
+        private readonly int maxX;
+        private readonly int maxY;
         private GuiComponent focus;
         public GuiComponent Focus
         {
@@ -24,9 +25,11 @@ namespace AsciiUml
         private readonly List<GuiComponent> rootComponents = new List<GuiComponent>();
         private Canvass previousPaint { get; set; }
 
-        public WindowManager(string title)
+        public WindowManager(string title, int maxX, int maxY)
         {
             this.title = title;
+            this.maxX = maxX;
+            this.maxY = maxY;
             previousPaint = new Canvass();
         }
 
@@ -129,7 +132,7 @@ namespace AsciiUml
             foreach (var component in toPaint)
             {
                 var canvas = component.Paint();
-                Merge(catode, canvas, component.Position);
+                Merge(catode, canvas, component.Position, maxX, maxY);
             }
 
             // repaint focused to ensure it is in front
@@ -139,7 +142,7 @@ namespace AsciiUml
                 foreach (var component in toPaint)
                 {
                     var canvas = component.Paint();
-                    Merge(catode, canvas, component.Position);
+                    Merge(catode, canvas, component.Position, maxX, maxY);
                 }
             }
 
@@ -182,11 +185,11 @@ namespace AsciiUml
             SetCursorPosition(cy, cx);
         }
 
-        private static void Merge(Canvass finalResult, Canvass newComponent, Coord canvasDelta)
+        private static void Merge(Canvass finalResult, Canvass newComponent, Coord canvasDelta, int maxX, int maxY)
         {
-            for (int y = 0; y+canvasDelta.Y < State.MaxY; y++)
+            for (int y = 0; y+canvasDelta.Y < maxY; y++)
             {
-                for (int x = 0; x+canvasDelta.X < State.MaxX; x++)
+                for (int x = 0; x+canvasDelta.X < maxX; x++)
                 {
                     var newpixel = newComponent.Catode[y][x];
                     if (newpixel != null)

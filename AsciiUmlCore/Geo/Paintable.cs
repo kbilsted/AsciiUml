@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml.Geo {
 	static class PaintAbles {

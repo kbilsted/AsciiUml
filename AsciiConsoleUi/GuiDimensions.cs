@@ -1,6 +1,5 @@
 using System;
-using AsciiUml.Geo;
-using Microsoft.VisualBasic.CompilerServices;
+using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml
 {
