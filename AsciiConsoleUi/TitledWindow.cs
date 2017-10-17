@@ -28,16 +28,10 @@ namespace AsciiUml.UI.GuiLib
             var size = Dimensions;
             if (Dimensions.IsFullyAutosize())
             {
-                Position = Children.Single().Position - GetInnerCanvasTopLeft(); // todo find max spanning area of all children
                 var childrensSize = GetSize();
                 var width = Math.Max(childrensSize.Width.Pixels, title.Length + CloseButton.Length);
                 size = new GuiDimensions(new Size(width), childrensSize.Height);
             }
-            else
-            {
-                Position = Parent.GetInnerCanvasTopLeft();
-            }
-
             var titleline = title.PadRight(size.Width.Pixels - CloseButton.Length) + CloseButton;
 
             var c = new Canvass();

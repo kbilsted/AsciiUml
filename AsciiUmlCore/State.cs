@@ -18,6 +18,7 @@ namespace AsciiUml
 		public int? SelectedId { get; set; }
 		public int? CursorHoverId { get; set; }
 	    public Configuration Config { get; set; }
+	    public bool PaintSelectableIds { get; set; } = false;
 
 	    public State()
 	    {

@@ -22,6 +22,13 @@ namespace AsciiUml
         {
             var commands = KeyHandler.HandleKeyPress(state, key, commandLog, this);
 
+            HandleCommands(commands);
+
+            return commands.Any();
+        }
+
+        public void HandleCommands(List<ICommand> commands)
+        {
             AddToCommandLog(commands);
 
             foreach (var command in commands)
@@ -29,10 +36,8 @@ namespace AsciiUml
                 state = command.Execute(state);
             }
 
-            if(commands.Any(x=>x is TmpForceRepaint))
+            if (commands.Any(x => x is TmpForceRepaint))
                 TemporarilyForceRepaint();
-
-            return commands.Any();
         }
 
         private void AddToCommandLog(List<ICommand> commands)

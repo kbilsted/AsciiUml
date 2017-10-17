@@ -20,6 +20,7 @@ namespace AsciiUml
     // TODO change arrow head + bottom
     // Todo change z orderof object by moving place in the model
     // TODO transitive select using hotkey such that a graph is easily selected
+    // TODO remember console colors and on exit restore colors - now console looks odd on linux when quiting
 
     class Program {
         static void Main(string[] args) {
@@ -35,9 +36,10 @@ namespace AsciiUml
             umlWindow.Focus();
             //ShowLogo(umlWindow);
 
-            var title= new TitledWindow(umlWindow, "Connect objects");
-            var f = new ConnectForm(title, new Coord(5,5));
-            f.Focus();
+            //var title = new TitledWindow(umlWindow, "Connect objects");
+            //var f = new ConnectForm(title, new Coord(5, 5));
+            //f.Focus();
+
             man.Start();
         }
 

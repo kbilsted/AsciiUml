@@ -1,61 +1,51 @@
 ﻿using System;
-using AsciiUml.Geo;
-using AsciiUml.UI;
 using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml
 {
-    class ConnectForm : GuiComponent
+    class ConnectForm 
     {
-        private readonly TextLabel connectA, connectB, validationErrors;
+        private readonly TitledWindow titled;
+        private readonly TextLabel validationErrors;
         private readonly TextBox from, to;
+        public Action<int, int> OnSubmit = (from, to) => { };
+        public Action OnCancel = () => { };
 
-        public ConnectForm(GuiComponent parent, Coord position) : base(parent, position)
+        public ConnectForm(GuiComponent parent, Coord position)
         {
-            connectA = new TextLabel(this, "From object:", new Coord(0, 0));
-            from = new TextBox(this, 5, new Coord(0, 1)) {OnUserEscape = RemoveMeAndChildren, OnUserSubmit = OnSubmit};
-            connectB = new TextLabel(this, "To object:", new Coord(0, 2));
-            to = new TextBox(this, 5, new Coord(0, 3)) {OnUserEscape = RemoveMeAndChildren, OnUserSubmit = OnSubmit};
+            titled = new TitledWindow(parent, "Connect..."){Position = position};
 
-            validationErrors = new TextLabel(this, "", new Coord(0, 4))
+            new TextLabel(titled, "From object:", new Coord(0, 0));
+            from = new TextBox(titled, 5, new Coord(0, 1)) { OnUserEscape = titled.RemoveMeAndChildren};
+            new TextLabel(titled, "To object:", new Coord(0, 2));
+            to = new TextBox(titled, 5, new Coord(0, 3)) { OnUserEscape = titled.RemoveMeAndChildren, OnUserSubmit = Submit };
+
+            from.OnUserSubmit = to.Focus;
+
+            validationErrors = new TextLabel(titled, "", new Coord(0, 4))
                 {
                     BackGround = ConsoleColor.White,
                     Foreground = ConsoleColor.Red
                 };
         }
-
-        public override bool HandleKey(ConsoleKeyInfo key)
+  
+        void Submit()
         {
-            return false;
-        }
-
-        public override Canvass Paint()
-        {
-            return new Canvass();
-        }
-
-        public override void Focus()
-        {
-            from.Focus();
-        }
-
-        public override Coord GetInnerCanvasTopLeft()
-        {
-            return new Coord(0,0);
-        }
-
-        void OnSubmit()
-        {
-            if (string.IsNullOrWhiteSpace(from.Value))
+            if (string.IsNullOrWhiteSpace(from.Value) || !int.TryParse(@from.Value, out var ifrom))
+            {
                 validationErrors.Text = "Need to fill in 'from'";
-            if (string.IsNullOrWhiteSpace(to.Value))
+                return;
+            }
+           
+            if (string.IsNullOrWhiteSpace(to.Value) || !int.TryParse(to.Value, out var ito))
+            {
                 validationErrors.Text = "Need to fill in 'to'";
+                return;
+            }
+            titled.RemoveMeAndChildren();
+            OnSubmit(ifrom, ito);
         }
 
-        public override GuiDimensions GetSize()
-        {
-            var size = base.GetSize();
-            return size;
-        }
+        public void Focus() { @from.Focus();}
     }
 }

@@ -69,7 +69,8 @@ static internal class KeyHandler
                     .Match(x => Lst(new CreateBox(state.TheCurser.Pos, x), new TmpForceRepaint()), () => NoopForceRepaint));
 
             case ConsoleKey.C:
-                return ConnectObjects(state);
+                ConnectObjects(state, umlWindow);
+                return new Option<List<ICommand>>();
             case ConsoleKey.L:
                 return SlopedLine(state);
 
@@ -134,20 +135,27 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
         return Noop;
     }
 
-    private static List<ICommand> ConnectObjects(State state)
+    private static void ConnectObjects(State state, UmlWindow umlWindow)
     {
-        Console.WriteLine("Connect from object: ");
+        PrintIds(state);
 
         var cmds = NoopForceRepaint;
-        PrintIdsAndLetUserSelectObject(state)
-            .IfSome(from =>
+
+        var connect = new ConnectForm(umlWindow, state.TheCurser.Pos)
+        {
+            OnCancel = () =>
             {
-                Console.WriteLine("");
-                Console.WriteLine("to object: ");
-                PrintIdsAndLetUserSelectObject(state)
-                    .IfSome(to => { cmds.Add(new CreateLine(@from, to, LineKind.Connected)); });
-            });
-        return cmds;
+                umlWindow.HandleCommands(cmds);
+                state.PaintSelectableIds = false;
+            },
+            OnSubmit = (from, to) =>
+            {
+                cmds.Add(new CreateLine(@from, to, LineKind.Connected));
+                umlWindow.HandleCommands(cmds);
+                state.PaintSelectableIds = false;
+            }
+        };
+        connect.Focus();
     }
 
     private static List<ICommand> CommandMode(State state, List<List<ICommand>> commandLog)
@@ -295,15 +303,19 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
     private static Option<int> PrintIdsAndLetUserSelectObject(State state)
     {
         var cursorTop = Console.CursorTop;
-        Screen.SetConsoleGetInputColors();
-        PrintIdsOfModel(state.Model);
-        WindowManager.SetCursorPosition(cursorTop, 0);
+        PrintIds(state);
 
         var res = GetISelectableElement(state.Model);
 
         Screen.SetConsoleStandardColor();
 
         return res;
+    }
+
+    private static void PrintIds(State state)
+    {
+        Screen.SetConsoleGetInputColors();
+        state.PaintSelectableIds = true;
     }
 
     private static T ConsoleInputColors<T>(Func<T> code)
@@ -323,15 +335,6 @@ ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround
                 Screen.PrintErrorAndWaitKey("Not a selectable object");
                 return GetISelectableElement(model);
             });
-    }
-
-    private static void PrintIdsOfModel(List<IPaintable<object>> model)
-    {
-        foreach (var selectable in model.OfType<ISelectable>())
-        {
-            Console.SetCursorPosition(selectable.Pos.Y + 1, selectable.Pos.X);
-            Console.Write(selectable.Id);
-        }
     }
 
     public static Option<List<ICommand>> SelectTemporarily(State state, Func<State, List<ICommand>> code)
