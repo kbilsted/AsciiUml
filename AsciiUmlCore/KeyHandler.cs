@@ -47,11 +47,11 @@ static internal class KeyHandler
                 break;
 
             case ConsoleKey.Spacebar:
-                return SelectDeselect(selected, state);
+                return SelectDeselect(selected, state, umlWindow);
 
             case ConsoleKey.S:
-                return PrintIdsAndLetUserSelectObject(state)
-                    .Match(x => Lst(new SelectObject(x, true)), () => Noop);
+                PrintIdsAndLetUserSelectObject(state, umlWindow);
+                return new Option<List<ICommand>>();
 
             case ConsoleKey.X:
             case ConsoleKey.Delete:
@@ -71,6 +71,7 @@ static internal class KeyHandler
             case ConsoleKey.C:
                 ConnectObjects(state, umlWindow);
                 return new Option<List<ICommand>>();
+
             case ConsoleKey.L:
                 return SlopedLine(state);
 
@@ -93,14 +94,18 @@ static internal class KeyHandler
         return Lst(new CreateSlopedLine(state.TheCurser.Pos));
     }
 
-    private static List<ICommand> SelectDeselect(int? selected, State state)
+    private static List<ICommand> SelectDeselect(int? selected, State state, UmlWindow umlWindow)
     {
         if (selected.HasValue)
             return Lst(new ClearSelection());
 
-        var obj = GetIdOfCursorPosOrAskUserForId(state)
-            .Match(x => Lst(new SelectObject(x.Item1, x.Item2)),
-                () => Lst(new ClearSelection()));
+        var obj = state.Canvas.GetOccupants(state.TheCurser.Pos).ToOption()
+            .Match(x => Lst(new SelectObject(x, false)),
+                () =>
+                {
+                    PrintIdsAndLetUserSelectObject(state, umlWindow);
+                    return Noop;
+                });
         return obj;
     }
 
@@ -287,23 +292,27 @@ ctrl+c ............... Exit program");
         return Lst(new MoveCursor(direction), new MoveSelectedPaintable(direction));
     }
 
-    private static Option<Tuple<int, bool>> GetIdOfCursorPosOrAskUserForId(State state)
+    private static void PrintIdsAndLetUserSelectObject(State state, UmlWindow umlWindow)
     {
-        return state.Canvas.GetOccupants(state.TheCurser.Pos).ToOption()
-            .Match(x => Tuple.Create(x, false),
-                () => PrintIdsAndLetUserSelectObject(state).Select(x => Tuple.Create(x, true)));
-    }
-
-    private static Option<int> PrintIdsAndLetUserSelectObject(State state)
-    {
-        var cursorTop = Console.CursorTop;
         PrintIds(state);
+        var cmds = NoopForceRepaint;
 
-        var res = GetISelectableElement(state.Model);
-
-        Screen.SetConsoleStandardColor();
-
-        return res;
+        var selectedform = new SelectObjectForm(umlWindow, state.TheCurser.Pos)
+        {
+            OnCancel = () =>
+            {
+                umlWindow.HandleCommands(cmds);
+                state.PaintSelectableIds = false;
+            },
+            OnSubmit = (selected) =>
+            {
+                if (state.Model.SingleOrDefault(b => b.Id == selected) is ISelectable)
+                    cmds.Add(new SelectObject(selected, true));
+                umlWindow.HandleCommands(cmds);
+                state.PaintSelectableIds = false;
+            }
+        };
+        selectedform.Focus();
     }
 
     private static void PrintIds(State state)
