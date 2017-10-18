@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiUml", "AsciiUmlCore\AsciiUml.csproj", "{0AFD1EE0-E78B-4831-A30C-F95335387F00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsciiUml", "AsciiUmlCore\AsciiUml.csproj", "{0AFD1EE0-E78B-4831-A30C-F95335387F00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiUmlTests", "AsciiUmlTests\AsciiUmlTests.csproj", "{5F132DFF-0D0D-4A9F-94BB-4EFCACEF0998}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsciiUmlTests", "AsciiUmlTests\AsciiUmlTests.csproj", "{5F132DFF-0D0D-4A9F-94BB-4EFCACEF0998}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiConsoleUi", "AsciiConsoleUi\AsciiConsoleUi.csproj", "{10939CB7-5AB6-4A49-82CE-624AF4F8E661}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsciiConsoleUi", "AsciiConsoleUi\AsciiConsoleUi.csproj", "{10939CB7-5AB6-4A49-82CE-624AF4F8E661}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4CA5C2A-CCF6-4288-9560-1BDC1FA7F85C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
