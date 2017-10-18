@@ -7,15 +7,11 @@ namespace AsciiUml.UI.GuiLib
     {
         private readonly string buttonText;
         private readonly Action onClick;
-        private readonly ConsoleColor backgroundColor;
-        private readonly ConsoleColor foregroundColor;
 
-        public Button(GuiComponent parent, string buttonText, Action onClick, ConsoleColor backgroundColor = ConsoleColor.DarkGray, ConsoleColor foregroundColor=ConsoleColor.Green) : base(parent)
+        public Button(GuiComponent parent, string buttonText, Action onClick, Coord position) : base(parent, position)
         {
             this.buttonText = buttonText;
             this.onClick = onClick;
-            this.backgroundColor = backgroundColor;
-            this.foregroundColor = foregroundColor;
         }
 
         public override bool HandleKey(ConsoleKeyInfo key)
@@ -37,7 +33,7 @@ namespace AsciiUml.UI.GuiLib
         {
             var c = new Canvass();
             var focusMarker = (IsFocused?">": " ");
-            Canvass.PaintString(c, " " + focusMarker + buttonText + "  ", 0, 0, -10, backgroundColor, foregroundColor);
+            Canvass.PaintString(c, " " + focusMarker + buttonText + "  ", 0, 0, -10, BackGround, Foreground);
             return c;
         }
 
