@@ -3,49 +3,32 @@ using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml.UI
 {
-    public class Popup : GuiComponent
+    public class Popup 
     {
-        private readonly Button ok;
-
-        public Popup(GuiComponent parent, string message) : base(parent)
+        public Popup(GuiComponent parent, string message)
         {
-            var label = new TextLabel(this, message, new Coord(4,0));
+            var titled = new TitledWindow(parent, "About...")
+            {
+                BackGround = ConsoleColor.DarkBlue,
+                Foreground = ConsoleColor.White
+            };
 
-            Dimensions = label.GetSize();
-            Dimensions.Height.Pixels += 5;
-            Dimensions.Width.Pixels += 6;
+            var label = new TextLabel(titled, message, new Coord(4, 1));
 
-            Position = new Coord((State.MaxX - Dimensions.Width.Pixels) / 2, ((State.MaxY - Dimensions.Height.Pixels) / 2) - 1);
+            titled.Dimensions = label.GetSize();
+            titled.Dimensions.Height.Pixels += 5;
+            titled.Dimensions.Width.Pixels += 6;
+            titled.Position = new Coord((State.MaxX - titled.Dimensions.Width.Pixels) / 2, ((State.MaxY - titled.Dimensions.Height.Pixels) / 2) - 1);
+
             label.AdjustWhenParentsReposition();
 
-            var screenCenter = new Coord(Dimensions.Width.Pixels / 2, Position.Y + label.Height + 3);
-            ok = new Button(this, "OK", () => { RemoveMeAndChildren(); })
+            var screenCenter = new Coord(titled.Dimensions.Width.Pixels / 2, label.Height + 2);
+            var ok = new Button(titled, "OK", () => { titled.RemoveMeAndChildren(); }, screenCenter)
             {
-                Position = screenCenter
+                BackGround = ConsoleColor.DarkGray,
+                Foreground = ConsoleColor.Green
             };
             ok.Focus();
-        }
-
-        public override bool HandleKey(ConsoleKeyInfo key)
-        {
-            if (IsFocused)
-            {
-                if(key.Key== ConsoleKey.Tab)
-                    ok.Focus();
-                return true;
-            }
-            return false;
-        }
-
-        public override Canvass Paint()
-        {
-            var c = new Canvass();
-            return c;
-        }
-
-        public override Coord GetInnerCanvasTopLeft()
-        {
-            return Parent.GetInnerCanvasTopLeft();
         }
     }
 }

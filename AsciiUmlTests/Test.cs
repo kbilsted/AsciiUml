@@ -12,11 +12,11 @@ namespace AsciiUmlTests {
 
 		public static string Paint(params IPaintable<object>[] p) {
 			return @"
-" + PaintServiceCore.PaintModel(p.ToList()).TrimEndToString();
+" + PaintServiceCore.PaintModel(p.ToList(), false).TrimEndToString();
 		}
 
 		public static string PaintOneLine(params IPaintable<object>[] p) {
-			return PaintServiceCore.PaintModel(p.ToList()).TrimEndToString();
+			return PaintServiceCore.PaintModel(p.ToList(), false).TrimEndToString();
 		}
 	}
 }

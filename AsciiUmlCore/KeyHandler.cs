@@ -106,13 +106,7 @@ static internal class KeyHandler
 
     private static List<ICommand> HelpScreen(UmlWindow umlWindow)
     {
-        var titled = new TitledWindow(umlWindow, "About...")
-        {
-            BackGround = ConsoleColor.DarkBlue,
-            Foreground = ConsoleColor.White
-        };
-        var pop = new Popup(titled, @"
-*  *  ****  *     ****    
+        new Popup(umlWindow, @"*  *  ****  *     ****    
 *  *  *     *     *  *    
 ****  **    *     ****    
 *  *  *     *     *       
@@ -131,7 +125,7 @@ l .................... Create a free-style line
 x / Del............... Delete selected object
 enter ................ Enter command mode
 Esc .................. Abort input
-ctrl+c ............... Exit program"){Foreground = titled.Foreground, BackGround = titled.BackGround};
+ctrl+c ............... Exit program");
         return Noop;
     }
 
