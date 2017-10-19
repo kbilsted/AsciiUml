@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AsciiConsoleUi;
 using AsciiUml.UI;
-using AsciiUml.UI.GuiLib;
 using Priority_Queue;
 
 namespace AsciiUml.Geo {

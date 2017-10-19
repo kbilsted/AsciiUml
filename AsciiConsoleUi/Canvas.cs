@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using AsciiUml.UI.GuiLib;
 
-namespace AsciiUml.UI {
-
+namespace AsciiConsoleUi
+{
     // TODO REMOVE
     internal static class State
     {
@@ -12,7 +11,7 @@ namespace AsciiUml.UI {
     }
 
     public class Canvass {
-        readonly int?[,] occupants = new int?[State.MaxY, State.MaxX]; // TODO there can be more than one object on the same pixel
+        readonly int?[,] occupants = new int?[State.MaxY, State.MaxX]; // TODO we should enable more than one object on the same pixel
 
         public readonly Pixel[][] Catode = new Pixel[State.MaxY][];
 

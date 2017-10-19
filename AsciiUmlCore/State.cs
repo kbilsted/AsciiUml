@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AsciiConsoleUi;
 using AsciiUml.Geo;
 using AsciiUml.UI;
 using LanguageExt;

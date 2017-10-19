@@ -1,5 +1,5 @@
-﻿using AsciiUml.Geo;
-using AsciiUml.UI.GuiLib;
+﻿using AsciiConsoleUi;
+using AsciiUml.Geo;
 
 namespace AsciiUml.Commands
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using AsciiUml.UI.GuiLib;
+using AsciiConsoleUi;
 
 namespace AsciiUml
 {

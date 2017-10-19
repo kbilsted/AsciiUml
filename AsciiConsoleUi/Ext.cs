@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AsciiUml.UI.GuiLib
+namespace AsciiConsoleUi
 {
     public static class Ext
     {

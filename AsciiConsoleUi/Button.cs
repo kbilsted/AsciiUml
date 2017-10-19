@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Text;
 
-namespace AsciiUml.UI.GuiLib
+namespace AsciiConsoleUi
 {
     class Button : GuiComponent
     {

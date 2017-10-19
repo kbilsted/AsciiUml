@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AsciiUml.UI;
 using System.Linq;
 
-namespace AsciiUml.UI.GuiLib
+namespace AsciiConsoleUi
 {
     public class WindowManager
     {

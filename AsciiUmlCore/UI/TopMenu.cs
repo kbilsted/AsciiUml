@@ -1,6 +1,6 @@
 using System;
+using AsciiConsoleUi;
 using AsciiUml.UI;
-using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml
 {

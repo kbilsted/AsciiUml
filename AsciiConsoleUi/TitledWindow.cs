@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
 
-namespace AsciiUml.UI.GuiLib
+namespace AsciiConsoleUi
 {
     public class TitledWindow : GuiComponent
     {

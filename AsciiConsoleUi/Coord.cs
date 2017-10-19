@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AsciiUml.UI.GuiLib
+namespace AsciiConsoleUi
 {
     public class Coord : IEquatable<Coord> {
         public readonly int X, Y;

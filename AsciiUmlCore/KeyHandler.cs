@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AsciiConsoleUi;
 using AsciiUml;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
-using AsciiUml.UI.GuiLib;
 using LanguageExt;
 using static AsciiUml.Extensions;
 

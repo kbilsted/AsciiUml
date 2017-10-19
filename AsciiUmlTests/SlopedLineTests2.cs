@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
+using AsciiConsoleUi;
 using AsciiUml.Geo;
-using AsciiUml.UI.GuiLib;
 using NUnit.Framework;
 using static AsciiUmlTests.Test;
 

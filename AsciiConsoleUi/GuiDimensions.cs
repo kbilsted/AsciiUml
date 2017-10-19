@@ -1,7 +1,6 @@
 using System;
-using AsciiUml.UI.GuiLib;
 
-namespace AsciiUml
+namespace AsciiConsoleUi
 {
     public class GuiDimensions
     {

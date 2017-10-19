@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AsciiConsoleUi;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
-using AsciiUml.UI.GuiLib;
 
 namespace AsciiUml
 {

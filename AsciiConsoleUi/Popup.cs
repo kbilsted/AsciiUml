@@ -1,7 +1,6 @@
 ﻿using System;
-using AsciiUml.UI.GuiLib;
 
-namespace AsciiUml.UI
+namespace AsciiConsoleUi
 {
     public class Popup 
     {

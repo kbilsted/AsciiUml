@@ -1,15 +1,17 @@
 ﻿using System;
 
-namespace AsciiUml.UI
+namespace AsciiConsoleUi
 {
-    public class Pixel {
+    public class Pixel
+    {
         public char Char;
         public ConsoleColor BackGroundColor, ForegroundColor;
 
-        public override bool Equals(object obj) {
-            var other = (Pixel) obj;
-            return Char == other.Char 
-                   && BackGroundColor == other.BackGroundColor 
+        public override bool Equals(object obj)
+        {
+            var other = (Pixel)obj;
+            return Char == other.Char
+                   && BackGroundColor == other.BackGroundColor
                    && ForegroundColor == other.ForegroundColor;
         }
 
@@ -25,8 +27,8 @@ namespace AsciiUml.UI
 
         public override int GetHashCode()
         {
-            return Char.GetHashCode() 
-                ^ ForegroundColor.GetHashCode() 
+            return Char.GetHashCode()
+                ^ ForegroundColor.GetHashCode()
                 ^ BackGroundColor.GetHashCode();
         }
     }
