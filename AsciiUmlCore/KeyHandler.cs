@@ -64,9 +64,8 @@ static internal class KeyHandler
                 return HelpScreen(umlWindow);
 
             case ConsoleKey.B:
-                return ConsoleInputColors(() =>
-                    CommandParser.TryReadLineWithCancel("Create box. Title: ")
-                    .Match(x => Lst(new CreateBox(state.TheCurser.Pos, x), new TmpForceRepaint()), () => NoopForceRepaint));
+                CreateBox(state, umlWindow);
+                break;
 
             case ConsoleKey.C:
                 ConnectObjects(state, umlWindow);
@@ -76,17 +75,43 @@ static internal class KeyHandler
                 return SlopedLine(state);
 
             case ConsoleKey.T:
-                return ConsoleInputColors(() =>
-                    CommandParser.TryReadLineWithCancel("Create a label. Text: ")
-                    .Match(x => Lst(new CreateLabel(state.TheCurser.Pos, x), new TmpForceRepaint()), () => NoopForceRepaint));
+                CreateText(state, umlWindow);
+                return new Option<List<ICommand>>();
 
             case ConsoleKey.R:
                 return Rotate(selected, model);
 
             case ConsoleKey.Enter:
-                return CommandMode(state, commandLog);
+                CommandMode(state, commandLog, umlWindow);
+                return new Option<List<ICommand>>();
         }
         return Noop;
+    }
+
+    private static void CreateText(State state, UmlWindow umlWindow)
+    {
+        var input = new MultilineInputForm(umlWindow, "Create a label", "Text:", state.TheCurser.Pos)
+        {
+            OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
+            OnSubmit = (text) =>
+            {
+                umlWindow.HandleCommands(Lst(new CreateLabel(state.TheCurser.Pos, text), new TmpForceRepaint()));
+            }
+        };
+        input.Focus();
+    }
+
+    private static void CreateBox(State state, UmlWindow umlWindow)
+    {
+        var input = new MultilineInputForm(umlWindow, "Create box", "Text:", state.TheCurser.Pos)
+        {
+            OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
+            OnSubmit = (text) =>
+            {
+                umlWindow.HandleCommands(Lst(new CreateBox(state.TheCurser.Pos, text), new TmpForceRepaint()));
+            }
+        };
+        input.Focus();
     }
 
     private static List<ICommand> SlopedLine(State state)
@@ -157,32 +182,40 @@ ctrl+c ............... Exit program");
         connect.Focus();
     }
 
-    private static List<ICommand> CommandMode(State state, List<List<ICommand>> commandLog)
+    private static void CommandMode(State state, List<List<ICommand>> commandLog, UmlWindow umlWindow)
     {
-        var cmd = CommandParser.TryReadLineWithCancel("Enter command (save-file,database,set-save-filename): ");
-
-        return cmd.Match(x => {
-            switch (x)
+        var input = new SinglelineInputForm(umlWindow, "Enter command", "database,save-file,set-save-filename:", 20,
+            state.TheCurser.Pos)
+        {
+            OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
+            OnSubmit = (cmd) =>
             {
-                case "set-save-filename":
-                    CommandParser.TryReadLineWithCancel("filename:").Bind(file => state.Config.SaveFilename = file);
-                    break;
-                case "save-file":
-                    var log = Program.Serialize(commandLog);
-                    var logname = state.Config.SaveFilename+".log";
-                    File.WriteAllText(logname, log);
+                switch (cmd)
+                {
+                    case "set-save-filename":
+                        var filename =
+                            new SinglelineInputForm(umlWindow, "Set state", "Filename", 20, state.TheCurser.Pos)
+                            {
+                                OnSubmit = fname => state.Config.SaveFilename = fname
+                            };
+                        filename.Focus();
+                        break;
+                    case "save-file":
+                        var log = Program.Serialize(commandLog);
+                        var logname = state.Config.SaveFilename + ".log";
+                        File.WriteAllText(logname, log);
 
-                    var model = Program.Serialize(state.Model);
-                    File.WriteAllText(state.Config.SaveFilename, model);
-
-                    Console.WriteLine($"file saved to \'{logname}\'");
-                    Console.ReadKey(true);
-                    break;
-                case "database":
-                    return Lst(new CreateDatabase(state.TheCurser.Pos), new TmpForceRepaint());
+                        var model = Program.Serialize(state.Model);
+                        File.WriteAllText(state.Config.SaveFilename, model);
+                        new Popup(umlWindow, $"file saved to \'{logname}\'");
+                        break;
+                    case "database":
+                        umlWindow.HandleCommands(Lst(new CreateDatabase(state.TheCurser.Pos), new TmpForceRepaint()));
+                        break;
+                }
             }
-            return NoopForceRepaint;
-        }, () => NoopForceRepaint);
+        };
+        input.Focus();
     }
 
     private static List<ICommand> Rotate(int? selected, List<IPaintable<object>> model)
@@ -297,7 +330,7 @@ ctrl+c ............... Exit program");
         PrintIds(state);
         var cmds = NoopForceRepaint;
 
-        var selectedform = new SelectObjectForm(umlWindow, state.TheCurser.Pos)
+        var selectedform = new SelectObjectForm(umlWindow, state.Model.Select(x=>x.Id).ToArray(), state.TheCurser.Pos)
         {
             OnCancel = () =>
             {
@@ -328,18 +361,7 @@ ctrl+c ............... Exit program");
         Screen.SetConsoleStandardColor();
         return res;
     }
-
-    private static Option<int> GetISelectableElement(List<IPaintable<object>> model)
-    {
-        return CommandParser.ReadInt(model.Select(x=>x.Id).ToArray(),  "Select object: ")
-            .Bind(x => {
-                if (model.SingleOrDefault(b => b.Id == x) is ISelectable)
-                    return x;
-                Screen.PrintErrorAndWaitKey("Not a selectable object");
-                return GetISelectableElement(model);
-            });
-    }
-
+    
     public static Option<List<ICommand>> SelectTemporarily(State state, Func<State, List<ICommand>> code)
     {
         if (state.SelectedId.HasValue)
