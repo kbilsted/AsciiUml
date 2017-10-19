@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Linq;
 using AsciiConsoleUi;
 
 namespace AsciiUml
 {
     class SelectObjectForm
     {
+        private readonly int[] legalInput;
         private readonly TitledWindow titled;
         private readonly TextLabel validationErrors;
         private readonly TextBox selected;
         public Action<int> OnSubmit = selected => { };
         public Action OnCancel = () => { };
 
-        public SelectObjectForm(GuiComponent parent, Coord position)
+        public SelectObjectForm(GuiComponent parent, int[] legalInput, Coord position)
         {
+            this.legalInput = legalInput;
             titled = new TitledWindow(parent, "Select object"){Position = position};
 
             new TextLabel(titled, "Object:", new Coord(0, 0));
@@ -32,6 +35,12 @@ namespace AsciiUml
                 validationErrors.Text = "Need to fill in a number";
                 return;
             }
+            if (!legalInput.Contains(ifrom))
+            {
+                validationErrors.Text = "No object with that ID";
+                return;
+            }
+
             titled.RemoveMeAndChildren();
             OnSubmit(ifrom);
         }
