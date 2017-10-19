@@ -24,7 +24,7 @@ namespace AsciiUml.UI {
 
             foreach (var x in model) {
                 if(x is Database)
-                    PaintDatabase(c, x as Database);
+                    PaintDatabase(c, x as Database, statePaintSelectableIds);
                 if (x is Box) 
                     PaintBox(c, x as Box, statePaintSelectableIds);
             }
@@ -139,9 +139,14 @@ namespace AsciiUml.UI {
             }
         }
 
-        public static void PaintDatabase(Canvass c, Database d) {
+        public static void PaintDatabase(Canvass c, Database d, bool statePaintSelectableIds) {
             foreach (var t in d.Paint()) {
                 c.Paint(t.Item1, t.Item2, t.Item3);
+            }
+
+            if (statePaintSelectableIds)
+            {
+                c.RawPaintString(d.Id.ToString(), d.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
             }
         }
 

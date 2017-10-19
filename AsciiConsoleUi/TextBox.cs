@@ -99,6 +99,7 @@ namespace AsciiConsoleUi
             if (IsFocused)
             {
                 WindowManager.SetCursorPosition(Position.Y, Position.X+cursor);
+                Console.CursorVisible = true;
             }
 
             return c;

@@ -2,7 +2,7 @@
 
 namespace AsciiConsoleUi
 {
-    class Button : GuiComponent
+    public class Button : GuiComponent
     {
         private readonly string buttonText;
         private readonly Action onClick;
@@ -22,7 +22,7 @@ namespace AsciiConsoleUi
                     onClick();
                 }
                 if (key.Key==ConsoleKey.Tab)
-                    Parent.Focus();
+                    Parent.FocusNextChild(this);
                 return true;
             }
             return false;
@@ -34,6 +34,12 @@ namespace AsciiConsoleUi
             var focusMarker = (IsFocused?">": " ");
             Canvass.PaintString(c, " " + focusMarker + buttonText + "  ", 0, 0, -10, BackGround, Foreground);
             return c;
+        }
+
+        public override void Focus()
+        {
+            base.Focus();
+            Console.CursorVisible = false;
         }
 
         public override Coord GetInnerCanvasTopLeft()

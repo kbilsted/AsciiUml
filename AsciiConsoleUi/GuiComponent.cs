@@ -41,7 +41,7 @@ namespace AsciiConsoleUi
         /// </summary>
         public Coord Position;
 
-        private Coord RelativePositionToParent;
+        public Coord RelativePositionToParent;
 
         public GuiDimensions Dimensions;
 
@@ -162,41 +162,16 @@ namespace AsciiConsoleUi
             {
                 return Dimensions;
             }
-            // TODO semi fixed need semi calculations
-            Coord upperLeft = Position;
-            GuiDimensions dimension = new GuiDimensions(new Size(0),new Size(0));
+
+            int upperLeftX=int.MaxValue, upperLeftY= int.MaxValue, lowerRightX=int.MinValue, lowerRightY=int.MinValue;
             foreach (var child in Children)
             {
-                if (child.Position.X < upperLeft.X)
-                {
-                    var dist = upperLeft.X - child.Position.X;
-                    dimension.Width.Pixels += dist;
-                    upperLeft = new Coord(child.Position.X, upperLeft.Y);
-                }
-                if (child.Position.X > upperLeft.X)
-                {
-                    var dist = child.Position.X - upperLeft.X;
-                    dimension.Width.Pixels += dist;
-                    upperLeft = new Coord(child.Position.X, upperLeft.Y);
-                }
-                var childSize = child.GetSize();
-                dimension.Width.Pixels = Math.Max(dimension.Width.Pixels, childSize.Width.Pixels);
-
-                if (child.Position.Y < upperLeft.Y)
-                {
-                    var dist = upperLeft.Y - child.Position.Y;
-                    dimension.Height.Pixels += dist;
-                    upperLeft = new Coord(upperLeft.X, child.Position.Y);
-                }
-                if (child.Position.Y > upperLeft.Y)
-                {
-                    var dist = child.Position.Y - upperLeft.Y;
-                    dimension.Height.Pixels += dist;
-                    upperLeft = new Coord(upperLeft.X, child.Position.Y);
-                }
-                dimension.Height.Pixels = Math.Max(dimension.Height.Pixels, childSize.Height.Pixels);
+                upperLeftX = Math.Min(upperLeftX, child.Position.X);
+                upperLeftY = Math.Min(upperLeftY, child.Position.Y);
+                lowerRightX = Math.Max(lowerRightX, child.Position.X + child.Dimensions.Width.Pixels);
+                lowerRightY = Math.Max(lowerRightY, child.Position.Y + child.Dimensions.Height.Pixels);
             }
-            return dimension;
+            return new GuiDimensions(new Size(lowerRightX-upperLeftX),new Size(lowerRightY-upperLeftY));
         }
     }
 }

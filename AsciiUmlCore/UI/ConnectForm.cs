@@ -1,7 +1,7 @@
 ﻿using System;
 using AsciiConsoleUi;
 
-namespace AsciiUml
+namespace AsciiUml.UI
 {
     class ConnectForm 
     {
