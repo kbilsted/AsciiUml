@@ -161,7 +161,7 @@ ctrl+c ............... Exit program");
 
     private static void ConnectObjects(State state, UmlWindow umlWindow)
     {
-        PrintIds(state);
+        state.PaintSelectableIds = true;
 
         var cmds = NoopForceRepaint;
 
@@ -327,7 +327,7 @@ ctrl+c ............... Exit program");
 
     private static void PrintIdsAndLetUserSelectObject(State state, UmlWindow umlWindow)
     {
-        PrintIds(state);
+        state.PaintSelectableIds = true;
         var cmds = NoopForceRepaint;
 
         var selectedform = new SelectObjectForm(umlWindow, state.Model.Select(x=>x.Id).ToArray(), state.TheCurser.Pos)
@@ -346,12 +346,6 @@ ctrl+c ............... Exit program");
             }
         };
         selectedform.Focus();
-    }
-
-    private static void PrintIds(State state)
-    {
-        Screen.SetConsoleGetInputColors();
-        state.PaintSelectableIds = true;
     }
 
     private static T ConsoleInputColors<T>(Func<T> code)
