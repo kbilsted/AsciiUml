@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AsciiConsoleUi;
+using AsciiConsoleUi.CompositeComponents;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;

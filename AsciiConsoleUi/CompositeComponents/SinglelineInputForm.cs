@@ -1,9 +1,8 @@
 ﻿using System;
-using AsciiConsoleUi;
 
-namespace AsciiUml
+namespace AsciiConsoleUi.CompositeComponents
 {
-    class SinglelineInputForm
+    public class SinglelineInputForm
     {
         private readonly TitledWindow titled;
         private readonly TextLabel validationErrors;

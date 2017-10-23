@@ -1,9 +1,8 @@
 ﻿using System;
-using AsciiConsoleUi;
 
-namespace AsciiUml.UI
+namespace AsciiConsoleUi.CompositeComponents
 {
-    class MultilineInputForm
+    public class MultilineInputForm
     {
         private readonly TitledWindow titled;
         private readonly TextArea textArea;

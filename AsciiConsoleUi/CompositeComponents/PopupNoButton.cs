@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AsciiConsoleUi
+namespace AsciiConsoleUi.CompositeComponents
 {
     public class PopupNoButton : GuiComponent
     {
