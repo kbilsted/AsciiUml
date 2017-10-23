@@ -19,14 +19,14 @@ namespace AsciiUml.UI {
             return canvas;
         }
 
-        public static Canvass PaintModel(List<IPaintable<object>> model, bool statePaintSelectableIds) {
+        public static Canvass PaintModel(List<IPaintable<object>> model, bool paintSelectableIds) {
             var c = new Canvass();
 
             foreach (var x in model) {
                 if(x is Database)
-                    PaintDatabase(c, x as Database, statePaintSelectableIds);
+                    PaintDatabase(c, x as Database, paintSelectableIds);
                 if (x is Box) 
-                    PaintBox(c, x as Box, statePaintSelectableIds);
+                    PaintBox(c, x as Box, paintSelectableIds);
             }
 
             // draw lines after boxes and labels so the shortest path does not intersect those objects
@@ -126,14 +126,14 @@ namespace AsciiUml.UI {
             }
         }
 
-        public static void PaintBox(Canvass c, Box b, bool statePaintSelectableIds) {
+        public static void PaintBox(Canvass c, Box b, bool paintSelectableIds) {
             Extensions.Each(b.GetFrameCoords(), pos => c.Paint(pos, '*', b.Id));
             const int padX = 2, padY = 1; // TODO make padding configurable pr. box
             if (!string.IsNullOrWhiteSpace(b.Text)) {
                 b.Text.Split('\n').Each((text, i) => Canvass.PaintString(c, text, b.X + padX, b.Y + padY + i, b.Id, ConsoleColor.Black, ConsoleColor.Gray));
             }
 
-            if (statePaintSelectableIds)
+            if (paintSelectableIds)
             {
                 c.RawPaintString(b.Id.ToString(), b.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
             }
