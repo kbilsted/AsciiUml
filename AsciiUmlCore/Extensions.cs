@@ -6,7 +6,7 @@ using AsciiUml.Geo;
 
 namespace AsciiUml
 {
-	public static class Extensions {
+	static class Extensions {
 		public static T FirstOrDefault<T>(this IEnumerable<T> collection, Func<T, bool> filter, Action<int> foundActionWithPosition) {
 			int pos = 0;
 
@@ -53,14 +53,9 @@ namespace AsciiUml
 			return new Range<int>(min, max);
 		}
 
-		public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> coll, Func<IEnumerable<T>> func)
-		{
-			return coll.Any() ? coll : func();
-		}
-
 		public static List<ICommand> Lst(params ICommand[] vals)
 		{
-			return vals.Cast<ICommand>().ToList();
+			return vals.ToList();
 		}
 	}
 }

@@ -23,7 +23,7 @@ namespace AsciiUml
 
 	    public State()
 	    {
-	        Config=new Configuration();
+	        Config = new Configuration();
 	        Config.SaveFilename = @"c:\temp\asciiuml.txt";
 	    }
 	    public Option<IPaintable<object>> GetSelected()

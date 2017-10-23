@@ -93,10 +93,10 @@ namespace AsciiUml
         {
             var input = new MultilineInputForm(umlWindow, "Create a label", "Text:", state.TheCurser.Pos)
             {
-                OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
+                OnCancel = () => { },
                 OnSubmit = (text) =>
                 {
-                    umlWindow.HandleCommands(Extensions.Lst(new CreateLabel(state.TheCurser.Pos, text), new TmpForceRepaint()));
+                    umlWindow.HandleCommands(Extensions.Lst(new CreateLabel(state.TheCurser.Pos, text)));
                 }
             };
             input.Focus();
@@ -109,7 +109,7 @@ namespace AsciiUml
                 OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
                 OnSubmit = (text) =>
                 {
-                    umlWindow.HandleCommands(Extensions.Lst(new CreateBox(state.TheCurser.Pos, text), new TmpForceRepaint()));
+                    umlWindow.HandleCommands(Extensions.Lst(new CreateBox(state.TheCurser.Pos, text)));
                 }
             };
             input.Focus();
@@ -211,7 +211,7 @@ ctrl+c ............... Exit program");
                             new Popup(umlWindow, $"file saved to \'{logname}\'");
                             break;
                         case "database":
-                            umlWindow.HandleCommands(Extensions.Lst(new CreateDatabase(state.TheCurser.Pos), new TmpForceRepaint()));
+                            umlWindow.HandleCommands(Extensions.Lst(new CreateDatabase(state.TheCurser.Pos)));
                             break;
                     }
                 }
