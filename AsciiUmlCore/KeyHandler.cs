@@ -348,14 +348,6 @@ ctrl+c ............... Exit program");
         selectedform.Focus();
     }
 
-    private static T ConsoleInputColors<T>(Func<T> code)
-    {
-        Screen.SetConsoleGetInputColors();
-        var res = code();
-        Screen.SetConsoleStandardColor();
-        return res;
-    }
-    
     public static Option<List<ICommand>> SelectTemporarily(State state, Func<State, List<ICommand>> code)
     {
         if (state.SelectedId.HasValue)
