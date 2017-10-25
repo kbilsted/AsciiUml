@@ -106,7 +106,7 @@ namespace AsciiUml
         {
             var input = new MultilineInputForm(umlWindow, "Create box", "Text:", state.TheCurser.Pos)
             {
-                OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
+                OnCancel = () => { },
                 OnSubmit = (text) =>
                 {
                     umlWindow.HandleCommands(Extensions.Lst(new CreateBox(state.TheCurser.Pos, text)));
@@ -188,7 +188,7 @@ ctrl+c ............... Exit program");
             var input = new SinglelineInputForm(umlWindow, "Enter command", "database,save-file,set-save-filename:", 20,
                 state.TheCurser.Pos)
             {
-                OnCancel = () => { umlWindow.HandleCommands(NoopForceRepaint); },
+                OnCancel = () => { },
                 OnSubmit = (cmd) =>
                 {
                     switch (cmd)
