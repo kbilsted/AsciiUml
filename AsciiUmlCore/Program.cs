@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using AsciiConsoleUi;
+using AsciiConsoleUi.CompositeComponents;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
-using AsciiUml.UI.GuiLib;
 using Newtonsoft.Json;
 
 namespace AsciiUml
