@@ -68,6 +68,9 @@ namespace AsciiUml
                     CreateBox(state, umlWindow);
                     break;
 
+                case ConsoleKey.E:
+                    EditUnderCursor(state, umlWindow);
+                    break;
                 case ConsoleKey.C:
                     ConnectObjects(state, umlWindow);
                     return new Option<List<ICommand>>();
@@ -91,7 +94,7 @@ namespace AsciiUml
 
         private static void CreateText(State state, UmlWindow umlWindow)
         {
-            var input = new MultilineInputForm(umlWindow, "Create a label", "Text:", state.TheCurser.Pos)
+            var input = new MultilineInputForm(umlWindow, "Create a label", "Text:", "", state.TheCurser.Pos)
             {
                 OnCancel = () => { },
                 OnSubmit = (text) =>
@@ -104,12 +107,30 @@ namespace AsciiUml
 
         private static void CreateBox(State state, UmlWindow umlWindow)
         {
-            var input = new MultilineInputForm(umlWindow, "Create box", "Text:", state.TheCurser.Pos)
+            var input = new MultilineInputForm(umlWindow, "Edit box", "Text:", "", state.TheCurser.Pos)
             {
                 OnCancel = () => { },
                 OnSubmit = (text) =>
                 {
                     umlWindow.HandleCommands(Extensions.Lst(new CreateBox(state.TheCurser.Pos, text)));
+                }
+            };
+            input.Focus();
+        }
+
+        private static void EditUnderCursor(State state, UmlWindow umlWindow)
+        {
+            var id = state.Canvas.GetOccupants(state.TheCurser.Pos);
+            if (!id.HasValue)
+                return;
+
+            var box = (Box) state.Model.Single(x => x.Id == id);
+            var input = new MultilineInputForm(umlWindow, "Edit box", "Text:", box.Text, state.TheCurser.Pos)
+            {
+                OnCancel = () => { },
+                OnSubmit = (text) =>
+                {
+                    umlWindow.HandleCommands(Extensions.Lst(new SetBoxText(id.Value, text)));
                 }
             };
             input.Focus();
@@ -149,6 +170,7 @@ shift + cursor ....... move object under cursor
 r .................... rotate selected object (only text label)
 ctrl + cursor ........ move selected object (only box)
 b .................... Create a Box
+e .................... Edit element under cursor (only box)
 c .................... Create a connection line between boxes
 d .................... Create a Database
 t .................... Create a text label

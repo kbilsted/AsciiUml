@@ -21,7 +21,7 @@ namespace AsciiUml
         public override Canvass Paint()
         {
             var c = new Canvass();
-            var menu = $"AsciiUml v0.1.1 Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}) Press \'h\' for help";
+            var menu = $"AsciiUml v0.1.2 Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}) Press \'h\' for help";
             Canvass.PaintString(c, menu, 0, 0, -1, ConsoleColor.DarkGreen, ConsoleColor.Green);
             return c;
         }

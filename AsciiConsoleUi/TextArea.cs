@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AsciiConsoleUi
 {
@@ -12,10 +13,10 @@ namespace AsciiConsoleUi
         public Action OnUserEscape { get; set; }
         readonly List<string> lines;
 
-        public TextArea(GuiComponent parent, int width, int height, Coord position) : base(parent, position)
+        public TextArea(GuiComponent parent, int width, int height, string content, Coord position) : base(parent, position)
         {
-            lines = new List<string>(height) {""};
-
+            lines = (content ?? "").Split(new[] {'\n'}, StringSplitOptions.None).ToList();
+            
             Dimensions = new GuiDimensions(new Size(width), new Size(height));
 
             BackGround = ConsoleColor.DarkCyan;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using AsciiConsoleUi;
 
@@ -7,21 +6,18 @@ namespace AsciiUml.Geo {
 	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable {
 		public int Id { get; }
 		public int X => Pos.X;
-		public int W { get; }
+		public int W { get; private set; }
 		public int Y => Pos.Y;
-		public int H { get; }
+		public int H { get; private set; }
 		public Coord Pos { get; }
 
-		public readonly string Text;
+		public string Text { get; private set; }
 
 		public Box(Coord pos) : this(PaintAbles.Id++, pos) {
 		}
 
 		public Box(Coord pos, string text) : this(PaintAbles.Id++, pos) {
-			var tmp = SetText(text);
-			W = tmp.W;
-			H = tmp.H;
-			Text = text;
+			SetText(text);
 		}
 
 		public Box(int id, Coord pos) {
@@ -47,12 +43,14 @@ namespace AsciiUml.Geo {
 			var rows = text.Split('\n');
 
 			var requiredWidth = rows.Select(x => x.Length).Max() + 4;
-			var w = W < requiredWidth ? requiredWidth : W;
+			W = W < requiredWidth ? requiredWidth : W;
 
 			var requiredHeight = 2 + rows.Length;
-			var h = H < requiredHeight ? requiredHeight : H;
+			H = H < requiredHeight ? requiredHeight : H;
 
-			return new Box(Id, Pos, w, h, text);
+		    Text = text;
+
+		    return this;
 		}
 
 		public Box Move(Coord delta) {

@@ -32,15 +32,14 @@ namespace AsciiUml
 
             var man = new WindowManager("AsciiUML (c) Kasper B. Graversen 2016-", State.MaxX, State.MaxY);
             var topmenu = new TopMenu(man, state);
-            var umlWindow = new UmlWindow(topmenu, state);
-            //var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
+            //var umlWindow = new UmlWindow(topmenu, state);
+            var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
             umlWindow.Focus();
             //ShowLogo(umlWindow);
 
             //var title = new TitledWindow(umlWindow, "Connect objects");
             //var f = new ConnectForm(title, new Coord(5, 5));
             //f.Focus();
-
             man.Start();
         }
 
@@ -77,10 +76,10 @@ namespace AsciiUml
             //model.Add(new SlopedLine2(new Coord(10,10)));
 
 
-   //         model.Add(new Box(new Coord(0, 0), "Foo\nMiddleware\nMW1"));
-   //         //model.Add(new Box() { Y = 14, Text = "goo\nand\nbazooka" });
-   //         model.Add(new Box(new Coord(19, 27), "foo\nServer\nbazooka"));
-            //model.Add(new Box(new Coord(13, 20), "goo\nWeb\nServer"));
+            model.Add(new Box(new Coord(0, 0), "Foo\nMiddleware\nMW1"));
+            //         //model.Add(new Box() { Y = 14, Text = "goo\nand\nbazooka" });
+            //         model.Add(new Box(new Coord(19, 27), "foo\nServer\nbazooka"));
+            model.Add(new Box(new Coord(13, 20), "goo\nWeb\nServer"));
             //model.Add(new Line() {FromId = 0, ToId = 1});
             //model.Add(new Label(new Coord(5, 5), "Server\nClient\nAAA"));
 
