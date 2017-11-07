@@ -223,6 +223,7 @@ ctrl+c ............... Exit program");
                                 };
                             filename.Focus();
                             break;
+
                         case "save-file":
                             var log = Program.Serialize(commandLog);
                             var logname = state.Config.SaveFilename + ".log";
@@ -230,8 +231,9 @@ ctrl+c ............... Exit program");
 
                             var model = Program.Serialize(state.Model);
                             File.WriteAllText(state.Config.SaveFilename, model);
-                            new Popup(umlWindow, $"file saved to \'{logname}\'");
+                            new Popup(umlWindow, $"file saved to \'{state.Config.SaveFilename}\'");
                             break;
+
                         case "database":
                             umlWindow.HandleCommands(Extensions.Lst(new CreateDatabase(state.TheCurser.Pos)));
                             break;

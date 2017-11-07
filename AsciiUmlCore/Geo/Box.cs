@@ -74,32 +74,6 @@ namespace AsciiUml.Geo {
 			}
 		}
 
-		//public static Coord[] CalcFrameCoords(int x, int y, int h, int w) {
-		//	if (h == 1 && w == 1) {
-		//		var coord = new Coord(x, y);
-		//		if (coord.IsAnyNegative()) {
-		//			return new Coord[0];
-		//		}
-		//		return new[] {coord};
-		//	}
-
-		//	List<Coord> coords = new List<Coord>();
-
-		//	// top + bottom 
-		//	for (int i = 0; i < w; i++) {
-		//		coords.Add(new Coord(x + i, y));
-		//		coords.Add(new Coord(x + i, y + h - 1));
-		//	}
-
-		//	// frame
-		//	for (int i = 1; i < h - 1; i++) {
-		//		coords.Add(new Coord(x, y + i));
-		//		coords.Add(new Coord(x + w - 1, y + i));
-		//	}
-
-		//	return coords.Where(c => !c.IsAnyNegative()).ToArray();
-		//}
-
 		public Coord[] GetFrameCoords() {
 			return RectangleHelper.GetFrameCoords(X, Y, H, W);
 		}
