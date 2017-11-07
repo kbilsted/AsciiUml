@@ -4,14 +4,16 @@ namespace AsciiConsoleUi.CompositeComponents
 {
     public class SinglelineInputForm
     {
+        private readonly string errorMessage;
         private readonly TitledWindow titled;
         private readonly TextLabel validationErrors;
         private readonly TextBox selected;
         public Action<string> OnSubmit = selected => { };
         public Action OnCancel = () => { };
 
-        public SinglelineInputForm(GuiComponent parent, string title, string explanation, int width, Coord position)
+        public SinglelineInputForm(GuiComponent parent, string title, string explanation, string errorMessage, int width, Coord position)
         {
+            this.errorMessage = errorMessage;
             titled = new TitledWindow(parent, title){Position = position};
 
             new TextLabel(titled, explanation, new Coord(0, 0));
@@ -28,7 +30,7 @@ namespace AsciiConsoleUi.CompositeComponents
         {
             if (string.IsNullOrWhiteSpace(selected.Value))
             {
-                validationErrors.Text = "Need to fill in a number";
+                validationErrors.Text = errorMessage;
                 return;
             }
             titled.RemoveMeAndChildren();

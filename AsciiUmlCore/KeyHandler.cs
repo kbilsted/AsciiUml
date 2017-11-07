@@ -207,7 +207,7 @@ ctrl+c ............... Exit program");
 
         private static void CommandMode(State state, List<List<ICommand>> commandLog, UmlWindow umlWindow)
         {
-            var input = new SinglelineInputForm(umlWindow, "Enter command", "database,save-file,set-save-filename:", 20,
+            var input = new SinglelineInputForm(umlWindow, "Enter command", "commands: database, save-file, set-save-filename:", "Enter a command", 25,
                 state.TheCurser.Pos)
             {
                 OnCancel = () => { },
@@ -217,7 +217,7 @@ ctrl+c ............... Exit program");
                     {
                         case "set-save-filename":
                             var filename =
-                                new SinglelineInputForm(umlWindow, "Set state", "Filename", 20, state.TheCurser.Pos)
+                                new SinglelineInputForm(umlWindow, "Set state", "Filename", "Enter a filename", 20, state.TheCurser.Pos)
                                 {
                                     OnSubmit = fname => state.Config.SaveFilename = fname
                                 };
