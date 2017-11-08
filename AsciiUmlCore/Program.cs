@@ -35,7 +35,7 @@ namespace AsciiUml
             //var umlWindow = new UmlWindow(topmenu, state);
             var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
             umlWindow.Focus();
-            //ShowLogo(umlWindow);
+            ShowLogo(umlWindow);
 
             //var title = new TitledWindow(umlWindow, "Connect objects");
             //var f = new ConnectForm(title, new Coord(5, 5));
@@ -76,10 +76,10 @@ namespace AsciiUml
             //model.Add(new SlopedLine2(new Coord(10,10)));
 
 
-            model.Add(new Box(new Coord(0, 0), "Foo\nMiddleware\nMW1"));
+            //model.Add(new Box(new Coord(0, 0), "Foo\nMiddleware\nMW1"));
             //         //model.Add(new Box() { Y = 14, Text = "goo\nand\nbazooka" });
             //         model.Add(new Box(new Coord(19, 27), "foo\nServer\nbazooka"));
-            model.Add(new Box(new Coord(13, 20), "goo\nWeb\nServer"));
+            //model.Add(new Box(new Coord(13, 20), "goo\nWeb\nServer"));
             //model.Add(new Line() {FromId = 0, ToId = 1});
             //model.Add(new Label(new Coord(5, 5), "Server\nClient\nAAA"));
 
