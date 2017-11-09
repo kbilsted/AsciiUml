@@ -22,11 +22,9 @@ namespace AsciiUml
         {
             var c = new Canvass();
             var displayFilename = state.Config.SaveFilename;
-            if (displayFilename.Length > 15)
-            {
-                displayFilename = displayFilename.Substring(0, 13) + "..";
-            }
-            var menu = $"AsciiUml v0.1.2 Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}). File: '{displayFilename}'. 'h' for help";
+            if (displayFilename.Length > 34)
+                displayFilename = displayFilename.Substring(0, 34) + "..";
+            var menu = $"Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}). '{displayFilename}'. 'h' for help";
             Canvass.PaintString(c, menu, 0, 0, -1, ConsoleColor.DarkGreen, ConsoleColor.Green);
             return c;
         }

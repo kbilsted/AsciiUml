@@ -23,13 +23,15 @@ namespace AsciiUml
     // TODO transitive select using hotkey such that a graph is easily selected
 
     class Program {
+        const string Version = "v0.1.2";
+
         static void Main(string[] args) {
             var state = new State
             {
                 TheCurser = new Cursor(new Coord(10, 10))
             };
 
-            var man = new WindowManager("AsciiUML (c) Kasper B. Graversen 2016-", State.MaxX, State.MaxY);
+            var man = new WindowManager($"AsciiUML {Version} (c) Kasper B. Graversen 2016-", State.MaxX, State.MaxY);
             var topmenu = new TopMenu(man, state);
             //var umlWindow = new UmlWindow(topmenu, state);
             var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
@@ -60,14 +62,14 @@ namespace AsciiUml
 
         private static void ShowLogo(UmlWindow umlWindow)
         {
-            var logo = new PopupNoButton(umlWindow, @"
+            var logo = new PopupNoButton(umlWindow, $@"
           _____  _____ ______ _____   _    _ __  __ _      
     /\   / ____|/ ____|__   _|_   _| | |  | |  \/  | |     
    /  \  | (___ | |      | |   | |   | |  | | \  / | |     
   / /\ \  \___ \| |      | |   | |   | |  | | |\/| | |     
  / ____ \ ____) | |____ _| |_ _| |_  | |__| | |  | | |____ 
 /_/    \_\_____/ \_____|_____|_____|  \____/|_|  |_|______|
-                                     by Kasper B. Graversen
+                              {Version} by Kasper B. Graversen
 ")
             {
                 BackGround = ConsoleColor.Black
