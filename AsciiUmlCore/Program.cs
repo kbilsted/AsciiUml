@@ -26,6 +26,10 @@ namespace AsciiUml
         const string Version = "v0.1.2";
 
         static void Main(string[] args) {
+            RestoreConsoleOnExit(CreateWindow);
+        }
+
+        private static void  CreateWindow() {
             var state = new State
             {
                 TheCurser = new Cursor(new Coord(10, 10))
@@ -37,16 +41,10 @@ namespace AsciiUml
             var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
             umlWindow.Focus();
             ShowLogo(umlWindow);
-
-            //var title = new TitledWindow(umlWindow, "Connect objects");
-            //var f = new ConnectForm(title, new Coord(5, 5));
-            //f.Focus();
-
-            RestoreConsoleOnExit(()=> man.Start());
+            man.Start();
         }
 
-        private static void RestoreConsoleOnExit(Action code)
-        {
+        private static void RestoreConsoleOnExit(Action code) {
             var foreground = Console.ForegroundColor;
             var background = Console.BackgroundColor;
             try
@@ -62,7 +60,7 @@ namespace AsciiUml
 
         private static void ShowLogo(UmlWindow umlWindow)
         {
-            var logo = new PopupNoButton(umlWindow, $@"
+            new PopupNoButton(umlWindow, $@"
           _____  _____ ______ _____   _    _ __  __ _      
     /\   / ____|/ ____|__   _|_   _| | |  | |  \/  | |     
    /  \  | (___ | |      | |   | |   | |  | | \  / | |     

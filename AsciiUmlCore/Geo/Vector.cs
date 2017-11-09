@@ -31,11 +31,6 @@ namespace AsciiUml.Geo
                 : d2 == LineDirection.East || d2 == LineDirection.West;
         }
 
-        // slet først efter en artikel omkring at man kan lave kode for svær at læse
-        // ved at den bliver mere abstarkt.. færre linier kode..
-        // det er fint med flere linier kode hvis man har mange små variationer over samme tema
-        // feks integration med 3jepart hvor der er en masse felter og hvor kun 90% af 
-        // felterne skal udfyldes, men hvor hvilke felter der skal udfyldes varierer fra kald til kald
         public static LineDirection GetOppositeDirection(LineDirection direction)
         {
             switch (direction)
