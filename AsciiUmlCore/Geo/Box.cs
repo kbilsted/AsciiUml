@@ -3,7 +3,7 @@ using System.Linq;
 using AsciiConsoleUi;
 
 namespace AsciiUml.Geo {
-	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable {
+	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable, IHasTextProperty {
 		public int Id { get; }
 		public int X => Pos.X;
 		public int W { get; private set; }
@@ -11,7 +11,8 @@ namespace AsciiUml.Geo {
 		public int H { get; private set; }
 		public Coord Pos { get; }
 
-		public string Text { get; private set; }
+	    private string text;
+		public string Text { get => text; set => SetText(value); }
 
 		public Box(Coord pos) : this(PaintAbles.Id++, pos) {
 		}
@@ -48,7 +49,7 @@ namespace AsciiUml.Geo {
 			var requiredHeight = 2 + rows.Length;
 			H = H < requiredHeight ? requiredHeight : H;
 
-		    Text = text;
+		    this.text = text;
 
 		    return this;
 		}

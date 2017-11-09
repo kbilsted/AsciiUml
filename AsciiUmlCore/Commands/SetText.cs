@@ -3,12 +3,12 @@ using AsciiUml.Geo;
 
 namespace AsciiUml.Commands
 {
-    internal class SetBoxText : ICommand
+    internal class SetText : ICommand
     {
         public readonly int id;
         public readonly string text;
 
-        public SetBoxText(int id, string text)
+        public SetText(int id, string text)
         {
             this.id = id;
             this.text = text;
@@ -16,7 +16,9 @@ namespace AsciiUml.Commands
 
         public State Execute(State state)
         {
-            state.Model.Where(x => x.Id == id).OfType<Box>().Single().SetText(text);
+            var elem = state.Model.FirstOrDefault(x => x.Id == id);
+            if(elem is IHasTextProperty property)
+                property.Text=text;
             return state;
         }
     }

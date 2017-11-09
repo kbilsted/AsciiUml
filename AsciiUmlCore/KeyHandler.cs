@@ -124,16 +124,24 @@ namespace AsciiUml
             if (!id.HasValue)
                 return;
 
-            var box = (Box) state.Model.Single(x => x.Id == id);
-            var input = new MultilineInputForm(umlWindow, "Edit box", "Text:", box.Text, state.TheCurser.Pos)
+            var elem = state.Model.Single(x => x.Id == id);
+            if (elem is IHasTextProperty property)
             {
-                OnCancel = () => { },
-                OnSubmit = (text) =>
+                string text = property.Text;
+                var input = new MultilineInputForm(umlWindow, "Edit box", "Text:", text, state.TheCurser.Pos)
                 {
-                    umlWindow.HandleCommands(Extensions.Lst(new SetBoxText(id.Value, text)));
-                }
-            };
-            input.Focus();
+                    OnCancel = () => { },
+                    OnSubmit = (newtext) =>
+                    {
+                        umlWindow.HandleCommands(Extensions.Lst(new SetText(id.Value, newtext)));
+                    }
+                };
+                input.Focus();
+            }
+            else
+            {
+                new Popup(umlWindow, "Only works on labels and boxes");
+            }
         }
 
         private static List<ICommand> SlopedLine(State state)
@@ -170,7 +178,7 @@ shift + cursor ....... move object under cursor
 r .................... rotate selected object (only text label)
 ctrl + cursor ........ move selected object (only box)
 b .................... Create a Box
-e .................... Edit element under cursor (only box)
+e .................... Edit element under cursor (box/label)
 c .................... Create a connection line between boxes
 d .................... Create a Database
 t .................... Create a text label

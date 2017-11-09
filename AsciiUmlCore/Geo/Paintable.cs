@@ -22,6 +22,10 @@ namespace AsciiUml.Geo {
 		Coord[] GetFrameCoords();
 	}
 
+    public interface IHasTextProperty {
+        string Text { get; set; }
+    }
+
 	public enum Direction {
 		North,
 		South,
@@ -165,12 +169,12 @@ namespace AsciiUml.Geo {
 		}
 	}
 
-	public class Label : IPaintable<Label>, ISelectable, IConnectable
+	public class Label : IPaintable<Label>, ISelectable, IConnectable, IHasTextProperty
 	{
 		public int Id { get; }
 		public int X => Pos.X;
 		public int Y => Pos.Y;
-		public string Text { get; }
+		public string Text { get; set; }
 		public Coord Pos { get; }
 		public LabelDirection Direction { get; }
 
