@@ -22,9 +22,9 @@ namespace AsciiUml.Geo {
 		Coord[] GetFrameCoords();
 	}
 
-    public interface IHasTextProperty {
-        string Text { get; set; }
-    }
+	public interface IHasTextProperty {
+		string Text { get; set; }
+	}
 
 	public enum Direction {
 		North,
@@ -55,6 +55,7 @@ namespace AsciiUml.Geo {
 		public Cursor Move(Coord delta) {
 			return new Cursor(Pos.Move(delta));
 		}
+
 		public override string ToString() {
 			return $"{X},{Y}";
 		}
@@ -114,8 +115,7 @@ namespace AsciiUml.Geo {
 		}
 
 		public static LineDirection GetDirectionDragginFromPart(LineDirection direction, int dragx, int dragy) {
-			switch (direction)
-			{
+			switch (direction) {
 				case LineDirection.North:
 				case LineDirection.South:
 					if (dragx > 0)
@@ -129,7 +129,6 @@ namespace AsciiUml.Geo {
 				default:
 					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
 			}
-
 		}
 
 		public static LineDirection GetDirectionFromBend2(LineDirection direction, EndpointKind kind, int dragx, int dragy) {
@@ -169,8 +168,7 @@ namespace AsciiUml.Geo {
 		}
 	}
 
-	public class Label : IPaintable<Label>, ISelectable, IConnectable, IHasTextProperty
-	{
+	public class Label : IPaintable<Label>, ISelectable, IConnectable, IHasTextProperty {
 		public int Id { get; }
 		public int X => Pos.X;
 		public int Y => Pos.Y;
@@ -178,7 +176,8 @@ namespace AsciiUml.Geo {
 		public Coord Pos { get; }
 		public LabelDirection Direction { get; }
 
-		public Label(string text) : this(new Coord(0, 0), text) {}
+		public Label(string text) : this(new Coord(0, 0), text) {
+		}
 
 		public Label(Coord pos, string text) {
 			Id = PaintAbles.Id++;
@@ -198,7 +197,7 @@ namespace AsciiUml.Geo {
 		}
 
 		public Label Rotate() {
-			return new Label(Id, Pos, Text, (LabelDirection) ((1 + (int) Direction)%2));
+			return new Label(Id, Pos, Text, (LabelDirection) ((1 + (int) Direction) % 2));
 		}
 
 		public Coord[] GetFrameCoords() {
@@ -228,7 +227,7 @@ namespace AsciiUml.Geo {
 			if (h == 1 && w == 1)
 				return new[] {Tuple.Create(new Coord(x, y), BoxFramePart.NWCorner)};
 
-			var coords = new List<Tuple<Coord, BoxFramePart>>(2*h*w) {
+			var coords = new List<Tuple<Coord, BoxFramePart>>(2 * h * w) {
 				Tuple.Create(new Coord(x, y), BoxFramePart.NWCorner),
 				Tuple.Create(new Coord(x + w - 1, y), BoxFramePart.NECorner),
 				Tuple.Create(new Coord(x, y + h - 1), BoxFramePart.SWCorner),

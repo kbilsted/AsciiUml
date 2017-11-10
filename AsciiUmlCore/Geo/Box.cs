@@ -11,8 +11,12 @@ namespace AsciiUml.Geo {
 		public int H { get; private set; }
 		public Coord Pos { get; }
 
-	    private string text;
-		public string Text { get => text; set => SetText(value); }
+		private string text;
+
+		public string Text {
+			get => text;
+			set => SetText(value);
+		}
 
 		public Box(Coord pos) : this(PaintAbles.Id++, pos) {
 		}
@@ -49,9 +53,9 @@ namespace AsciiUml.Geo {
 			var requiredHeight = 2 + rows.Length;
 			H = H < requiredHeight ? requiredHeight : H;
 
-		    this.text = text;
+			this.text = text;
 
-		    return this;
+			return this;
 		}
 
 		public Box Move(Coord delta) {

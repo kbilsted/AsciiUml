@@ -1,6 +1,5 @@
-﻿namespace AsciiUml.Geo
-{
-    public class Range<T> {
+﻿namespace AsciiUml.Geo {
+	public class Range<T> {
 		public T Min, Max;
 
 		public Range(T min, T max) {

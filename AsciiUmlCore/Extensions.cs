@@ -4,8 +4,7 @@ using System.Linq;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 
-namespace AsciiUml
-{
+namespace AsciiUml {
 	static class Extensions {
 		public static T FirstOrDefault<T>(this IEnumerable<T> collection, Func<T, bool> filter, Action<int> foundActionWithPosition) {
 			int pos = 0;
@@ -40,10 +39,9 @@ namespace AsciiUml
 			}
 		}
 
-		public static Range<int> MinMax<T>(this IEnumerable<T> coll, Func<T, int> selector)
-		{
+		public static Range<int> MinMax<T>(this IEnumerable<T> coll, Func<T, int> selector) {
 			int min = int.MaxValue, max = int.MinValue;
-			foreach(var c in coll) {
+			foreach (var c in coll) {
 				var val = selector(c);
 				if (val < min)
 					min = val;
@@ -53,8 +51,7 @@ namespace AsciiUml
 			return new Range<int>(min, max);
 		}
 
-		public static List<ICommand> Lst(params ICommand[] vals)
-		{
+		public static List<ICommand> Lst(params ICommand[] vals) {
 			return vals.ToList();
 		}
 	}

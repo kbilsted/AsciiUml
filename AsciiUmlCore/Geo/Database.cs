@@ -20,13 +20,12 @@ namespace AsciiUml.Geo {
 		public const int Height = 8;
 
 
-		public Database(Coord pos)
-		{
+		public Database(Coord pos) {
 			Pos = pos;
 			Id = PaintAbles.Id++;
 		}
-		private Database(int id, Coord pos)
-		{
+
+		private Database(int id, Coord pos) {
 			Pos = pos;
 			Id = id;
 		}
@@ -34,14 +33,14 @@ namespace AsciiUml.Geo {
 		public IEnumerable<Tuple<Coord, char, int>> Paint() {
 			Coord pos = Pos;
 			foreach (var c in definition) {
-				if(c=='\r')
+				if (c == '\r')
 					continue;
 				if (c == '\n') {
-					pos = new Coord(Pos.X, pos.Y+1);
+					pos = new Coord(Pos.X, pos.Y + 1);
 					continue;
 				}
 				yield return Tuple.Create(pos, c, Id);
-				pos = pos.Move(new Coord(1,0));
+				pos = pos.Move(new Coord(1, 0));
 			}
 		}
 

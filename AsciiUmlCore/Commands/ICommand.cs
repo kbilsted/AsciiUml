@@ -1,7 +1,5 @@
-﻿namespace AsciiUml.Commands
-{
-    public interface ICommand
-    {
-        State Execute(State state);
-    }
+﻿namespace AsciiUml.Commands {
+	public interface ICommand {
+		State Execute(State state);
+	}
 }

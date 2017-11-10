@@ -6,63 +6,53 @@ using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
 
-namespace AsciiUml
-{
-    class UmlWindow : GuiComponent
-    {
-        private State state;
-        readonly List<List<ICommand>> commandLog = new List<List<ICommand>>();
+namespace AsciiUml {
+	class UmlWindow : GuiComponent {
+		private State state;
+		readonly List<List<ICommand>> commandLog = new List<List<ICommand>>();
 
-        public UmlWindow(GuiComponent parent, State state) : base(parent)
-        {
-            this.state = state;
-        }
+		public UmlWindow(GuiComponent parent, State state) : base(parent) {
+			this.state = state;
+		}
 
-        public override bool HandleKey(ConsoleKeyInfo key)
-        {
-            var commands = KeyHandler.HandleKeyPress(state, key, commandLog, this);
+		public override bool HandleKey(ConsoleKeyInfo key) {
+			var commands = KeyHandler.HandleKeyPress(state, key, commandLog, this);
 
-            HandleCommands(commands);
+			HandleCommands(commands);
 
-            return commands.Any();
-        }
+			return commands.Any();
+		}
 
-        public void HandleCommands(List<ICommand> commands)
-        {
-            AddToCommandLog(commands);
+		public void HandleCommands(List<ICommand> commands) {
+			AddToCommandLog(commands);
 
-            foreach (var command in commands)
-            {
-                state = command.Execute(state);
-            }
+			foreach (var command in commands) {
+				state = command.Execute(state);
+			}
 
-            if (commands.Any(x => x is TmpForceRepaint))
-                TemporarilyForceRepaint();
-        }
+			if (commands.Any(x => x is TmpForceRepaint))
+				TemporarilyForceRepaint();
+		}
 
-        private void AddToCommandLog(List<ICommand> commands)
-        {
-            if(commands.Any())
-                commandLog.Add(commands);
-        }
+		private void AddToCommandLog(List<ICommand> commands) {
+			if (commands.Any())
+				commandLog.Add(commands);
+		}
 
-        public override Canvass Paint()
-        {
-            var canvass = PaintServiceCore.Paint(state);
-            state.Canvas = canvass; // todo should be more functional, ie a clone
-            return canvass;
-        }
+		public override Canvass Paint() {
+			var canvass = PaintServiceCore.Paint(state);
+			state.Canvas = canvass; // todo should be more functional, ie a clone
+			return canvass;
+		}
 
-        public override Coord GetInnerCanvasTopLeft()
-        {
-            return Parent.GetInnerCanvasTopLeft();
-        }
+		public override Coord GetInnerCanvasTopLeft() {
+			return Parent.GetInnerCanvasTopLeft();
+		}
 
-        public override void OnException(Exception e)
-        {
-            Console.WriteLine("something unexpected happened " + e.Message + " :: " + e.StackTrace);
+		public override void OnException(Exception e) {
+			Console.WriteLine("something unexpected happened " + e.Message + " :: " + e.StackTrace);
 
-            Program.Serialize(commandLog);
-        }
-    }
+			Program.Serialize(commandLog);
+		}
+	}
 }

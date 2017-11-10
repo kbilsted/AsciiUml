@@ -67,7 +67,8 @@ namespace AsciiUml.Geo {
 
 				var solution = new Solution(pathForPosition, current.Distance);
 
-				var ifNoOrWeakerSolution =  solution.Distance < (solutions[current.Position.Y, current.Position.X]?.Distance ?? int.MaxValue);
+				var ifNoOrWeakerSolution =
+					solution.Distance < (solutions[current.Position.Y, current.Position.X]?.Distance ?? int.MaxValue);
 				if (ifNoOrWeakerSolution) {
 					solutions[current.Position.Y, current.Position.X] = solution;
 
@@ -78,7 +79,8 @@ namespace AsciiUml.Geo {
 						.Select(x =>
 							new {
 								Neighbour = x,
-								EstimatedDistance = PaintServiceCore.ManhattenDistance(x, to) + (Vector.IsStraightLine(x, to) ? 0 : WeightOfTurn),
+								EstimatedDistance =
+								PaintServiceCore.ManhattenDistance(x, to) + (Vector.IsStraightLine(x, to) ? 0 : WeightOfTurn),
 								Unhandled = new UnhandledField(x, pathForPosition, current.Distance + StepLength)
 							})
 						.Where(x => current.Distance + x.EstimatedDistance + StepLength < currentBestSolutionAtDestination);
