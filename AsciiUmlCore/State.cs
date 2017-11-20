@@ -16,11 +16,10 @@ namespace AsciiUml {
 		public int? SelectedIndexInModel { get; set; }
 		public int? SelectedId { get; set; }
 		public int? CursorHoverId { get; set; }
-		public Configuration Config { get; set; }
+		public Configuration Config { get; set; } = new Configuration();
 		public bool PaintSelectableIds { get; set; } = false;
 
 		public State() {
-			Config = new Configuration();
 			Config.SaveFilename = @"c:\temp\asciiuml.txt";
 		}
 

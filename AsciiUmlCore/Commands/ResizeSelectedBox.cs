@@ -12,9 +12,8 @@ namespace AsciiUml.Commands {
 
 		public State Execute(State state) {
 			if (state.SelectedIndexInModel.HasValue) {
-				var box = state.Model[state.SelectedIndexInModel.Value] as IResizeable<object>;
-				if (box != null)
-					state.Model[state.SelectedIndexInModel.Value] = (IPaintable<object>) box.Resize(delta);
+				if (state.Model[state.SelectedIndexInModel.Value] is IResizeable<object> box)
+					state.Model[state.SelectedIndexInModel.Value] = box.Resize(delta);
 			}
 
 			return state;

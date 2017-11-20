@@ -41,7 +41,6 @@ namespace AsciiUml.UI {
 					PaintLabel(c, x as Label);
 			}
 
-
 			// lines may not cross boxes, hence drawn afterwards
 			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x));
 			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));

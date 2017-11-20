@@ -93,8 +93,7 @@ namespace AsciiConsoleUi {
 		public void FocusPrevChild(GuiComponent currentComponent) {
 			int index = Children.FindIndex(x => x == currentComponent);
 			for (int i = 1; i < Children.Count; i++) {
-				var idx = (Math.Abs(index + Children.Count - i)) % Children.Count;
-				var child = Children[idx];
+				var child = Children[Math.Abs(index + Children.Count - i) % Children.Count];
 				if (child.IsVisible && child.IsFocusable) {
 					child.Focus();
 					return;

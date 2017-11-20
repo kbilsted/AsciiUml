@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using AsciiUml.Commands;
 using AsciiUml.Geo;
 
@@ -54,5 +55,29 @@ namespace AsciiUml {
 		public static List<ICommand> Lst(params ICommand[] vals) {
 			return vals.ToList();
 		}
+
+		public static T NextOrPrevEnumValue<T>(T value, StyleChangeKind change) {
+			if (!typeof(T).IsEnum)
+				throw new ArgumentException(String.Format("{0} is not an Enum", typeof(T).FullName));
+
+			int changer = change == StyleChangeKind.Next ? 1 : -1;
+
+			T[] values = (T[])Enum.GetValues(value.GetType());
+			var enumCount = values.Length;
+
+			var index = (Array.IndexOf<T>(values, value) + changer + enumCount) % enumCount;
+			return values[index];
+		}
+
+		public static string Repeat(this string s, int count) {
+			if(count < 0)
+				throw new ArgumentOutOfRangeException(nameof(count));
+			var sb = new StringBuilder();
+			for (int i = 0; i < count; i++) {
+				sb.Append(s);
+			}
+			return sb.ToString();
+	}
+
 	}
 }

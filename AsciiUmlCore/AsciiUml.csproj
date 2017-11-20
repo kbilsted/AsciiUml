@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <StartupObject>AsciiUml.Program</StartupObject>
     <RootNamespace>AsciiUml</RootNamespace>
+    <Copyright>Kasper B. Graversen 2017-</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

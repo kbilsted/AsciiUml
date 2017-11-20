@@ -14,8 +14,6 @@ namespace AsciiUml {
 	// TODO delete selected which is connected.. change into connect to a coord
 	// Todo pine like menu
 	// Todo colour themes
-	// Todo saving picture or state
-	// Todo change style of box
 	// TODO change arrow style
 	// TODO change arrow head + bottom
 	// Todo change z orderof object by moving place in the model
@@ -55,7 +53,7 @@ namespace AsciiUml {
 		}
 
 		private static void ShowLogo(UmlWindow umlWindow) {
-            new PopupNoButton(umlWindow, $@"
+			new PopupNoButton(umlWindow, $@"
           _____  _____ ______ _____   _    _ __  __ _      
     /\   / ____|/ ____|__   _|_   _| | |  | |  \/  | |     
    /  \  | (___ | |      | |   | |   | |  | | \  / | |     
