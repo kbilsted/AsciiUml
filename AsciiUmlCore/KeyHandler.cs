@@ -193,6 +193,7 @@ i .................... InsertMode
   d ..................   Create a Database
   n ..................   Create a note
   t ..................   Create a text label
+  u ..................   Create a user
 l .................... Create a free-style line
 ., ................... Change the style (only box)
 x / Del............... Delete selected object

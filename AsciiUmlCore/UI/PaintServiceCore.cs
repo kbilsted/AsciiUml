@@ -27,6 +27,8 @@ namespace AsciiUml.UI {
 					PaintDatabase(c, x as Database, paintSelectableIds);
 				if (x is Box)
 					PaintBox(c, x as Box, paintSelectableIds);
+				if (x is UmlUser)
+					PaintUmlUser(c, x as UmlUser, paintSelectableIds);
 			}
 
 			// draw lines after boxes and labels so the shortest path does not intersect those objects
@@ -48,6 +50,22 @@ namespace AsciiUml.UI {
 			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));
 
 			return c;
+		}
+
+		private static void PaintUmlUser(Canvass canvass, UmlUser user, bool paintSelectableIds) {
+			string gfx = @"
+,-.
+`-'
+/|\
+ |
+/ \
+" + (user.Text ?? "");
+
+			var lines = gfx.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+			lines.Each((line, row) => Canvass.PaintString(canvass, line, user.Pos.X, user.Pos.Y + row, user.Id));
+
+			if (paintSelectableIds)
+				canvass.RawPaintString(user.Id.ToString(), user.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
 		}
 
 		//+~~~~~~~~~~+\
