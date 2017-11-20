@@ -9,7 +9,7 @@ namespace AsciiConsoleUi {
 	}
 
 	public class Canvass {
-		readonly int?[,] occupants = new int?[State.MaxY, State.MaxX]; // TODO we should enable more than one object on the same pixel
+		public readonly int?[,] Occupants = new int?[State.MaxY, State.MaxX]; // TODO we should enable more than one object on the same pixel
 
 		public readonly Pixel[][] Catode = new Pixel[State.MaxY][];
 
@@ -24,7 +24,7 @@ namespace AsciiConsoleUi {
 		}
 
 		public int? GetOccupants(Coord pos) {
-			var occupant = occupants[pos.Y, pos.X];
+			var occupant = Occupants[pos.Y, pos.X];
 			return occupant;
 		}
 
@@ -47,7 +47,7 @@ namespace AsciiConsoleUi {
 			Catode[y][x] = new Pixel() {Char = c, BackGroundColor = backgroundColor, ForegroundColor = foregroundColor};
 			var isCursor = objectId == -1;
 			if (!isCursor)
-				occupants[y, x] = objectId;
+				Occupants[y, x] = objectId;
 		}
 
 		public void RawPaintString(string s, int x, int y, ConsoleColor background, ConsoleColor foreground) {

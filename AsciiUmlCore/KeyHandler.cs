@@ -69,7 +69,7 @@ namespace AsciiUml {
 					break;
 				case ConsoleKey.C:
 					ConnectObjects(state, umlWindow);
-					return new Option<List<ICommand>>();
+					return OptNoop;
 
 				case ConsoleKey.L:
 					return SlopedLine(state);
@@ -83,7 +83,8 @@ namespace AsciiUml {
 
 				case ConsoleKey.Enter:
 					CommandMode(state, commandLog, umlWindow);
-					return new Option<List<ICommand>>();
+					return OptNoop;
+
 				case ConsoleKey.OemPeriod:
 					return ChangeStyleUnderCursor(state, umlWindow, StyleChangeKind.Next);
 				case ConsoleKey.OemComma:
@@ -113,9 +114,9 @@ namespace AsciiUml {
 		}
 
 		private static void CreateBox(State state, UmlWindow umlWindow) {
-			var input = new MultilineInputForm(umlWindow, "Edit box", "Text:", "", state.TheCurser.Pos) {
+			var input = new MultilineInputForm(umlWindow, "Create box", "Text:", "", state.TheCurser.Pos) {
 				OnCancel = () => { },
-				OnSubmit = (text) => { umlWindow.HandleCommands(Extensions.Lst(new CreateBox(state.TheCurser.Pos, text))); }
+				OnSubmit = text => { umlWindow.HandleCommands(Lst(new CreateBox(state.TheCurser.Pos, text))); }
 			};
 			input.Focus();
 		}
@@ -128,9 +129,9 @@ namespace AsciiUml {
 			var elem = state.Model.Single(x => x.Id == id);
 			if (elem is IHasTextProperty property) {
 				string text = property.Text;
-				var input = new MultilineInputForm(umlWindow, "Edit box", "Text:", text, state.TheCurser.Pos) {
+				var input = new MultilineInputForm(umlWindow, "Edit..", "Text:", text, state.TheCurser.Pos) {
 					OnCancel = () => { },
-					OnSubmit = (newtext) => { umlWindow.HandleCommands(Extensions.Lst(new SetText(id.Value, newtext))); }
+					OnSubmit = newtext => { umlWindow.HandleCommands(Lst(new SetText(id.Value, newtext))); }
 				};
 				input.Focus();
 			}
@@ -140,15 +141,15 @@ namespace AsciiUml {
 		}
 
 		private static List<ICommand> SlopedLine(State state) {
-			return Extensions.Lst(new CreateSlopedLine(state.TheCurser.Pos));
+			return Lst(new CreateSlopedLine(state.TheCurser.Pos));
 		}
 
 		private static List<ICommand> SelectDeselect(int? selected, State state, UmlWindow umlWindow) {
 			if (selected.HasValue)
-				return Extensions.Lst(new ClearSelection());
+				return Lst(new ClearSelection());
 
 			var obj = state.Canvas.GetOccupants(state.TheCurser.Pos).ToOption()
-				.Match(x => Extensions.Lst(new SelectObject(x, false)),
+				.Match(x => Lst(new SelectObject(x, false)),
 					() => {
 						PrintIdsAndLetUserSelectObject(state, umlWindow);
 						return Noop;
@@ -193,7 +194,7 @@ ctrl+c ............... Exit program");
 					state.PaintSelectableIds = false;
 				},
 				OnSubmit = (from, to) => {
-					cmds.Add(new CreateLine(@from, to, LineKind.Connected));
+					cmds.Add(new CreateLine(from, to, LineKind.Connected));
 					umlWindow.HandleCommands(cmds);
 					state.PaintSelectableIds = false;
 				}
@@ -206,7 +207,7 @@ ctrl+c ............... Exit program");
 				"Enter a command", 25,
 				state.TheCurser.Pos) {
 				OnCancel = () => { },
-				OnSubmit = (cmd) => {
+				OnSubmit = cmd => {
 					switch (cmd) {
 						case "set-save-filename":
 							var filename =
@@ -227,7 +228,7 @@ ctrl+c ............... Exit program");
 							break;
 
 						case "database":
-							umlWindow.HandleCommands(Extensions.Lst(new CreateDatabase(state.TheCurser.Pos)));
+							umlWindow.HandleCommands(Lst(new CreateDatabase(state.TheCurser.Pos)));
 							break;
 					}
 				}
@@ -238,7 +239,7 @@ ctrl+c ............... Exit program");
 		private static List<ICommand> Rotate(int? selected, List<IPaintable<object>> model) {
 			return selected.Match(x => {
 					if (model[x] is Label)
-						return Extensions.Lst(new RotateSelectedElement(x));
+						return Lst(new RotateSelectedElement(x));
 					Screen.PrintErrorAndWaitKey("Only labels can be rotated");
 					return NoopForceRepaint;
 				},
@@ -247,7 +248,6 @@ ctrl+c ............... Exit program");
 					return NoopForceRepaint;
 				});
 		}
-
 
 		private static Option<List<ICommand>> ControlKeys(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog) {
 			if ((key.Modifiers & ConsoleModifiers.Control) == 0)
@@ -275,28 +275,28 @@ ctrl+c ............... Exit program");
 					if (el is Box) {
 						switch (key.Key) {
 							case ConsoleKey.UpArrow:
-								return Extensions.Lst(new ResizeSelectedBox(Vector.DeltaNorth));
+								return Lst(new ResizeSelectedBox(Vector.DeltaNorth));
 							case ConsoleKey.DownArrow:
-								return Extensions.Lst(new ResizeSelectedBox(Vector.DeltaSouth));
+								return Lst(new ResizeSelectedBox(Vector.DeltaSouth));
 							case ConsoleKey.LeftArrow:
-								return Extensions.Lst(new ResizeSelectedBox(Vector.DeltaWest));
+								return Lst(new ResizeSelectedBox(Vector.DeltaWest));
 							case ConsoleKey.RightArrow:
-								return Extensions.Lst(new ResizeSelectedBox(Vector.DeltaEast));
+								return Lst(new ResizeSelectedBox(Vector.DeltaEast));
 						}
 					}
 					if (el is SlopedLine2) {
 						switch (key.Key) {
 							case ConsoleKey.UpArrow:
-								return Extensions.Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaNorth),
+								return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaNorth),
 									new MoveCursor(Vector.DeltaNorth));
 							case ConsoleKey.DownArrow:
-								return Extensions.Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaSouth),
+								return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaSouth),
 									new MoveCursor(Vector.DeltaSouth));
 							case ConsoleKey.LeftArrow:
-								return Extensions.Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaWest),
+								return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaWest),
 									new MoveCursor(Vector.DeltaWest));
 							case ConsoleKey.RightArrow:
-								return Extensions.Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaEast),
+								return Lst(new DragLinePixel(state.TheCurser.Pos, Vector.DeltaEast),
 									new MoveCursor(Vector.DeltaEast));
 						}
 					}
@@ -326,7 +326,7 @@ ctrl+c ............... Exit program");
 		}
 
 		private static List<ICommand> MoveCursorAndSelectPaintable(Coord direction) {
-			return Extensions.Lst(new MoveCursor(direction), new MoveSelectedPaintable(direction));
+			return Lst(new MoveCursor(direction), new MoveSelectedPaintable(direction));
 		}
 
 		private static void PrintIdsAndLetUserSelectObject(State state, UmlWindow umlWindow) {
@@ -338,7 +338,7 @@ ctrl+c ............... Exit program");
 					umlWindow.HandleCommands(cmds);
 					state.PaintSelectableIds = false;
 				},
-				OnSubmit = (selected) => {
+				OnSubmit = selected => {
 					if (state.Model.SingleOrDefault(b => b.Id == selected) is ISelectable)
 						cmds.Add(new SelectObject(selected, true));
 					umlWindow.HandleCommands(cmds);
@@ -361,9 +361,9 @@ ctrl+c ............... Exit program");
 			var commands = code(state);
 			var result = commands.Count == 0
 				? Noop
-				: Extensions.Lst(new SelectObject(occupants.Value, false))
+				: Lst(new SelectObject(occupants.Value, false))
 					.Append(commands)
-					.Append(Extensions.Lst(new ClearSelection()))
+					.Append(Lst(new ClearSelection()))
 					.ToList();
 			state.SelectedId = null;
 			return result;
