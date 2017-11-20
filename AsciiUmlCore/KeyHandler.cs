@@ -8,17 +8,41 @@ using AsciiUml.Commands;
 using AsciiUml.Geo;
 using AsciiUml.UI;
 using LanguageExt;
+using static AsciiUml.Extensions;
 
 namespace AsciiUml {
 	internal static class KeyHandler {
+
+		enum HandlerState {
+			Normal,
+			Insert
+		}
+
 		private static List<ICommand> Noop => new List<ICommand>();
-		private static List<ICommand> NoopForceRepaint => new List<ICommand>() {new TmpForceRepaint()};
+		private static List<ICommand> NoopForceRepaint => new List<ICommand> {new TmpForceRepaint()};
+		private static HandlerState handlerState = HandlerState.Normal;
+		private static Option<List<ICommand>> OptNoop => new Option<List<ICommand>>();
 
 		public static List<ICommand> HandleKeyPress(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog, UmlWindow umlWindow) {
-			return ControlKeys(state, key, commandLog)
-				.IfNone(() => ShiftKeys(state, key)
-					.IfNone(() => HandleKeys(state, key, commandLog, umlWindow)
-						.IfNone(() => Noop)));
+			switch (handlerState) {
+				case HandlerState.Normal:
+					return ControlKeys(state, key, commandLog)
+						.IfNone(() => ShiftKeys(state, key)
+							.IfNone(() => HandleKeys(state, key, commandLog, umlWindow)
+								.IfNone(() => Noop)));
+
+				case HandlerState.Insert:
+					(var done, var cmds) = new KeyHandlerInsertState().HandleKeyPress(state, key, commandLog, umlWindow);
+
+					if (done) {
+						handlerState=HandlerState.Normal;
+						cmds = cmds.Concat(Lst(new ClearTopmenuText())).ToList();
+					}
+					return cmds;
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		private static Option<List<ICommand>> HandleKeys(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog,
@@ -60,6 +84,10 @@ namespace AsciiUml {
 				case ConsoleKey.H:
 					return HelpScreen(umlWindow);
 
+				case ConsoleKey.I:
+					handlerState = HandlerState.Insert;
+					return Lst(new SetTopmenuText("INSERTMODE> d: database | t: text | n: note | u: user"));
+
 				case ConsoleKey.B:
 					CreateBox(state, umlWindow);
 					break;
@@ -67,16 +95,13 @@ namespace AsciiUml {
 				case ConsoleKey.E:
 					EditUnderCursor(state, umlWindow);
 					break;
+
 				case ConsoleKey.C:
 					ConnectObjects(state, umlWindow);
 					return OptNoop;
 
 				case ConsoleKey.L:
 					return SlopedLine(state);
-
-				case ConsoleKey.T:
-					CreateText(state, umlWindow);
-					return new Option<List<ICommand>>();
 
 				case ConsoleKey.R:
 					return Rotate(selected, model);
@@ -93,12 +118,7 @@ namespace AsciiUml {
 			return Noop;
 		}
 
-		private static void CreateText(State state, UmlWindow umlWindow) {
-			var input = new MultilineInputForm(umlWindow, "Create a label", "Text:", "", state.TheCurser.Pos) {
-				OnCancel = () => { },
-				OnSubmit = (text) => { umlWindow.HandleCommands(Extensions.Lst(new CreateLabel(state.TheCurser.Pos, text))); }
-			};
-			input.Focus();
+
 		private static List<ICommand> ChangeStyleUnderCursor(State state, UmlWindow umlWindow, StyleChangeKind change)
 		{
 			var id = state.Canvas.GetOccupants(state.TheCurser.Pos);
@@ -172,13 +192,14 @@ ctrl + cursor ........ move selected object (only box)
 b .................... Create a Box
 e .................... Edit element under cursor (box/label)
 c .................... Create a connection line between boxes
-d .................... Create a Database
-t .................... Create a text label
+i .................... InsertMode
+  d ..................   Create a Database
+  t ..................   Create a text label
 l .................... Create a free-style line
 ., ................... Change the style (only box)
 x / Del............... Delete selected object
 enter ................ Enter command mode
-Esc .................. Abort input
+Esc .................. Abort input / InsertMode
 ctrl+c ............... Exit program");
 			return Noop;
 		}
@@ -367,6 +388,67 @@ ctrl+c ............... Exit program");
 					.ToList();
 			state.SelectedId = null;
 			return result;
+		}
+	}
+
+	class KeyHandlerInsertState {
+		private static Option<List<ICommand>> OptNoop => new Option<List<ICommand>>();
+		private static List<ICommand> Noop => new List<ICommand>();
+
+		public (bool, List<ICommand>) HandleKeyPress(State state, ConsoleKeyInfo key, List<List<ICommand>> commandLog, UmlWindow umlWindow) {
+			switch (key.Key) {
+				case ConsoleKey.C:
+					return (true, Noop);
+
+				case ConsoleKey.D:
+					return (true, Lst(new CreateDatabase(state.TheCurser.Pos)));
+
+				case ConsoleKey.N:
+					CreateNote(state, umlWindow);
+					return (true, Noop);
+
+				case ConsoleKey.T:
+					CreateText(state, umlWindow);
+					return (true, Noop);
+
+				case ConsoleKey.U:
+					CreateUmlUser(state, umlWindow);
+					return (true, Noop);
+
+				case ConsoleKey.Escape:
+					return (true, Noop);
+			}
+			return (false, Noop);
+		}
+
+		private static void CreateText(State state, UmlWindow umlWindow)
+		{
+			var input = new MultilineInputForm(umlWindow, "Create a label", "Text:", "", state.TheCurser.Pos)
+			{
+				OnCancel = () => { },
+				OnSubmit = text => { umlWindow.HandleCommands(Lst(new CreateLabel(state.TheCurser.Pos, text))); }
+			};
+			input.Focus();
+		}
+
+		private static void CreateNote(State state, UmlWindow umlWindow)
+		{
+			var input = new MultilineInputForm(umlWindow, "Create a note", "Text:", "", state.TheCurser.Pos)
+			{
+				OnCancel = () => { },
+				OnSubmit = text => { umlWindow.HandleCommands(Lst(new CreateNote(state.TheCurser.Pos, text))); }
+			};
+			input.Focus();
+		}
+
+		private static void CreateUmlUser(State state, UmlWindow umlWindow)
+		{
+			var input = new MultilineInputForm(umlWindow, "Text for user (optional)", "Text:", "", state.TheCurser.Pos)
+			{
+				OnCancel = () => { },
+				OnSubmit = text => { umlWindow.HandleCommands(Lst(new CreateUmlUser(state.TheCurser.Pos, text))); }
+			};
+			input.Focus();
 		}
 	}
 }
