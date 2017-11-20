@@ -31,7 +31,7 @@ namespace AsciiUml.UI {
 					PaintUmlUser(c, x as UmlUser, paintSelectableIds);
 			}
 
-			// draw lines after boxes and labels so the shortest path does not intersect those objects
+			// draw lines after boxes so the shortest path does not intersect those objects
 			foreach (var x in model) {
 				if (x is Line)
 					PaintLine2(c, x as Line, model);
@@ -40,7 +40,7 @@ namespace AsciiUml.UI {
 			// labels may go above lines
 			foreach (var x in model) {
 				if (x is Label)
-					PaintLabel(c, x as Label);
+					PaintLabel(c, x as Label, paintSelectableIds);
 				if (x is Note)
 					PaintNote(c, x as Note, paintSelectableIds);
 			}
@@ -156,7 +156,7 @@ namespace AsciiUml.UI {
 			canvass.Paint(pos, c, id);
 		}
 
-		private static void PaintLabel(Canvass canvass, Label label) {
+		private static void PaintLabel(Canvass canvass, Label label, bool paintSelectableIds) {
 			var lines = label.Text.Split('\n');
 
 			switch (label.Direction) {
@@ -176,6 +176,11 @@ namespace AsciiUml.UI {
 
 				default:
 					throw new ArgumentOutOfRangeException();
+			}
+
+			if (paintSelectableIds)
+			{
+				canvass.RawPaintString(label.Id.ToString(), label.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
 			}
 		}
 
