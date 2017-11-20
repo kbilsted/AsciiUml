@@ -18,6 +18,13 @@ namespace AsciiUml.Geo {
 		Coord Pos { get; }
 	}
 
+	public interface IStyleChangeable {
+		void ChangeStyle(StyleChangeKind change);
+	}
+
+	public enum StyleChangeKind { Next, Previous }
+
+
 	public interface IConnectable {
 		Coord[] GetFrameCoords();
 	}
@@ -251,9 +258,8 @@ namespace AsciiUml.Geo {
 
 
 		public static Coord[] GetFrameCoords(int x, int y, int h, int w) {
-			Coord[] res;
-			var key = "" + x + y + h + w;
-			if (!CacheFrames.TryGetValue(key, out res)) {
+			var key = "coords_" + x + y + h + w;
+			if (!CacheFrames.TryGetValue(key, out var res)) {
 				CacheFrames[key] = res = GetFrameParts(x, y, h, w).Select(c => c.Item1).ToArray();
 			}
 			return res;

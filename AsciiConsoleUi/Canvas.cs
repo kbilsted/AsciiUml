@@ -33,23 +33,6 @@ namespace AsciiConsoleUi {
 			return pixel?.Char;
 		}
 
-		public bool IsCellFree(Coord pos) {
-			int x = pos.X, y = pos.Y;
-
-			if (x < 0 || y < 0)
-				return false;
-
-			if (y >= Catode.Length)
-				return false; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
-
-			if (x >= Catode[0].Length)
-				return false; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
-
-			//Console.WriteLine($"{x},{y}::{(int)line[x]}");
-			var cell = Catode[y][x];
-			return cell == null || cell.Char != '*'; // TODO change semantics so we know what occupies the cell..ie. box/label/..
-		}
-
 		public void Paint(Coord pos, char c, int objectId) {
 			Paint(pos.X, pos.Y, c, objectId, ConsoleColor.Black, ConsoleColor.Gray);
 		}

@@ -3,13 +3,21 @@ using System.Linq;
 using AsciiConsoleUi;
 
 namespace AsciiUml.Geo {
-	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable, IHasTextProperty {
+	public enum BoxStyle {
+		Lines = 0,
+		Stars = 1,
+		Dots = 2,
+		Eqls = 3,
+	}
+
+	public class Box : IPaintable<Box>, ISelectable, IResizeable<Box>, IConnectable, IHasTextProperty, IStyleChangeable {
 		public int Id { get; }
 		public int X => Pos.X;
 		public int W { get; private set; }
 		public int Y => Pos.Y;
 		public int H { get; private set; }
 		public Coord Pos { get; }
+		public BoxStyle Style { get; private set; }
 
 		private string text;
 
@@ -32,19 +40,23 @@ namespace AsciiUml.Geo {
 			Pos = pos;
 		}
 
-		public Box(int id, Coord pos, int w, int h, string text) {
+		public Box(int id, Coord pos, int w, int h, string text, BoxStyle style) {
 			Id = id;
 			W = w;
 			H = h;
 			Text = text;
 			Pos = pos;
 			Check();
+			Style = style;
 		}
 
-		public Box(Coord pos, int w, int h) : this(PaintAbles.Id++, pos, w, h, null) {
+		public Box(Coord pos, int w, int h) : this(PaintAbles.GlobalId++, pos, w, h, null, BoxStyle.Stars) {
 		}
 
 		public Box SetText(string text) {
+			if (text == null)
+				return this;
+
 			var rows = text.Split('\n');
 
 			var requiredWidth = rows.Select(x => x.Length).Max() + 4;
@@ -59,7 +71,7 @@ namespace AsciiUml.Geo {
 		}
 
 		public Box Move(Coord delta) {
-			return new Box(Id, Pos.Move(delta), W, H, Text);
+			return new Box(Id, Pos.Move(delta), W, H, Text, Style);
 		}
 
 		public IPaintable<object> Resize(Coord delta) {
@@ -67,7 +79,7 @@ namespace AsciiUml.Geo {
 		}
 
 		public Box Resize(int width, int height) {
-			return new Box(Id, Pos, W + width, H + height, Text);
+			return new Box(Id, Pos, W + width, H + height, Text, Style);
 		}
 
 		public void Check() {
@@ -85,6 +97,10 @@ namespace AsciiUml.Geo {
 
 		public Tuple<Coord, BoxFramePart>[] GetFrameParts() {
 			return RectangleHelper.GetFrameParts(X, Y, H, W);
+		}
+
+		public void ChangeStyle(StyleChangeKind change) {
+			Style = Extensions.NextOrPrevEnumValue(Style, change);
 		}
 	}
 }

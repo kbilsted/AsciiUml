@@ -52,7 +52,7 @@ namespace AsciiUml.Geo {
 			}
 		}
 
-		public static List<Coord> Calculate(Coord from, Coord to, Canvass c) {
+		public static List<Coord> Calculate(Coord @from, Coord to, Canvass c, List<IPaintable<object>> model) {
 			var size = c.GetSize();
 			var solutions = new Solution[size.Item1, size.Item2];
 			var unHandled = new SimplePriorityQueue<UnhandledField>();
@@ -75,7 +75,7 @@ namespace AsciiUml.Geo {
 					var currentBestSolutionAtDestination = solutions[to.Y, to.X]?.Distance ?? int.MaxValue;
 					var neighbours = CalculateNSEW(current.Position);
 					var potentials = neighbours
-						.Where(x => x == to || c.IsCellFree(x))
+						.Where(x => x == to || IsCellFree(c, x, model))
 						.Select(x =>
 							new {
 								Neighbour = x,
@@ -92,6 +92,28 @@ namespace AsciiUml.Geo {
 			var shortestPath = solutions[to.Y, to.X];
 			return shortestPath == null ? new List<Coord>() : shortestPath.Path;
 		}
+
+		private static bool IsCellFree(Canvass c, Coord pos, List<IPaintable<object>> model)
+		{
+			int x = pos.X, y = pos.Y;
+
+			if (x < 0 || y < 0)
+				return false;
+
+			if (y >= c.Catode.Length)
+				return false; //throw new ArgumentException($"y=${y} is too large. Max ${Lines.Count}");
+
+			if (x >= c.Catode[0].Length)
+				return false; //throw new ArgumentException($"x=${x} is too large. Max ${line.Length}");
+
+			//Console.WriteLine($"{x},{y}::{(int)line[x]}");
+			var cell = c.Catode[y][x];
+			if (cell == null)
+				return true;
+			var elem = model.First(z => z.Id == c.Occupants[y, x]);
+			return elem is Line || elem is SlopedLine || elem is SlopedLine2;
+		}
+
 
 		private static List<Coord> CalculateNSEW(Coord coord) {
 			List<Coord> result = new List<Coord>(4);

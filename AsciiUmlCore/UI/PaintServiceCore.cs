@@ -125,8 +125,36 @@ namespace AsciiUml.UI {
 			}
 		}
 
+		private static char GetCharForStyle(BoxStyle style, BoxFramePart part) {
+			switch (style)
+			{
+				case BoxStyle.Stars:
+					return '*';
+				case BoxStyle.Dots:
+					return '.';
+				case BoxStyle.Eqls:
+					return '=';
+				case BoxStyle.Lines:
+					switch (part) {
+						case BoxFramePart.NWCorner:
+						case BoxFramePart.NECorner:
+						case BoxFramePart.SWCorner:
+						case BoxFramePart.SECorner:
+							return '+';
+						case BoxFramePart.Horizontal:
+							return '-';
+						case BoxFramePart.Vertical:
+							return '|';
+						default:
+							throw new ArgumentOutOfRangeException(nameof(part));
+					}
+				default:
+					throw new ArgumentOutOfRangeException(nameof(style));
+			}
+		}
+
 		public static void PaintBox(Canvass c, Box b, bool paintSelectableIds) {
-			Extensions.Each(b.GetFrameCoords(), pos => c.Paint(pos, '*', b.Id));
+			Extensions.Each(b.GetFrameParts(), part => c.Paint(part.Item1, GetCharForStyle(b.Style, part.Item2), b.Id));
 			const int padX = 2, padY = 1; // TODO make padding configurable pr. box
 			if (!string.IsNullOrWhiteSpace(b.Text)) {
 				b.Text.Split('\n').Each((text, i) =>
@@ -190,7 +218,7 @@ namespace AsciiUml.UI {
 			var to = (IConnectable) model.First(x => x.Id == lineArg.ToId);
 			var smallestDist = CalcSmallestDist(from.GetFrameCoords(), to.GetFrameCoords());
 
-			var line = ShortestPathFinder.Calculate(smallestDist.Min, smallestDist.Max, c);
+			var line = ShortestPathFinder.Calculate(smallestDist.Min, smallestDist.Max, c, model);
 			if (line.Count < 2) {
 				return;
 			}

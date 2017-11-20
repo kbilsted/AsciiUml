@@ -84,6 +84,10 @@ namespace AsciiUml {
 				case ConsoleKey.Enter:
 					CommandMode(state, commandLog, umlWindow);
 					return new Option<List<ICommand>>();
+				case ConsoleKey.OemPeriod:
+					return ChangeStyleUnderCursor(state, umlWindow, StyleChangeKind.Next);
+				case ConsoleKey.OemComma:
+					return ChangeStyleUnderCursor(state, umlWindow, StyleChangeKind.Previous);
 			}
 			return Noop;
 		}
@@ -94,6 +98,18 @@ namespace AsciiUml {
 				OnSubmit = (text) => { umlWindow.HandleCommands(Extensions.Lst(new CreateLabel(state.TheCurser.Pos, text))); }
 			};
 			input.Focus();
+		private static List<ICommand> ChangeStyleUnderCursor(State state, UmlWindow umlWindow, StyleChangeKind change)
+		{
+			var id = state.Canvas.GetOccupants(state.TheCurser.Pos);
+			if (!id.HasValue)
+				return Noop;
+
+			var elem = state.Model.Single(x => x.Id == id);
+			if (elem is IStyleChangeable) {
+				return Lst(new ChangeStyle(elem.Id, change));
+			}
+			new Popup(umlWindow, "Only works on boxes");
+			return Noop;
 		}
 
 		private static void CreateBox(State state, UmlWindow umlWindow) {
@@ -158,6 +174,7 @@ c .................... Create a connection line between boxes
 d .................... Create a Database
 t .................... Create a text label
 l .................... Create a free-style line
+., ................... Change the style (only box)
 x / Del............... Delete selected object
 enter ................ Enter command mode
 Esc .................. Abort input

@@ -82,6 +82,34 @@ namespace AsciiUmlTests {
 ****", res);
 		}
 
+		[Test]
+		public void PaintBoxChangeStyleNext()
+		{
+			var box = new Box(new Coord(0, 0), 4, 3);
+			box.ChangeStyle(StyleChangeKind.Next);
+			var res = Paint(box);
+
+			Assert.AreEqual(
+				@"
+....
+.  .
+....", res);
+		}
+
+		[Test]
+		public void PaintBoxChangeStyleNextAndPrev()
+		{
+			var box = new Box(new Coord(0, 0), 4, 3);
+			box.ChangeStyle(StyleChangeKind.Next);
+			box.ChangeStyle(StyleChangeKind.Previous);
+			var res = Paint(box);
+
+			Assert.AreEqual(
+				@"
+****
+*  *
+****", res);
+		}
 
 		[Test]
 		public void PaintTextBox() {
