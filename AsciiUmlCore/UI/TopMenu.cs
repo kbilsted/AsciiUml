@@ -16,12 +16,17 @@ namespace AsciiUml {
 
 		public override Canvass Paint() {
 			var c = new Canvass();
+			var menu = state.Gui.TopMenuTextOverride ?? DefaultMenu();
+			Canvass.PaintString(c, menu, 0, 0, -1, ConsoleColor.DarkGreen, ConsoleColor.Green);
+			return c;
+		}
+
+		private string DefaultMenu() {
 			var displayFilename = state.Config.SaveFilename;
 			if (displayFilename.Length > 34)
 				displayFilename = displayFilename.Substring(0, 34) + "..";
 			var menu = $"Selected: {state.SelectedId?.ToString() ?? "None"}. ({state.TheCurser}). '{displayFilename}'. 'h' for help";
-			Canvass.PaintString(c, menu, 0, 0, -1, ConsoleColor.DarkGreen, ConsoleColor.Green);
-			return c;
+			return menu;
 		}
 
 		public override Coord GetInnerCanvasTopLeft() {

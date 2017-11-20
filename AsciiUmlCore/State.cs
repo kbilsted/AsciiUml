@@ -18,6 +18,7 @@ namespace AsciiUml {
 		public int? CursorHoverId { get; set; }
 		public Configuration Config { get; set; } = new Configuration();
 		public bool PaintSelectableIds { get; set; } = false;
+		public GuiState Gui { get; set; } = new GuiState();
 
 		public State() {
 			Config.SaveFilename = @"c:\temp\asciiuml.txt";
@@ -33,6 +34,10 @@ namespace AsciiUml {
 			state.SelectedId = null;
 			return state;
 		}
+	}
+
+	public class GuiState {
+		public string TopMenuTextOverride = null;
 	}
 
 	public class Configuration {
