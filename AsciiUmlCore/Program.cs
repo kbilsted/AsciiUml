@@ -23,10 +23,11 @@ namespace AsciiUml {
 		const string Version = "v0.1.2";
 
 		static void Main(string[] args) {
-			RestoreConsoleOnExit(CreateWindow);
+			bool showLogo = !(args.Length == 1 && args[0] == "--no-logo");
+			RestoreConsoleOnExit(() => CreateWindow(showLogo));
 		}
 
-		private static void CreateWindow() {
+		private static void CreateWindow(bool showLogo) {
 			var state = new State {
 				TheCurser = new Cursor(new Coord(10, 10))
 			};
@@ -36,7 +37,10 @@ namespace AsciiUml {
 			//var umlWindow = new UmlWindow(topmenu, state);
 			var umlWindow = new UmlWindow(topmenu, TempModelForPlayingAround(state));
 			umlWindow.Focus();
-			ShowLogo(umlWindow);
+
+			if (showLogo)
+				ShowLogo(umlWindow);
+
 			man.Start();
 		}
 
