@@ -22,7 +22,7 @@ namespace AsciiUml.Geo {
 
 		public Database(Coord pos) {
 			Pos = pos;
-			Id = PaintAbles.Id++;
+			Id = PaintAbles.GlobalId++;
 		}
 
 		private Database(int id, Coord pos) {

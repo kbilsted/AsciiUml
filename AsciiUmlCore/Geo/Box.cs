@@ -18,10 +18,10 @@ namespace AsciiUml.Geo {
 			set => SetText(value);
 		}
 
-		public Box(Coord pos) : this(PaintAbles.Id++, pos) {
+		public Box(Coord pos) : this(PaintAbles.GlobalId++, pos) {
 		}
 
-		public Box(Coord pos, string text) : this(PaintAbles.Id++, pos) {
+		public Box(Coord pos, string text) : this(PaintAbles.GlobalId++, pos) {
 			SetText(text);
 		}
 

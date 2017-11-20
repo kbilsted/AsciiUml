@@ -13,7 +13,7 @@ namespace AsciiUml.Geo {
 		public int Id { get; }
 
 		public SlopedLine() {
-			Id = PaintAbles.Id++;
+			Id = PaintAbles.GlobalId++;
 		}
 
 		public SlopedLine(int id, List<LineSegment> segments) {
@@ -154,11 +154,11 @@ namespace AsciiUml.Geo {
 		public readonly SlopedLine Origin;
 
 		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type)
-			: this(PaintAbles.Id++, l, from, to, type, Vector.GetDirection(from, to)) {
+			: this(PaintAbles.GlobalId++, l, from, to, type, Vector.GetDirection(from, to)) {
 		}
 
 		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction)
-			: this(PaintAbles.Id++, l, from, to, type, direction) {
+			: this(PaintAbles.GlobalId++, l, from, to, type, direction) {
 		}
 
 		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type)

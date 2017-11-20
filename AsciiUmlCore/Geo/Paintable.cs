@@ -5,7 +5,7 @@ using AsciiConsoleUi;
 
 namespace AsciiUml.Geo {
 	static class PaintAbles {
-		public static int Id { get; set; }
+		public static int GlobalId { get; set; }
 	}
 
 	public interface IPaintable<out T> {
@@ -160,7 +160,7 @@ namespace AsciiUml.Geo {
 		public int? RequiredToOffset { get; set; }
 
 		public Line() {
-			Id = PaintAbles.Id++;
+			Id = PaintAbles.GlobalId++;
 		}
 
 		public Line Move(Coord delta) {
@@ -180,7 +180,7 @@ namespace AsciiUml.Geo {
 		}
 
 		public Label(Coord pos, string text) {
-			Id = PaintAbles.Id++;
+			Id = PaintAbles.GlobalId++;
 			Text = text;
 			Pos = pos;
 		}

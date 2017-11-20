@@ -35,7 +35,7 @@ namespace AsciiUml.Geo {
 		public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
 
 		public SlopedLine2(Coord pos) {
-			Id = PaintAbles.Id++;
+			Id = PaintAbles.GlobalId++;
 			Segments.Add(new SlopedSegment2(pos, SegmentType.Line));
 		}
 
