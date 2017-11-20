@@ -46,8 +46,8 @@ namespace AsciiUml.UI {
 			}
 
 			// lines may not cross boxes, hence drawn afterwards
-			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x));
-			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));
+			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x, model));
+			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x, model));
 
 			return c;
 		}
@@ -102,10 +102,10 @@ namespace AsciiUml.UI {
 			}
 		}
 
-		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2) {
+		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2, List<IPaintable<object>> model) {
 			slopedLine2.Segments.Each((segment, i) => {
 				char c = GetLineChar(slopedLine2.GetDirectionOf(i), segment.Type);
-				PaintLineOrCross(canvass, segment.Pos, c, slopedLine2.Id);
+				PaintLineOrCross(canvass, segment.Pos, c, slopedLine2.Id, model);
 			});
 		}
 
@@ -129,7 +129,7 @@ namespace AsciiUml.UI {
 			}
 		}
 
-		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine) {
+		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, List<IPaintable<object>> model) {
 			foreach (var segment in slopedLine.Segments) {
 				char c = GetLineChar(segment.Direction, segment.Type);
 
@@ -138,21 +138,26 @@ namespace AsciiUml.UI {
 				direction = segment.From.X < segment.To.X ? 1 : -1;
 				for (int i = 0; i <= delta; i++) {
 					var newPos = new Coord(segment.From.X + (i * direction), segment.From.Y);
-					PaintLineOrCross(canvass, newPos, c, segment.Id);
+					PaintLineOrCross(canvass, newPos, c, segment.Id, model);
 				}
 
 				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
 				for (int i = 0; i <= delta; i++) {
 					var newPos = new Coord(segment.From.X, segment.From.Y + (i * direction));
-					PaintLineOrCross(canvass, newPos, c, segment.Id);
+					PaintLineOrCross(canvass, newPos, c, segment.Id, model);
 				}
 			}
 		}
 
-		private static void PaintLineOrCross(Canvass canvass, Coord pos, char c, int id) {
-			if ((canvass.GetCell(pos) == '-' && c == '|') || (canvass.GetCell(pos) == '|' && c == '-'))
-				c = '+';
+		private static void PaintLineOrCross(Canvass canvass, Coord pos, char c, int id, List<IPaintable<object>> model) {
+			var elem = canvass.Occupants[pos.Y,pos.X];
+			if (elem is Line || elem is SlopedLine || elem is SlopedLine2) {
+				var cell = canvass.GetCell(pos);
+				if ((cell == '-' && c == '|') || (cell == '|' && c == '-'))
+					c = '+';
+			}
+
 			canvass.Paint(pos, c, id);
 		}
 
