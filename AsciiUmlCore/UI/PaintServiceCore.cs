@@ -39,6 +39,8 @@ namespace AsciiUml.UI {
 			foreach (var x in model) {
 				if (x is Label)
 					PaintLabel(c, x as Label);
+				if (x is Note)
+					PaintNote(c, x as Note, paintSelectableIds);
 			}
 
 			// lines may not cross boxes, hence drawn afterwards
@@ -46,6 +48,40 @@ namespace AsciiUml.UI {
 			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x));
 
 			return c;
+		}
+
+		//+~~~~~~~~~~+\
+		//|          |_\
+		//|             |
+		//|             |
+		//+~~~~~~~~~~~~~+
+		private static void PaintNote(Canvass canvass, Note note, bool paintSelectableIds) {
+			int px = note.Pos.X, py = note.Pos.Y;
+			var rows = note.Text.Split('\n');
+
+			for (int y = 0; y < note.H; y++) {
+				if (y == 0) {
+					var line = "~".Repeat(note.W - 3);
+					Canvass.PaintString(canvass, $"+{line}+\\", px, py + y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
+				}
+				else if (y == 1) {
+					var line = "".PadLeft(note.W - 3);
+					Canvass.PaintString(canvass, $"|{line}|_\\", px, py + y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
+				}
+				else if (y < note.H - 1) {
+					var line = rows[y - 2].PadRight(note.W - 1);
+					Canvass.PaintString(canvass,$"|{line}|",px,py+y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
+				}
+				else {
+					var line = "~".Repeat(note.W - 1);
+					Canvass.PaintString(canvass, $"+{line}+", px, py + y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
+				}
+			}
+
+			if (paintSelectableIds)
+			{
+				canvass.RawPaintString(note.Id.ToString(), note.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
+			}
 		}
 
 		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2) {

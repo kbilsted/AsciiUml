@@ -72,14 +72,11 @@ namespace AsciiUml {
 
 				case ConsoleKey.S:
 					PrintIdsAndLetUserSelectObject(state, umlWindow);
-					return new Option<List<ICommand>>();
+					return OptNoop;
 
 				case ConsoleKey.X:
 				case ConsoleKey.Delete:
-					return Extensions.Lst(new DeleteSelectedElement());
-
-				case ConsoleKey.D:
-					return Extensions.Lst(new CreateDatabase(state.TheCurser.Pos));
+					return Lst(new DeleteSelectedElement());
 
 				case ConsoleKey.H:
 					return HelpScreen(umlWindow);
@@ -188,12 +185,13 @@ s .................... select an object
 cursor keys........... move cursor or selected object
 shift + cursor ....... move object under cursor
 r .................... rotate selected object (only text label)
-ctrl + cursor ........ move selected object (only box)
+ctrl + cursor ........ Resize selected object (only box)
 b .................... Create a Box
-e .................... Edit element under cursor (box/label)
+e .................... Edit element at cursor (box/label/note)
 c .................... Create a connection line between boxes
 i .................... InsertMode
   d ..................   Create a Database
+  n ..................   Create a note
   t ..................   Create a text label
 l .................... Create a free-style line
 ., ................... Change the style (only box)
