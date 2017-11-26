@@ -6,29 +6,15 @@ using LanguageExt;
 
 namespace AsciiUml.Geo {
 	/// <summary>
-	/// A line implementation where each pixel is stored rather than vectors
+	///     A line implementation where each pixel is stored rather than vectors
 	/// </summary>
 	public class SlopedLine2 : IPaintable<SlopedLine2>, ISelectable {
-		public class SlopedSegment2 {
-			public Coord Pos;
-			public SegmentType Type;
-
-			public SlopedSegment2(Coord pos, SegmentType type) {
-				Pos = pos;
-				Type = type;
-			}
-		}
-
 		public enum LineSemantic {
 			StartArrow,
 			EndArrow,
 			Slope,
-			LinePiece,
+			LinePiece
 		}
-
-		public int Id { get; }
-
-		public Coord Pos => Segments.First().Pos;
 
 		public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
 
@@ -36,6 +22,14 @@ namespace AsciiUml.Geo {
 			Id = PaintAbles.GlobalId++;
 			Segments.Add(new SlopedSegment2(pos, SegmentType.Line));
 		}
+
+		public int Id { get; }
+
+		public SlopedLine2 Move(Coord delta) {
+			throw new NotImplementedException();
+		}
+
+		public Coord Pos => Segments.First().Pos;
 
 		public SlopedLine2 Drag(Coord dragFrom, Coord dragTo) {
 			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
@@ -51,7 +45,7 @@ namespace AsciiUml.Geo {
 		}
 
 		public Option<SlopedLine2> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
-			LineSemantic s = GetSemantic(dragFrom);
+			var s = GetSemantic(dragFrom);
 			switch (s) {
 				case LineSemantic.StartArrow:
 					if (Segments.Count == 1) {
@@ -75,7 +69,7 @@ namespace AsciiUml.Geo {
 					return this;
 
 				case LineSemantic.EndArrow:
-					int? nthlastPos = GetLastNthLastPos(Segments, 1);
+					var nthlastPos = GetLastNthLastPos(Segments, 1);
 					if (nthlastPos.HasValue) {
 						var isDragBackwards = Segments[nthlastPos.Value].Pos == dragTo;
 						if (isDragBackwards) {
@@ -85,7 +79,7 @@ namespace AsciiUml.Geo {
 						}
 					}
 
-					int posAtInsert = Segments.Count - 1;
+					var posAtInsert = Segments.Count - 1;
 					Segments.Add(new SlopedSegment2(dragTo, SegmentType.Line));
 					if (Vector.IsOrthogonal(GetDirectionOf(posAtInsert), GetDirectionOf(posAtInsert + 1)))
 						Segments[posAtInsert].Type = SegmentType.Slope;
@@ -110,7 +104,7 @@ namespace AsciiUml.Geo {
 		}
 
 		private LineSemantic GetSemantic(Coord coord) {
-			int pos = Segments.FindIndex(x => x.Pos == coord);
+			var pos = Segments.FindIndex(x => x.Pos == coord);
 			if (pos == 0)
 				return LineSemantic.StartArrow;
 			if (pos == Segments.Count - 1)
@@ -128,8 +122,14 @@ namespace AsciiUml.Geo {
 			throw new NotImplementedException();
 		}
 
-		public SlopedLine2 Move(Coord delta) {
-			throw new NotImplementedException();
+		public class SlopedSegment2 {
+			public Coord Pos;
+			public SegmentType Type;
+
+			public SlopedSegment2(Coord pos, SegmentType type) {
+				Pos = pos;
+				Type = type;
+			}
 		}
 	}
 }

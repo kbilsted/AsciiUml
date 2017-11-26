@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using AsciiConsoleUi;
 using AsciiUml.Geo;
@@ -32,10 +31,9 @@ namespace AsciiUml.UI {
 			}
 
 			// draw lines after boxes so the shortest path does not intersect those objects
-			foreach (var x in model.Objects) {
+			foreach (var x in model.Objects)
 				if (x is Line)
 					PaintLine2(c, x as Line, model);
-			}
 
 			// labels may go above lines
 			foreach (var x in model.Objects) {
@@ -53,7 +51,7 @@ namespace AsciiUml.UI {
 		}
 
 		private static void PaintUmlUser(Canvass canvass, UmlUser user, bool paintSelectableIds) {
-			string gfx = @"
+			var gfx = @"
 ,-.
 `-'
 /|\
@@ -77,7 +75,7 @@ namespace AsciiUml.UI {
 			int px = note.Pos.X, py = note.Pos.Y;
 			var rows = note.Text.Split('\n');
 
-			for (int y = 0; y < note.H; y++) {
+			for (var y = 0; y < note.H; y++)
 				if (y == 0) {
 					var line = "~".Repeat(note.W - 3);
 					Canvass.PaintString(canvass, $"+{line}+\\", px, py + y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
@@ -88,23 +86,20 @@ namespace AsciiUml.UI {
 				}
 				else if (y < note.H - 1) {
 					var line = rows[y - 2].PadRight(note.W - 1);
-					Canvass.PaintString(canvass,$"|{line}|",px,py+y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
+					Canvass.PaintString(canvass, $"|{line}|", px, py + y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
 				}
 				else {
 					var line = "~".Repeat(note.W - 1);
 					Canvass.PaintString(canvass, $"+{line}+", px, py + y, note.Id, ConsoleColor.Black, ConsoleColor.Gray);
 				}
-			}
 
 			if (paintSelectableIds)
-			{
 				canvass.RawPaintString(note.Id.ToString(), note.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
-			}
 		}
 
 		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2, Model model) {
 			slopedLine2.Segments.Each((segment, i) => {
-				char c = GetLineChar(slopedLine2.GetDirectionOf(i), segment.Type);
+				var c = GetLineChar(slopedLine2.GetDirectionOf(i), segment.Type);
 				PaintLineOrCross(canvass, segment.Pos, c, slopedLine2.Id, model);
 			});
 		}
@@ -131,33 +126,32 @@ namespace AsciiUml.UI {
 
 		private static void PaintSlopedLine(Canvass canvass, SlopedLineVectorized slopedLineVectorized, Model model) {
 			foreach (var segment in slopedLineVectorized.Segments) {
-				char c = GetLineChar(segment.Direction, segment.Type);
+				var c = GetLineChar(segment.Direction, segment.Type);
 
 				var delta = Math.Abs(segment.From.X - segment.To.X);
 				int direction;
 				direction = segment.From.X < segment.To.X ? 1 : -1;
-				for (int i = 0; i <= delta; i++) {
-					var newPos = new Coord(segment.From.X + (i * direction), segment.From.Y);
+				for (var i = 0; i <= delta; i++) {
+					var newPos = new Coord(segment.From.X + i * direction, segment.From.Y);
 					PaintLineOrCross(canvass, newPos, c, segment.Id, model);
 				}
 
 				direction = segment.From.Y < segment.To.Y ? 1 : -1;
 				delta = Math.Abs(segment.From.Y - segment.To.Y);
-				for (int i = 0; i <= delta; i++) {
-					var newPos = new Coord(segment.From.X, segment.From.Y + (i * direction));
+				for (var i = 0; i <= delta; i++) {
+					var newPos = new Coord(segment.From.X, segment.From.Y + i * direction);
 					PaintLineOrCross(canvass, newPos, c, segment.Id, model);
 				}
 			}
 		}
 
 		private static void PaintLineOrCross(Canvass canvass, Coord pos, char c, int id, Model model) {
-			var oc= canvass.Occupants[pos.Y,pos.X];
+			var oc = canvass.Occupants[pos.Y, pos.X];
 			if (oc.HasValue) {
-
 				var elem = model.Objects.First(x => x.Id == oc.Value);
 				if (elem is Line || elem is SlopedLineVectorized || elem is SlopedLine2) {
 					var cell = canvass.GetCell(pos);
-					if ((cell == '-' && c == '|') || (cell == '|' && c == '-'))
+					if (cell == '-' && c == '|' || cell == '|' && c == '-')
 						c = '+';
 				}
 			}
@@ -175,9 +169,9 @@ namespace AsciiUml.UI {
 					break;
 
 				case LabelDirection.TopDown:
-					int extraX = 0;
+					var extraX = 0;
 					foreach (var line in lines) {
-						for (int i = 0; i < line.Length; i++)
+						for (var i = 0; i < line.Length; i++)
 							canvass.Paint(new Coord(label.X + extraX, label.Y + i), line[i], label.Id);
 						extraX++;
 					}
@@ -188,14 +182,11 @@ namespace AsciiUml.UI {
 			}
 
 			if (paintSelectableIds)
-			{
 				canvass.RawPaintString(label.Id.ToString(), label.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
-			}
 		}
 
 		private static char GetCharForStyle(BoxStyle style, BoxFramePart part) {
-			switch (style)
-			{
+			switch (style) {
 				case BoxStyle.Stars:
 					return '*';
 				case BoxStyle.Dots:
@@ -222,60 +213,37 @@ namespace AsciiUml.UI {
 		}
 
 		public static void PaintBox(Canvass c, Box b, bool paintSelectableIds) {
-			Extensions.Each(b.GetFrameParts(), part => c.Paint(part.Item1, GetCharForStyle(b.Style, part.Item2), b.Id));
+			b.GetFrameParts().Each(part => c.Paint(part.Item1, GetCharForStyle(b.Style, part.Item2), b.Id));
 			const int padX = 2, padY = 1; // TODO make padding configurable pr. box
-			if (!string.IsNullOrWhiteSpace(b.Text)) {
+			if (!string.IsNullOrWhiteSpace(b.Text))
 				b.Text.Split('\n').Each((text, i) =>
 					Canvass.PaintString(c, text, b.X + padX, b.Y + padY + i, b.Id, ConsoleColor.Black, ConsoleColor.Gray));
-			}
 
-			if (paintSelectableIds) {
-				c.RawPaintString(b.Id.ToString(), b.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
-			}
+			if (paintSelectableIds) c.RawPaintString(b.Id.ToString(), b.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
 		}
 
 		public static void PaintDatabase(Canvass c, Database d, bool statePaintSelectableIds) {
-			foreach (var t in d.Paint()) {
-				c.Paint(t.Item1, t.Item2, t.Item3);
-			}
+			foreach (var t in d.Paint()) c.Paint(t.Item1, t.Item2, t.Item3);
 
-			if (statePaintSelectableIds) {
-				c.RawPaintString(d.Id.ToString(), d.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
-			}
+			if (statePaintSelectableIds) c.RawPaintString(d.Id.ToString(), d.Pos, ConsoleColor.DarkGreen, ConsoleColor.Green);
 		}
 
 		public static char CalculateDirectionLine(Coord previous, Coord point, Coord next) {
-			if (previous.X == point.X) {
-				return point.X == next.X ? '|' : '+';
-			}
+			if (previous.X == point.X) return point.X == next.X ? '|' : '+';
 
-			if (previous.Y == point.Y) {
-				return point.Y == next.Y ? '-' : '+';
-			}
+			if (previous.Y == point.Y) return point.Y == next.Y ? '-' : '+';
 
-			if (previous.X < point.X && previous.Y < point.Y) {
-				return '\\';
-			}
-			if (previous.X < point.X && previous.Y > point.Y) {
-				return '/';
-			}
-			if (previous.X > point.X && previous.Y < point.Y) {
-				return '/';
-			}
-			if (previous.X > point.X && previous.Y > point.Y) {
-				return '\\';
-			}
+			if (previous.X < point.X && previous.Y < point.Y) return '\\';
+			if (previous.X < point.X && previous.Y > point.Y) return '/';
+			if (previous.X > point.X && previous.Y < point.Y) return '/';
+			if (previous.X > point.X && previous.Y > point.Y) return '\\';
 
 			throw new ArgumentException("Cannot find a direction");
 		}
 
 		public static char CalculateDirectionArrowHead(Coord previous, Coord point) {
-			if (previous.X == point.X) {
-				return previous.Y > point.Y ? '^' : 'v';
-			}
-			if (previous.Y == point.Y) {
-				return previous.X > point.X ? '<' : '>';
-			}
+			if (previous.X == point.X) return previous.Y > point.Y ? '^' : 'v';
+			if (previous.Y == point.Y) return previous.X > point.X ? '<' : '>';
 
 			// diagonal lines
 			return previous.X < point.X ? '>' : '<';
@@ -287,14 +255,12 @@ namespace AsciiUml.UI {
 			var smallestDist = CalcSmallestDist(from.GetFrameCoords(), to.GetFrameCoords());
 
 			var line = ShortestPathFinder.Calculate(smallestDist.Min, smallestDist.Max, c, model);
-			if (line.Count < 2) {
-				return;
-			}
+			if (line.Count < 2) return;
 
 			Coord coord;
 
 			// dont draw first nor 2-last elements. First/last elements are box-frames
-			int i = 1;
+			var i = 1;
 			for (; i < line.Count - 2; i++) {
 				coord = line[i];
 				var lineChar = CalculateDirectionLine(line[i - 1], coord, line[i + 1]);
@@ -318,13 +284,12 @@ namespace AsciiUml.UI {
 		public static Range<Coord> CalcSmallestDist(Coord[] froms, Coord[] tos) {
 			double smallestDist = int.MaxValue;
 			Range<Coord> minDist = null;
-			foreach (var pointFrom in froms) {
-				foreach (var pointTo in tos) {
-					var dist = ManhattenDistance(pointFrom, pointTo);
-					if (dist < smallestDist) {
-						smallestDist = dist;
-						minDist = new Range<Coord>(pointFrom, pointTo);
-					}
+			foreach (var pointFrom in froms)
+			foreach (var pointTo in tos) {
+				var dist = ManhattenDistance(pointFrom, pointTo);
+				if (dist < smallestDist) {
+					smallestDist = dist;
+					minDist = new Range<Coord>(pointFrom, pointTo);
 				}
 			}
 

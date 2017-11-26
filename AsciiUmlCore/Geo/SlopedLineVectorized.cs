@@ -7,7 +7,6 @@ using LanguageExt;
 namespace AsciiUml.Geo {
 	public class SlopedLineVectorized : IPaintable<SlopedLineVectorized> {
 		public readonly List<LineSegment> Segments = new List<LineSegment>();
-		public int Id { get; }
 
 		public SlopedLineVectorized() {
 			Id = PaintAbles.GlobalId++;
@@ -18,11 +17,13 @@ namespace AsciiUml.Geo {
 			Segments = segments;
 		}
 
-		public SlopedLineVectorized Move(int x, int y) {
+		public int Id { get; }
+
+		public SlopedLineVectorized Move(Coord delta) {
 			throw new NotImplementedException();
 		}
 
-		public SlopedLineVectorized Move(Coord delta) {
+		public SlopedLineVectorized Move(int x, int y) {
 			throw new NotImplementedException();
 		}
 
@@ -37,61 +38,56 @@ namespace AsciiUml.Geo {
 		public Option<SlopedLineVectorized> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
 			var endpoints = MatchEndpoint(dragFrom).ToList();
 			if (endpoints.Any()) {
-				//if (endpoints.Count == 1)
-				{
-					var newList = Segments.ToList();
-					var match = endpoints.First();
-					var deltaX = dragTo.X - dragFrom.X;
-					var deltaY = dragTo.Y - dragFrom.Y;
-					var delta = new Coord(deltaX, deltaY);
+				var newList = Segments.ToList();
+				var match = endpoints.First();
+				var deltaX = dragTo.X - dragFrom.X;
+				var deltaY = dragTo.Y - dragFrom.Y;
+				var delta = new Coord(deltaX, deltaY);
 
-					var currentSegment = newList[match.Item1];
+				var currentSegment = newList[match.Item1];
 
-					if (currentSegment.Type == SegmentType.Slope) {
-						newList.Insert(0, new LineSegment(this, dragTo, dragTo, SegmentType.Line));
-					}
-					else if (IsLineAtomic()) {
-						//
-						newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
-					}
-					else if (IsDragDiagonalOfLine(currentSegment, dragFrom, dragTo)) {
-						if (newList[match.Item1].IsReducable())
-							newList[match.Item1] = currentSegment.Reduce(match.Item2);
-						else
-							newList.RemoveAt(match.Item1);
-
-						Coord slopePoint = match.Item2 == EndpointKind.From
-							? currentSegment.From
-							: currentSegment.To;
-						newList.Insert(match.Item1, new LineSegment(this, slopePoint, slopePoint, SegmentType.Slope));
-
-						var directionFromBend = LineDirections.GetDirectionFromBend(currentSegment.Direction, match.Item2, deltaX, deltaY);
-						var newSegmentPos = match.Item2 == EndpointKind.From
-							? currentSegment.From.Move(delta)
-							: currentSegment.To.Move(delta);
-						newList.Insert(match.Item1,
-							new LineSegment(this, newSegmentPos, newSegmentPos, SegmentType.Line, directionFromBend));
-					}
-					else {
-						if (currentSegment.SpanOneCell()) {
-							if (Vector.IsDirectionOpposite(currentSegment.Direction, Vector.GetDirection(dragFrom, dragTo)))
-								newList.RemoveAt(match.Item1);
-							else
-								newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
-						}
-						else {
-							for (int i = match.Item1; i < newList.Count; i++) {
-								if (newList[i].Type == SegmentType.Slope)
-									break;
-								newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY, match.Item2);
-							}
-						}
-					}
-					return new SlopedLineVectorized(Id, newList);
+				if (currentSegment.Type == SegmentType.Slope) {
+					newList.Insert(0, new LineSegment(this, dragTo, dragTo, SegmentType.Line));
 				}
+				else if (IsLineAtomic()) {
+					//
+					newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
+				}
+				else if (IsDragDiagonalOfLine(currentSegment, dragFrom, dragTo)) {
+					if (newList[match.Item1].IsReducable())
+						newList[match.Item1] = currentSegment.Reduce(match.Item2);
+					else
+						newList.RemoveAt(match.Item1);
+
+					var slopePoint = match.Item2 == EndpointKind.From
+						? currentSegment.From
+						: currentSegment.To;
+					newList.Insert(match.Item1, new LineSegment(this, slopePoint, slopePoint, SegmentType.Slope));
+
+					var directionFromBend = LineDirections.GetDirectionFromBend(currentSegment.Direction, match.Item2, deltaX, deltaY);
+					var newSegmentPos = match.Item2 == EndpointKind.From
+						? currentSegment.From.Move(delta)
+						: currentSegment.To.Move(delta);
+					newList.Insert(match.Item1,
+						new LineSegment(this, newSegmentPos, newSegmentPos, SegmentType.Line, directionFromBend));
+				}
+				else {
+					if (currentSegment.SpanOneCell())
+						if (Vector.IsDirectionOpposite(currentSegment.Direction, Vector.GetDirection(dragFrom, dragTo)))
+							newList.RemoveAt(match.Item1);
+						else
+							newList[match.Item1] = newList[match.Item1].ExtendEndpoint(deltaX, deltaY, match.Item2);
+					else
+						for (var i = match.Item1; i < newList.Count; i++) {
+							if (newList[i].Type == SegmentType.Slope)
+								break;
+							newList[i] = newList[i].ExtendEndpoint(deltaX, deltaY, match.Item2);
+						}
+				}
+				return new SlopedLineVectorized(Id, newList);
 			}
 
-			int pos = -1;
+			var pos = -1;
 			var matchedSegment = Segments.FirstOrDefault(s => IsPointPartOfLine(s.From, s.To, dragFrom), p => pos = p);
 			var noLinesAreHit = matchedSegment == null;
 			if (noLinesAreHit)
@@ -116,39 +112,30 @@ namespace AsciiUml.Geo {
 
 
 		private IEnumerable<Tuple<int, EndpointKind>> MatchEndpoint(Coord dragFrom) {
-			for (int i = 0; i < Segments.Count; i++) {
+			for (var i = 0; i < Segments.Count; i++) {
 				var segment = Segments[i];
 
 				if (segment.From == segment.To) {
-					if (segment.To == dragFrom) {
-						yield return Tuple.Create(i, EndpointKind.To);
-					}
+					if (segment.To == dragFrom) yield return Tuple.Create(i, EndpointKind.To);
 				}
 				else {
-					if (segment.From == dragFrom) {
-						yield return Tuple.Create(i, EndpointKind.From);
-					}
-					if (segment.To == dragFrom && segment.From != segment.To) {
-						yield return Tuple.Create(i, EndpointKind.To);
-					}
+					if (segment.From == dragFrom) yield return Tuple.Create(i, EndpointKind.From);
+					if (segment.To == dragFrom && segment.From != segment.To) yield return Tuple.Create(i, EndpointKind.To);
 				}
 			}
 		}
 
 		private bool IsPointPartOfLine(Coord lineFrom, Coord lineTo, Coord point) {
-			if (lineFrom.X <= point.X && point.X <= lineTo.X && lineFrom.Y <= point.Y && point.Y <= lineTo.Y) {
-				return true;
-			}
+			if (lineFrom.X <= point.X && point.X <= lineTo.X && lineFrom.Y <= point.Y && point.Y <= lineTo.Y) return true;
 			return false;
 		}
 	}
 
 	public class LineSegment {
-		public int Id { get; }
-		public readonly Coord From, To;
-		public readonly SegmentType Type;
 		public readonly LineDirection Direction;
+		public readonly Coord From, To;
 		public readonly SlopedLineVectorized Origin;
+		public readonly SegmentType Type;
 
 		public LineSegment(SlopedLineVectorized l, Coord from, Coord to, SegmentType type)
 			: this(PaintAbles.GlobalId++, l, from, to, type, Vector.GetDirection(from, to)) {
@@ -173,6 +160,8 @@ namespace AsciiUml.Geo {
 			Type = type;
 			Direction = direction;
 		}
+
+		public int Id { get; }
 
 		public LineSegment ExtendEndpoint(int x, int y, EndpointKind kind) {
 			Coord newTo, newFrom;

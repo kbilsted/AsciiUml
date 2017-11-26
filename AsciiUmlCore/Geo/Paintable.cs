@@ -4,7 +4,7 @@ using System.Linq;
 using AsciiConsoleUi;
 
 namespace AsciiUml.Geo {
-	static class PaintAbles {
+	internal static class PaintAbles {
 		public static int GlobalId { get; set; }
 	}
 
@@ -22,7 +22,10 @@ namespace AsciiUml.Geo {
 		void ChangeStyle(StyleChangeKind change);
 	}
 
-	public enum StyleChangeKind { Next, Previous }
+	public enum StyleChangeKind {
+		Next,
+		Previous
+	}
 
 
 	public interface IConnectable {
@@ -48,16 +51,15 @@ namespace AsciiUml.Geo {
 
 	public class Cursor : IPaintable<Cursor> {
 		public readonly Coord Pos;
-		public int X => Pos.X;
-		public int Y => Pos.Y;
 
 		public Cursor(Coord c) {
 			Pos = c;
 		}
 
-		public int Id {
-			get { return -1; }
-		}
+		public int X => Pos.X;
+		public int Y => Pos.Y;
+
+		public int Id => -1;
 
 		public Cursor Move(Coord delta) {
 			return new Cursor(Pos.Move(delta));
@@ -72,7 +74,7 @@ namespace AsciiUml.Geo {
 		North = 1,
 		South = 2,
 		East = 4,
-		West = 8,
+		West = 8
 	}
 
 	public static class LineDirections {
@@ -146,17 +148,19 @@ namespace AsciiUml.Geo {
 
 	public enum SegmentType {
 		Line = 1,
-		Slope = 2,
+		Slope = 2
 	}
 
 	public enum EndpointKind {
 		From = 1,
-		To = 2,
+		To = 2
 	}
 
 
 	public class Line : IPaintable<Line> {
-		public int Id { get; }
+		public Line() {
+			Id = PaintAbles.GlobalId++;
+		}
 
 		public int FromId { get; set; }
 		public Direction? RequiredFromPosition { get; set; }
@@ -165,10 +169,7 @@ namespace AsciiUml.Geo {
 		public int ToId { get; set; }
 		public Direction? RequiredToPosition { get; set; }
 		public int? RequiredToOffset { get; set; }
-
-		public Line() {
-			Id = PaintAbles.GlobalId++;
-		}
+		public int Id { get; }
 
 		public Line Move(Coord delta) {
 			throw new NotImplementedException();
@@ -176,13 +177,6 @@ namespace AsciiUml.Geo {
 	}
 
 	public class Label : IPaintable<Label>, ISelectable, IConnectable, IHasTextProperty {
-		public int Id { get; }
-		public int X => Pos.X;
-		public int Y => Pos.Y;
-		public string Text { get; set; }
-		public Coord Pos { get; }
-		public LabelDirection Direction { get; }
-
 		public Label(string text) : this(new Coord(0, 0), text) {
 		}
 
@@ -199,17 +193,26 @@ namespace AsciiUml.Geo {
 			Direction = direction;
 		}
 
-		public Label Move(Coord delta) {
-			return new Label(Id, Pos.Move(delta), Text, Direction);
-		}
-
-		public Label Rotate() {
-			return new Label(Id, Pos, Text, (LabelDirection) ((1 + (int) Direction) % 2));
-		}
+		public int X => Pos.X;
+		public int Y => Pos.Y;
+		public LabelDirection Direction { get; }
 
 		public Coord[] GetFrameCoords() {
 			var strings = Text.Split('\n');
 			return RectangleHelper.GetFrameCoords(Pos.X, Pos.Y, strings.Length, strings.Max(x => x.Length));
+		}
+
+		public string Text { get; set; }
+		public int Id { get; }
+
+		public Label Move(Coord delta) {
+			return new Label(Id, Pos.Move(delta), Text, Direction);
+		}
+
+		public Coord Pos { get; }
+
+		public Label Rotate() {
+			return new Label(Id, Pos, Text, (LabelDirection) ((1 + (int) Direction) % 2));
 		}
 	}
 
@@ -259,9 +262,7 @@ namespace AsciiUml.Geo {
 
 		public static Coord[] GetFrameCoords(int x, int y, int h, int w) {
 			var key = "coords_" + x + y + h + w;
-			if (!CacheFrames.TryGetValue(key, out var res)) {
-				CacheFrames[key] = res = GetFrameParts(x, y, h, w).Select(c => c.Item1).ToArray();
-			}
+			if (!CacheFrames.TryGetValue(key, out var res)) CacheFrames[key] = res = GetFrameParts(x, y, h, w).Select(c => c.Item1).ToArray();
 			return res;
 		}
 	}

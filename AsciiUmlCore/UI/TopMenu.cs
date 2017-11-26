@@ -1,9 +1,8 @@
 using System;
 using AsciiConsoleUi;
-using AsciiUml.UI;
 
 namespace AsciiUml {
-	class TopMenu : GuiComponent {
+	internal class TopMenu : GuiComponent {
 		private readonly State state;
 
 		public TopMenu(WindowManager manager, State state) : base(manager) {

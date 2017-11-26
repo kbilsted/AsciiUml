@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "AsciiUml": {
-      "commandName": "Project",
-      "commandLineArgs": "--no-logo"
+    "profiles": {
+        "AsciiUml": {
+            "commandName": "Project",
+            "commandLineArgs": "--no-logo"
+        }
     }
-  }
 }

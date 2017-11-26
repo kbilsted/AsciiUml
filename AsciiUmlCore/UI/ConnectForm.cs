@@ -2,12 +2,12 @@
 using AsciiConsoleUi;
 
 namespace AsciiUml.UI {
-	class ConnectForm {
+	internal class ConnectForm {
+		private readonly TextBox from, to;
 		private readonly TitledWindow titled;
 		private readonly TextLabel validationErrors;
-		private readonly TextBox from, to;
-		public Action<int, int> OnSubmit = (from, to) => { };
 		public Action OnCancel = () => { };
+		public Action<int, int> OnSubmit = (from, to) => { };
 
 		public ConnectForm(GuiComponent parent, Coord position) {
 			titled = new TitledWindow(parent, "Connect...") {Position = position};
@@ -25,8 +25,8 @@ namespace AsciiUml.UI {
 			};
 		}
 
-		void Submit() {
-			if (string.IsNullOrWhiteSpace(from.Value) || !int.TryParse(@from.Value, out var ifrom)) {
+		private void Submit() {
+			if (string.IsNullOrWhiteSpace(from.Value) || !int.TryParse(from.Value, out var ifrom)) {
 				validationErrors.Text = "Need to fill in 'from'";
 				return;
 			}
@@ -40,7 +40,7 @@ namespace AsciiUml.UI {
 		}
 
 		public void Focus() {
-			@from.Focus();
+			from.Focus();
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿namespace AsciiUml.Commands {
-	internal class SetTopmenuText: ICommand
-	{
+	internal class SetTopmenuText : ICommand {
 		private readonly string text;
 
 		public SetTopmenuText(string text) {

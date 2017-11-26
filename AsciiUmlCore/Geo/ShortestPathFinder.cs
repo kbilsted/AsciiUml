@@ -5,58 +5,15 @@ using AsciiUml.UI;
 using Priority_Queue;
 
 namespace AsciiUml.Geo {
-	static class ShortestPathFinder {
-		const int WeightOfTurn = 1;
-		const int StepLength = 1;
+	internal static class ShortestPathFinder {
+		private const int WeightOfTurn = 1;
+		private const int StepLength = 1;
 
-		class UnhandledField {
-			public readonly Coord Position;
-			public readonly List<Coord> Path;
-			public readonly int Distance;
-
-			public UnhandledField(Coord position, List<Coord> path, int distance) {
-				Position = position;
-				Path = path;
-				Distance = distance;
-			}
-
-			public override string ToString() {
-				return $"{Position}::{Path.Count}";
-			}
-		}
-
-		class Solution {
-			public readonly List<Coord> Path;
-			public readonly int Distance;
-
-			public Solution(List<Coord> path, int distance) {
-				Path = path;
-				Distance = PenalizeTurns(path);
-			}
-
-			int PenalizeTurns(List<Coord> rute) {
-				int distance = rute.Count;
-
-				for (int i = 0; i < rute.Count - 3; i++)
-					if (IsTurn(rute[i], rute[i + 1], rute[i + 2]))
-						distance = distance + WeightOfTurn;
-				return distance;
-			}
-
-			bool IsTurn(Coord a, Coord b, Coord c) {
-				if (a.X == b.X && b.X == c.X)
-					return false;
-				if (a.Y == b.Y && b.Y == c.Y)
-					return false;
-				return true;
-			}
-		}
-
-		public static List<Coord> Calculate(Coord @from, Coord to, Canvass c, Model model) {
+		public static List<Coord> Calculate(Coord from, Coord to, Canvass c, Model model) {
 			var size = c.GetSize();
 			var solutions = new Solution[size.Item1, size.Item2];
 			var unHandled = new SimplePriorityQueue<UnhandledField>();
-			unHandled.Enqueue(new UnhandledField(@from, new List<Coord>(), 0), 0);
+			unHandled.Enqueue(new UnhandledField(from, new List<Coord>(), 0), 0);
 
 			while (unHandled.Count > 0) {
 				var current = unHandled.Dequeue();
@@ -93,8 +50,7 @@ namespace AsciiUml.Geo {
 			return shortestPath == null ? new List<Coord>() : shortestPath.Path;
 		}
 
-		private static bool IsCellFree(Canvass c, Coord pos, Model model)
-		{
+		private static bool IsCellFree(Canvass c, Coord pos, Model model) {
 			int x = pos.X, y = pos.Y;
 
 			if (x < 0 || y < 0)
@@ -116,7 +72,7 @@ namespace AsciiUml.Geo {
 
 
 		private static List<Coord> CalculateNSEW(Coord coord) {
-			List<Coord> result = new List<Coord>(4);
+			var result = new List<Coord>(4);
 			if (coord.X > 0)
 				result.Add(new Coord(coord.X - 1, coord.Y));
 			if (coord.Y > 0)
@@ -127,6 +83,49 @@ namespace AsciiUml.Geo {
 				result.Add(new Coord(coord.X, coord.Y + 1));
 
 			return result;
+		}
+
+		private class UnhandledField {
+			public readonly int Distance;
+			public readonly List<Coord> Path;
+			public readonly Coord Position;
+
+			public UnhandledField(Coord position, List<Coord> path, int distance) {
+				Position = position;
+				Path = path;
+				Distance = distance;
+			}
+
+			public override string ToString() {
+				return $"{Position}::{Path.Count}";
+			}
+		}
+
+		private class Solution {
+			public readonly int Distance;
+			public readonly List<Coord> Path;
+
+			public Solution(List<Coord> path, int distance) {
+				Path = path;
+				Distance = PenalizeTurns(path);
+			}
+
+			private int PenalizeTurns(List<Coord> rute) {
+				var distance = rute.Count;
+
+				for (var i = 0; i < rute.Count - 3; i++)
+					if (IsTurn(rute[i], rute[i + 1], rute[i + 2]))
+						distance = distance + WeightOfTurn;
+				return distance;
+			}
+
+			private bool IsTurn(Coord a, Coord b, Coord c) {
+				if (a.X == b.X && b.X == c.X)
+					return false;
+				if (a.Y == b.Y && b.Y == c.Y)
+					return false;
+				return true;
+			}
 		}
 	}
 }

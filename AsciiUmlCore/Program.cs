@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using AsciiConsoleUi;
 using AsciiConsoleUi.CompositeComponents;
-using AsciiUml.Commands;
 using AsciiUml.Geo;
-using AsciiUml.UI;
 using Newtonsoft.Json;
 
 namespace AsciiUml {
@@ -19,11 +16,11 @@ namespace AsciiUml {
 	// Todo change z orderof object by moving place in the model
 	// TODO transitive select using hotkey such that a graph is easily selected
 
-	class Program {
-		const string Version = "v0.1.2";
+	internal class Program {
+		private const string Version = "v0.1.2";
 
-		static void Main(string[] args) {
-			bool showLogo = !(args.Length == 1 && args[0] == "--no-logo");
+		private static void Main(string[] args) {
+			var showLogo = !(args.Length == 1 && args[0] == "--no-logo");
 			RestoreConsoleOnExit(() => CreateWindow(showLogo));
 		}
 
@@ -71,9 +68,9 @@ namespace AsciiUml {
 		}
 
 		public static string Serialize(object o) {
-			var ser = new JsonSerializer() {
+			var ser = new JsonSerializer {
 				TypeNameHandling = TypeNameHandling.Auto,
-				Formatting = Formatting.Indented,
+				Formatting = Formatting.Indented
 			};
 			var w = new StringWriter();
 			ser.Serialize(w, o);

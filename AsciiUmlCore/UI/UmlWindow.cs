@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using AsciiConsoleUi;
 using AsciiUml.Commands;
-using AsciiUml.Geo;
 using AsciiUml.UI;
 
 namespace AsciiUml {
-	class UmlWindow : GuiComponent {
+	internal class UmlWindow : GuiComponent {
+		private readonly List<List<ICommand>> commandLog = new List<List<ICommand>>();
 		private State state;
-		readonly List<List<ICommand>> commandLog = new List<List<ICommand>>();
 
 		public UmlWindow(GuiComponent parent, State state) : base(parent) {
 			this.state = state;
@@ -26,9 +25,7 @@ namespace AsciiUml {
 		public void HandleCommands(List<ICommand> commands) {
 			AddToCommandLog(commands);
 
-			foreach (var command in commands) {
-				state = command.Execute(state);
-			}
+			foreach (var command in commands) state = command.Execute(state);
 
 			if (commands.Any(x => x is TmpForceRepaint))
 				TemporarilyForceRepaint();

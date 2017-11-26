@@ -3,6 +3,11 @@ using AsciiConsoleUi;
 
 namespace AsciiUml.Geo {
 	public static class Vector {
+		public static readonly Coord DeltaNorth = new Coord(0, -1);
+		public static readonly Coord DeltaSouth = new Coord(0, 1);
+		public static readonly Coord DeltaEast = new Coord(1, 0);
+		public static readonly Coord DeltaWest = new Coord(-1, 0);
+
 		public static bool IsDirectionOpposite(LineDirection d1, LineDirection d2) {
 			return d1 == LineDirection.North && d2 == LineDirection.South
 			       || d1 == LineDirection.South && d2 == LineDirection.North
@@ -15,13 +20,13 @@ namespace AsciiUml.Geo {
 		}
 
 		public static LineDirection GetDirection(Coord from, Coord to) {
-			if (@from == to)
+			if (from == to)
 				return LineDirection.East;
-			if (@from.X < to.X)
+			if (from.X < to.X)
 				return LineDirection.East;
-			if (@from.X > to.X)
+			if (from.X > to.X)
 				return LineDirection.West;
-			return @from.Y < to.Y ? LineDirection.South : LineDirection.North;
+			return from.Y < to.Y ? LineDirection.South : LineDirection.North;
 		}
 
 		public static bool IsOrthogonal(LineDirection d1, LineDirection d2) {
@@ -44,10 +49,5 @@ namespace AsciiUml.Geo {
 					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
 			}
 		}
-
-		public static readonly Coord DeltaNorth = new Coord(0, -1);
-		public static readonly Coord DeltaSouth = new Coord(0, 1);
-		public static readonly Coord DeltaEast = new Coord(1, 0);
-		public static readonly Coord DeltaWest = new Coord(-1, 0);
 	}
 }

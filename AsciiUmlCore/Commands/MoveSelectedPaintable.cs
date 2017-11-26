@@ -3,7 +3,7 @@ using AsciiUml.Geo;
 using LanguageExt;
 
 namespace AsciiUml.Commands {
-	class MoveSelectedPaintable : ICommand {
+	internal class MoveSelectedPaintable : ICommand {
 		public readonly Coord delta;
 
 		public MoveSelectedPaintable(Coord delta) {

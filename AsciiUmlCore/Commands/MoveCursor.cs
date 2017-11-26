@@ -1,8 +1,7 @@
 ﻿using AsciiConsoleUi;
-using AsciiUml.Geo;
 
 namespace AsciiUml.Commands {
-	class MoveCursor : ICommand {
+	internal class MoveCursor : ICommand {
 		public readonly Coord delta;
 
 		public MoveCursor(Coord delta) {

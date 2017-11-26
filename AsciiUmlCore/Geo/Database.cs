@@ -4,20 +4,16 @@ using AsciiConsoleUi;
 
 namespace AsciiUml.Geo {
 	public class Database : IPaintable<Database>, ISelectable {
-		public int Id { get; }
+		public const int Width = 9;
+		public const int Height = 8;
 
-		public Coord Pos { get; }
 
-
-		private string definition = @"  _____
+		private readonly string definition = @"  _____
  -     -
 |-_____-|
 |       |
 |       |
  -_____-";
-
-		public const int Width = 9;
-		public const int Height = 8;
 
 
 		public Database(Coord pos) {
@@ -30,8 +26,16 @@ namespace AsciiUml.Geo {
 			Id = id;
 		}
 
+		public int Id { get; }
+
+		public Database Move(Coord delta) {
+			return new Database(Id, Pos.Move(delta));
+		}
+
+		public Coord Pos { get; }
+
 		public IEnumerable<Tuple<Coord, char, int>> Paint() {
-			Coord pos = Pos;
+			var pos = Pos;
 			foreach (var c in definition) {
 				if (c == '\r')
 					continue;
@@ -42,10 +46,6 @@ namespace AsciiUml.Geo {
 				yield return Tuple.Create(pos, c, Id);
 				pos = pos.Move(new Coord(1, 0));
 			}
-		}
-
-		public Database Move(Coord delta) {
-			return new Database(Id, Pos.Move(delta));
 		}
 	}
 }
