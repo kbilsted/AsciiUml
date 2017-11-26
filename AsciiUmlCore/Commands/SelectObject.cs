@@ -11,8 +11,8 @@ namespace AsciiUml.Commands {
 		}
 
 		public State Execute(State state) {
-			var idx = state.Model.FindIndex(0, m => m.Id == id);
-			var elem = state.Model[idx] as ISelectable;
+			var idx = state.Model.Objects.FindIndex(0, m => m.Id == id);
+			var elem = state.Model.Objects[idx] as ISelectable;
 			if (elem == null)
 				return state;
 

@@ -11,7 +11,7 @@ namespace AsciiUml.Commands {
 
 		public State Execute(State state) {
 			var line = new SlopedLine2(pos);
-			state.Model.Add(line);
+			state.Model.Objects.Add(line);
 			state.SelectedId = null;
 			state.SelectedIndexInModel = null;
 			return state;

@@ -52,7 +52,7 @@ namespace AsciiUml.Geo {
 			}
 		}
 
-		public static List<Coord> Calculate(Coord @from, Coord to, Canvass c, List<IPaintable<object>> model) {
+		public static List<Coord> Calculate(Coord @from, Coord to, Canvass c, Model model) {
 			var size = c.GetSize();
 			var solutions = new Solution[size.Item1, size.Item2];
 			var unHandled = new SimplePriorityQueue<UnhandledField>();
@@ -93,7 +93,7 @@ namespace AsciiUml.Geo {
 			return shortestPath == null ? new List<Coord>() : shortestPath.Path;
 		}
 
-		private static bool IsCellFree(Canvass c, Coord pos, List<IPaintable<object>> model)
+		private static bool IsCellFree(Canvass c, Coord pos, Model model)
 		{
 			int x = pos.X, y = pos.Y;
 
@@ -110,7 +110,7 @@ namespace AsciiUml.Geo {
 			var cell = c.Catode[y][x];
 			if (cell == null)
 				return true;
-			var elem = model.First(z => z.Id == c.Occupants[y, x]);
+			var elem = model.Objects.First(z => z.Id == c.Occupants[y, x]);
 			return elem is Line || elem is SlopedLine || elem is SlopedLine2;
 		}
 

@@ -5,7 +5,7 @@ namespace AsciiUml.Commands {
 		public State Execute(State state) {
 			var selected = state.SelectedId;
 			if (selected.HasValue) {
-				state.Model.RemoveAt(state.Model.FindIndex(x => x.Id == selected));
+				state.Model.Objects.RemoveAt(state.Model.Objects.FindIndex(x => x.Id == selected));
 				return State.ClearSelection(state);
 			}
 

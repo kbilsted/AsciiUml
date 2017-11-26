@@ -6,8 +6,8 @@ using AsciiUml.Geo;
 
 namespace AsciiUml.UI {
 	public static class PaintServiceCore {
-		public static Canvass Paint(State state, params IPaintable<object>[] model) {
-			var canvas = PaintModel(model.Concat(state.Model).ToList(), state.PaintSelectableIds);
+		public static Canvass Paint(State state) {
+			var canvas = PaintModel(state.Model, state.PaintSelectableIds);
 			canvas = PaintCursor(canvas, state.TheCurser);
 			return canvas;
 		}
@@ -19,10 +19,10 @@ namespace AsciiUml.UI {
 			return canvas;
 		}
 
-		public static Canvass PaintModel(List<IPaintable<object>> model, bool paintSelectableIds) {
+		public static Canvass PaintModel(Model model, bool paintSelectableIds) {
 			var c = new Canvass();
 
-			foreach (var x in model) {
+			foreach (var x in model.Objects) {
 				if (x is Database)
 					PaintDatabase(c, x as Database, paintSelectableIds);
 				if (x is Box)
@@ -32,13 +32,13 @@ namespace AsciiUml.UI {
 			}
 
 			// draw lines after boxes so the shortest path does not intersect those objects
-			foreach (var x in model) {
+			foreach (var x in model.Objects) {
 				if (x is Line)
 					PaintLine2(c, x as Line, model);
 			}
 
 			// labels may go above lines
-			foreach (var x in model) {
+			foreach (var x in model.Objects) {
 				if (x is Label)
 					PaintLabel(c, x as Label, paintSelectableIds);
 				if (x is Note)
@@ -46,8 +46,8 @@ namespace AsciiUml.UI {
 			}
 
 			// lines may not cross boxes, hence drawn afterwards
-			model.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x, model));
-			model.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x, model));
+			model.Objects.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x, model));
+			model.Objects.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x, model));
 
 			return c;
 		}
@@ -102,7 +102,7 @@ namespace AsciiUml.UI {
 			}
 		}
 
-		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2, List<IPaintable<object>> model) {
+		private static void PaintSlopedLine2(Canvass canvass, SlopedLine2 slopedLine2, Model model) {
 			slopedLine2.Segments.Each((segment, i) => {
 				char c = GetLineChar(slopedLine2.GetDirectionOf(i), segment.Type);
 				PaintLineOrCross(canvass, segment.Pos, c, slopedLine2.Id, model);
@@ -129,7 +129,7 @@ namespace AsciiUml.UI {
 			}
 		}
 
-		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, List<IPaintable<object>> model) {
+		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, Model model) {
 			foreach (var segment in slopedLine.Segments) {
 				char c = GetLineChar(segment.Direction, segment.Type);
 
@@ -150,12 +150,16 @@ namespace AsciiUml.UI {
 			}
 		}
 
-		private static void PaintLineOrCross(Canvass canvass, Coord pos, char c, int id, List<IPaintable<object>> model) {
-			var elem = canvass.Occupants[pos.Y,pos.X];
-			if (elem is Line || elem is SlopedLine || elem is SlopedLine2) {
-				var cell = canvass.GetCell(pos);
-				if ((cell == '-' && c == '|') || (cell == '|' && c == '-'))
-					c = '+';
+		private static void PaintLineOrCross(Canvass canvass, Coord pos, char c, int id, Model model) {
+			var oc= canvass.Occupants[pos.Y,pos.X];
+			if (oc.HasValue) {
+
+				var elem = model.Objects.First(x => x.Id == oc.Value);
+				if (elem is Line || elem is SlopedLine || elem is SlopedLine2) {
+					var cell = canvass.GetCell(pos);
+					if ((cell == '-' && c == '|') || (cell == '|' && c == '-'))
+						c = '+';
+				}
 			}
 
 			canvass.Paint(pos, c, id);
@@ -277,9 +281,9 @@ namespace AsciiUml.UI {
 			return previous.X < point.X ? '>' : '<';
 		}
 
-		public static void PaintLine2(Canvass c, Line lineArg, List<IPaintable<object>> model) {
-			var from = (IConnectable) model.First(x => x.Id == lineArg.FromId);
-			var to = (IConnectable) model.First(x => x.Id == lineArg.ToId);
+		public static void PaintLine2(Canvass c, Line lineArg, Model model) {
+			var from = (IConnectable) model.Objects.First(x => x.Id == lineArg.FromId);
+			var to = (IConnectable) model.Objects.First(x => x.Id == lineArg.ToId);
 			var smallestDist = CalcSmallestDist(from.GetFrameCoords(), to.GetFrameCoords());
 
 			var line = ShortestPathFinder.Calculate(smallestDist.Min, smallestDist.Max, c, model);

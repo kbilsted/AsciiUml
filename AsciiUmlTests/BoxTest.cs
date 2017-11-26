@@ -10,7 +10,7 @@ namespace AsciiUmlTests {
 	public class BoxTest {
 		[Test]
 		public void FrameCoords() {
-			var res = new Box(new Coord(3,3)).GetFrameCoords();
+			var res = new Box(new Coord(3,3), "").GetFrameCoords();
 
 			Assert.AreEqual(new[] {new Coord(3, 3)}, res);
 		}
@@ -62,20 +62,11 @@ namespace AsciiUmlTests {
 				res);
 		}
 
-
-		[Test]
-		public void PaintDefaultBox() {
-			var res = Paint(new Box(new Coord(0,0)));
-
-			Assert.AreEqual(@"
-*", res);
-		}
-
 		[Test]
 		public void PaintBox() {
 			var res = Paint(new Box(new Coord(0,0), 4, 3));
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
 ****
 *  *
@@ -89,7 +80,7 @@ namespace AsciiUmlTests {
 			box.ChangeStyle(StyleChangeKind.Next);
 			var res = Paint(box);
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
 ....
 .  .
@@ -104,7 +95,7 @@ namespace AsciiUmlTests {
 			box.ChangeStyle(StyleChangeKind.Previous);
 			var res = Paint(box);
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
 ****
 *  *
@@ -115,7 +106,7 @@ namespace AsciiUmlTests {
 		public void PaintTextBox() {
 			var res = Paint(new Box(new Coord(0,0), "Foo"));
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
 *******
 * Foo *
@@ -126,7 +117,7 @@ namespace AsciiUmlTests {
 		public void PaintMultiTextBox() {
 			var res = Paint(new Box(new Coord(0,0), "Foo\nbazooka"));
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
 ***********
 * Foo     *
@@ -139,7 +130,7 @@ namespace AsciiUmlTests {
 		public void PaintMultiTextBoxex() {
 			var res = Paint(new Box(new Coord(0,0), "Foo\nbazooka"), new Box(new Coord(14,1), "Bar.."));
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
 ***********
 * Foo     *   *********

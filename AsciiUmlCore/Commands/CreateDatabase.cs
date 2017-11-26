@@ -11,9 +11,9 @@ namespace AsciiUml.Commands {
 
 		public State Execute(State state) {
 			var db = new Database(pos);
-			state.Model.Add(db);
+			state.Model.Objects.Add(db);
 			state.SelectedId = db.Id;
-			state.SelectedIndexInModel = state.Model.Count - 1;
+			state.SelectedIndexInModel = state.Model.Objects.Count - 1;
 			return state;
 		}
 	}

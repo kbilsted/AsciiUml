@@ -26,11 +26,11 @@ namespace AsciiUml.Geo {
 			set => SetText(value);
 		}
 
-		public Box(Coord pos) : this(PaintAbles.GlobalId++, pos) {
-		}
-
-		public Box(Coord pos, string text) : this(PaintAbles.GlobalId++, pos) {
+		public Box(Coord pos, string text) {
+			Id = PaintAbles.GlobalId++;
+			Pos = pos;
 			SetText(text);
+			Style = BoxStyle.Stars;
 		}
 
 		public Box(int id, Coord pos) {

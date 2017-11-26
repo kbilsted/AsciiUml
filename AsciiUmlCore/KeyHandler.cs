@@ -122,7 +122,7 @@ namespace AsciiUml {
 			if (!id.HasValue)
 				return Noop;
 
-			var elem = state.Model.Single(x => x.Id == id);
+			var elem = state.Model.Objects.Single(x => x.Id == id);
 			if (elem is IStyleChangeable) {
 				return Lst(new ChangeStyle(elem.Id, change));
 			}
@@ -143,7 +143,7 @@ namespace AsciiUml {
 			if (!id.HasValue)
 				return;
 
-			var elem = state.Model.Single(x => x.Id == id);
+			var elem = state.Model.Objects.Single(x => x.Id == id);
 			if (elem is IHasTextProperty property) {
 				string text = property.Text;
 				var input = new MultilineInputForm(umlWindow, "Edit..", "Text:", text, state.TheCurser.Pos) {
@@ -256,9 +256,9 @@ ctrl+c ............... Exit program");
 			input.Focus();
 		}
 
-		private static List<ICommand> Rotate(int? selected, List<IPaintable<object>> model) {
+		private static List<ICommand> Rotate(int? selected, Model model) {
 			return selected.Match(x => {
-					if (model[x] is Label)
+					if (model.Objects[x] is Label)
 						return Lst(new RotateSelectedElement(x));
 					Screen.PrintErrorAndWaitKey("Only labels can be rotated");
 					return NoopForceRepaint;
@@ -353,13 +353,13 @@ ctrl+c ............... Exit program");
 			state.PaintSelectableIds = true;
 			var cmds = NoopForceRepaint;
 
-			var selectedform = new SelectObjectForm(umlWindow, state.Model.Select(x => x.Id).ToArray(), state.TheCurser.Pos) {
+			var selectedform = new SelectObjectForm(umlWindow, state.Model.Objects.Select(x => x.Id).ToArray(), state.TheCurser.Pos) {
 				OnCancel = () => {
 					umlWindow.HandleCommands(cmds);
 					state.PaintSelectableIds = false;
 				},
 				OnSubmit = selected => {
-					if (state.Model.SingleOrDefault(b => b.Id == selected) is ISelectable)
+					if (state.Model.Objects.SingleOrDefault(b => b.Id == selected) is ISelectable)
 						cmds.Add(new SelectObject(selected, true));
 					umlWindow.HandleCommands(cmds);
 					state.PaintSelectableIds = false;

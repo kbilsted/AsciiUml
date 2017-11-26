@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using AsciiConsoleUi;
-using AsciiUml;
 using AsciiUml.Geo;
 using AsciiUml.UI;
 using NUnit.Framework;
-using static LanguageExt.Prelude;
 using static AsciiUmlTests.Test;
 
 namespace AsciiUmlTests {
 	public class LineTests {
 		[Test]
 		public void BoxOutline() {
-			var res = PaintServiceCore.CalculateBoxOutline(new Box(new Coord(3,4)));
+			var res = PaintServiceCore.CalculateBoxOutline(new Box(1, new Coord(3,4)));
 
 			Assert.AreEqual(new[] {
 				new Coord(2, 3),
@@ -35,11 +30,11 @@ namespace AsciiUmlTests {
 				new Box(1, new Coord(9,0)).SetText("Bar"),
 				new Line() {FromId = 0, ToId = 1});
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
-*******->*******
-* Foo *  * Bar *
-*******  *******", res);
++-----+->+-----+
+| Foo |  | Bar |
++-----+  +-----+", res);
 		}
 
 		[Test]
@@ -48,11 +43,11 @@ namespace AsciiUmlTests {
 				new Box(0, new Coord(0,0)) .SetText("Foo"),
 				new Box(1, new Coord(16,0)).SetText("Bar"),
 				new Line() {FromId = 0, ToId = 1});
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
-*******-------->*******
-* Foo *         * Bar *
-*******         *******", res);
++-----+-------->+-----+
+| Foo |         | Bar |
++-----+         +-----+", res);
 		}
 
 		[Test]
@@ -62,12 +57,12 @@ namespace AsciiUmlTests {
 				new Box(1, new Coord(16,1)) .SetText("Bar"),
 				new Line() {FromId = 0, ToId = 1});
 
-			Assert.AreEqual(
+			Test.AssertString(
 				@"
-*******
-* Foo *         *******
-*******-------->* Bar *
-                *******", res);
++-----+
+| Foo |         +-----+
++-----+-------->| Bar |
+                +-----+", res);
 		}
 
 
@@ -82,20 +77,20 @@ namespace AsciiUmlTests {
 			);
 			Test.AssertString(
 				@"
-***********
-* goo     *
-* and     *
-* bazooka *
-***********
++---------+
+| goo     |
+| and     |
+| bazooka |
++---------+
           |
      Server
      service
      oriented
           v
-      *********
-      * Mango *
-      * Tango *
-      *********", res);
+      +-------+
+      | Mango |
+      | Tango |
+      +-------+", res);
 		}
 
 
@@ -110,24 +105,24 @@ namespace AsciiUmlTests {
 			);
 			Test.AssertString(
 				@"
-*****
-      * a *
-      *****
++---+
+      | a |
+      +---+
       |
       |
       |
      ++
-     |*****
-     |* c *
-     |*****
+     |+---+
+     || c |
+     |+---+
      |
      |
      |
      |
      |
-     v*****
-      * b *
-      *****", res);
+     v+---+
+      | b |
+      +---+", res);
 		}
 
 
@@ -142,13 +137,13 @@ namespace AsciiUmlTests {
 
 			Test.AssertString(
 				@"
-*****
-* a *
-*****
++---+
+| a |
++---+
 v
-*****
-* b *
-*****", res);
++---+
+| b |
++---+", res);
 		}
 
 		[Test]
@@ -162,14 +157,14 @@ v
 
 			Test.AssertString(
 				@"
-*****
-* a *
-*****
++---+
+| a |
++---+
 |
 v
-*****
-* b *
-*****", res);
++---+
+| b |
++---+", res);
 		}
 	}
 }

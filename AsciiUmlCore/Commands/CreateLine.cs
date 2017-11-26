@@ -22,7 +22,7 @@ namespace AsciiUml.Commands {
 			switch (kind) {
 				case LineKind.Connected:
 					var line = new Line() {FromId = from, ToId = to};
-					state.Model.Add(line);
+					state.Model.Objects.Add(line);
 					state.SelectedId = null;
 					state.SelectedIndexInModel = null;
 					return state;

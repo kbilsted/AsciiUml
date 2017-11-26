@@ -12,7 +12,7 @@ namespace AsciiUmlTests {
             [Test]
             public void PaintLine() {
                 var res = PaintOneLine(labelX, GetLine2_0());
-                Assert.AreEqual(@"x -", res);
+                Test.AssertString(@"x -", res);
             }
 
             [Test]
@@ -21,7 +21,7 @@ namespace AsciiUmlTests {
                 line.Segments.Add(new LineSegment(line, new Coord(0, 0), new Coord(0, 1), SegmentType.Line));
 
                 var res = PaintOneLine(line);
-                Assert.AreEqual(
+	            Test.AssertString(
                     @"|
 |", res);
             }
@@ -30,32 +30,32 @@ namespace AsciiUmlTests {
             public void Test2_0_DragLeftAt_2_0() {
                 var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(1, 0));
                 var res = PaintOneLine(labelX, line);
-                Assert.AreEqual(@"x--", res);
+	            Test.AssertString(@"x--", res);
             }
 
             [Test]
             public void Test2_0_DragRightAt_2_0() {
                 var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0));
                 var res = PaintOneLine(labelX, line);
-                Assert.AreEqual(@"x --", res);
+	            Test.AssertString(@"x --", res);
             }
 
             [Test]
             public void Test2_0_DragRightDragLeft_Should_result_in_size_1() {
                 var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(3, 0));
                 var res = PaintOneLine(labelX, line);
-                Assert.AreEqual(@"x --", res);
+	            Test.AssertString(@"x --", res);
 
                 line = line.Drag(new Coord(3, 0), new Coord(2, 0));
                 res = PaintOneLine(labelX, line);
-                Assert.AreEqual(@"x -", res);
+                Test.AssertString(@"x -", res);
             }
 
             [Test]
             public void Test2_0_DragDownAt_2_0() {
                 var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(2, 1));
                 var res = PaintOneLine(labelX, line);
-                Assert.AreEqual(@"x |
+                Test.AssertString(@"x |
   |", res);
             }
 
@@ -63,7 +63,7 @@ namespace AsciiUmlTests {
             public void Test2_1_DragUpAt_2_1() {
                 var line = GetLine(new Coord(2, 1), new Coord(2, 1)).Drag(new Coord(2, 1), new Coord(2, 0));
                 var res = PaintOneLine(labelX, line);
-                Assert.AreEqual(@"x |
+                Test.AssertString(@"x |
   |", res);
             }
         }
@@ -72,27 +72,27 @@ namespace AsciiUmlTests {
             [Test]
             public void Can_draw_line_10_40() {
                 var res = PaintOneLine(labelX, GetLine10_40());
-                Assert.AreEqual(@"x----", res);
+                Test.AssertString(@"x----", res);
             }
 
             [Test]
             public void Drag_outside_any_line_has_no_effect() {
                 var res = PaintOneLine(labelX, GetLine10_40().Drag(new Coord(2, 2), new Coord(2, 3)));
-                Assert.AreEqual(@"x----", res);
+                Test.AssertString(@"x----", res);
             }
 
             [Test]
             public void DragLeft_on_left_will_extend_line() {
                 var line14 = GetLine10_40().Drag(new Coord(1, 0), new Coord(0, 0));
                 var res = PaintOneLine(line14);
-                Assert.AreEqual(@"-----", res);
+                Test.AssertString(@"-----", res);
             }
 
             [Test]
             public void DragRight_on_left_will_subtract_line() {
                 var line14 = GetLine10_40().Drag(new Coord(1, 0), new Coord(2, 0));
                 var res = PaintOneLine(labelX, line14);
-                Assert.AreEqual(@"x ---", res);
+                Test.AssertString(@"x ---", res);
             }
 
             [ Test]
@@ -131,7 +131,7 @@ namespace AsciiUmlTests {
                 line14 = line14.Drag(new Coord(4,1), new Coord(4,0));
                 var res = PaintOneLine(labelX, line14);
                 Console.WriteLine(res);
-                Assert.AreEqual(@"x---+", res);
+                Test.AssertString(@"x---+", res);
             }
 
             [Test]
@@ -187,28 +187,28 @@ namespace AsciiUmlTests {
             public void DragLeft_on_secondleft_will_not_extend_line() {
                 var line14 = GetLine10_40().Drag(new Coord(2, 0), new Coord(3, 0));
                 var res = PaintOneLine(labelX, line14);
-                Assert.AreEqual(@"x----", res);
+                Test.AssertString(@"x----", res);
             }
 
             [Test]
             public void DragRight_on_secondleft_will_not_extend_line() {
                 var line14 = GetLine10_40().Drag(new Coord(2, 0), new Coord(1, 0));
                 var res = PaintOneLine(labelX, line14);
-                Assert.AreEqual(@"x----", res);
+                Test.AssertString(@"x----", res);
             }
 
             [Test]
             public void DragLeft_on_rightend_will_subtract_line() {
                 var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(3, 0));
                 var res = PaintOneLine(labelX, line14);
-                Assert.AreEqual(@"x---", res);
+                Test.AssertString(@"x---", res);
             }
 
             [Test]
             public void DragRight_on_rightend_will_extend_line() {
                 var line14 = GetLine10_40().Drag(new Coord(4, 0), new Coord(5, 0));
                 var res = PaintOneLine(labelX, line14);
-                Assert.AreEqual(@"x-----", res);
+                Test.AssertString(@"x-----", res);
             }
         }
 

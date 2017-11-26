@@ -9,8 +9,8 @@ namespace AsciiUml.Commands {
 		}
 
 		public State Execute(State state) {
-			var idx = state.Model.FindIndex(x => x.Id == id);
-			state.Model[idx] = ((Label) state.Model[idx]).Rotate();
+			var idx = state.Model.Objects.FindIndex(x => x.Id == id);
+			state.Model.Objects[idx] = ((Label) state.Model.Objects[idx]).Rotate();
 			return state;
 		}
 	}

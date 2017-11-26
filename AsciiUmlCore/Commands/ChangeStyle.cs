@@ -13,7 +13,7 @@ namespace AsciiUml.Commands {
 		}
 
 		public State Execute(State state) {
-			var elem = state.Model.FirstOrDefault(x => x.Id == id);
+			var elem = state.Model.Objects.FirstOrDefault(x => x.Id == id);
 			if (elem is IStyleChangeable property) {
 				property.ChangeStyle(change);
 			}

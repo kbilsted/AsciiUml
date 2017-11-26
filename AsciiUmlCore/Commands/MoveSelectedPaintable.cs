@@ -12,7 +12,7 @@ namespace AsciiUml.Commands {
 
 		public State Execute(State state) {
 			state.SelectedIndexInModel.ToOption()
-				.Match(x => state.Model[x] = (IPaintable<object>) state.Model[x].Move(delta), () => { });
+				.Match(x => state.Model.Objects[x] = (IPaintable<object>) state.Model.Objects[x].Move(delta), () => { });
 			return state;
 		}
 	}
