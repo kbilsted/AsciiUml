@@ -28,9 +28,7 @@ namespace AsciiUml.Geo {
 
 		public int Id { get; }
 
-		public Coord Pos {
-			get { return Segments.First().Pos; }
-		}
+		public Coord Pos => Segments.First().Pos;
 
 		public readonly List<SlopedSegment2> Segments = new List<SlopedSegment2>();
 
@@ -122,7 +120,7 @@ namespace AsciiUml.Geo {
 			return LineSemantic.LinePiece;
 		}
 
-		public SlopedLine AutoRoute() {
+		public SlopedLineVectorized AutoRoute() {
 			return null; // return a new shortest path from start to end
 		}
 

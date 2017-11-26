@@ -5,39 +5,36 @@ using AsciiConsoleUi;
 using LanguageExt;
 
 namespace AsciiUml.Geo {
-	/// <summary>
-	/// a line representation based on vectors
-	/// </summary>
-	public class SlopedLine : IPaintable<SlopedLine> {
+	public class SlopedLineVectorized : IPaintable<SlopedLineVectorized> {
 		public readonly List<LineSegment> Segments = new List<LineSegment>();
 		public int Id { get; }
 
-		public SlopedLine() {
+		public SlopedLineVectorized() {
 			Id = PaintAbles.GlobalId++;
 		}
 
-		public SlopedLine(int id, List<LineSegment> segments) {
+		public SlopedLineVectorized(int id, List<LineSegment> segments) {
 			Id = id;
 			Segments = segments;
 		}
 
-		public SlopedLine Move(int x, int y) {
+		public SlopedLineVectorized Move(int x, int y) {
 			throw new NotImplementedException();
 		}
 
-		public SlopedLine Move(Coord delta) {
+		public SlopedLineVectorized Move(Coord delta) {
 			throw new NotImplementedException();
 		}
 
-		public SlopedLine AutoRoute() {
+		public SlopedLineVectorized AutoRoute() {
 			return null; // return a new shortest path from start to end
 		}
 
-		public SlopedLine Drag(Coord dragFrom, Coord dragTo) {
+		public SlopedLineVectorized Drag(Coord dragFrom, Coord dragTo) {
 			return DragAnArrowLinePiece(dragFrom, dragTo).MatchUnsafe(x => x, () => this);
 		}
 
-		public Option<SlopedLine> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
+		public Option<SlopedLineVectorized> DragAnArrowLinePiece(Coord dragFrom, Coord dragTo) {
 			var endpoints = MatchEndpoint(dragFrom).ToList();
 			if (endpoints.Any()) {
 				//if (endpoints.Count == 1)
@@ -90,7 +87,7 @@ namespace AsciiUml.Geo {
 							}
 						}
 					}
-					return new SlopedLine(Id, newList);
+					return new SlopedLineVectorized(Id, newList);
 				}
 			}
 
@@ -151,21 +148,21 @@ namespace AsciiUml.Geo {
 		public readonly Coord From, To;
 		public readonly SegmentType Type;
 		public readonly LineDirection Direction;
-		public readonly SlopedLine Origin;
+		public readonly SlopedLineVectorized Origin;
 
-		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type)
+		public LineSegment(SlopedLineVectorized l, Coord from, Coord to, SegmentType type)
 			: this(PaintAbles.GlobalId++, l, from, to, type, Vector.GetDirection(from, to)) {
 		}
 
-		public LineSegment(SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction)
+		public LineSegment(SlopedLineVectorized l, Coord from, Coord to, SegmentType type, LineDirection direction)
 			: this(PaintAbles.GlobalId++, l, from, to, type, direction) {
 		}
 
-		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type)
+		public LineSegment(int id, SlopedLineVectorized l, Coord from, Coord to, SegmentType type)
 			: this(id, l, from, to, type, Vector.GetDirection(from, to)) {
 		}
 
-		public LineSegment(int id, SlopedLine l, Coord from, Coord to, SegmentType type, LineDirection direction) {
+		public LineSegment(int id, SlopedLineVectorized l, Coord from, Coord to, SegmentType type, LineDirection direction) {
 			if (type == SegmentType.Slope && from != to)
 				throw new ArgumentException("Slopes can only be size 1");
 

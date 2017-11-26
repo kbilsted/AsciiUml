@@ -5,10 +5,13 @@ using NUnit.Framework;
 using static AsciiUmlTests.Test;
 
 namespace AsciiUmlTests {
-    public class SlopedLineTests {
-        static Label labelX = new Label(1000,new Coord(0, 0), "x", LabelDirection.LeftToRight);
+	[Ignore("not using the vector version")]
+	class SlopedLineVectorizedTests
+	{
+		static Label labelX = new Label(1000,new Coord(0, 0), "x", LabelDirection.LeftToRight);
 
-        public class SinglePoint_DragTests {
+		[Ignore("not using the vector version")]
+        class SinglePoint_DragTests {
             [Test]
             public void PaintLine() {
                 var res = PaintOneLine(labelX, GetLine2_0());
@@ -17,7 +20,7 @@ namespace AsciiUmlTests {
 
             [Test]
             public void PaintLine_horizontal() {
-                var line = new SlopedLine();
+                var line = new SlopedLineVectorized();
                 line.Segments.Add(new LineSegment(line, new Coord(0, 0), new Coord(0, 1), SegmentType.Line));
 
                 var res = PaintOneLine(line);
@@ -68,7 +71,8 @@ namespace AsciiUmlTests {
             }
         }
 
-        public class Line_DragTests {
+		[Ignore("not using the vector version")]
+		public class Line_DragTests {
             [Test]
             public void Can_draw_line_10_40() {
                 var res = PaintOneLine(labelX, GetLine10_40());
@@ -214,22 +218,22 @@ namespace AsciiUmlTests {
 
         // todo drag lines up/down
 
-        private static SlopedLine GetLine(Coord from, Coord to) {
-            SlopedLine l1 = new SlopedLine();
+        private static SlopedLineVectorized GetLine(Coord from, Coord to) {
+            SlopedLineVectorized l1 = new SlopedLineVectorized();
             l1.Segments.Add(new LineSegment(l1, from, to, SegmentType.Line));
             return l1;
         }
 
-        private static SlopedLine GetLine2_0() {
+        private static SlopedLineVectorized GetLine2_0() {
             return GetLine(new Coord(2, 0), new Coord(2, 0));
         }
 
-        private static SlopedLine GetLine10_40()
+        private static SlopedLineVectorized GetLine10_40()
         {
             return GetLine(new Coord(1, 0), new Coord(4, 0));
         }
 
-        private static SlopedLine GetLine11_41()
+        private static SlopedLineVectorized GetLine11_41()
         {
             return GetLine(new Coord(1, 1), new Coord(4, 1));
         }

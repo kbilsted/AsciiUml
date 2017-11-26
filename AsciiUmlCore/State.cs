@@ -44,6 +44,12 @@ namespace AsciiUml {
 		public Model(IEnumerable<IPaintable<object>> objects) {
 			Objects.AddRange(objects);
 		}
+
+		public IPaintable<object> GetById(int id) {
+			var res = Objects.FirstOrDefault(x => x.Id == id);
+			return res;
+		}
+
 	}
 
 	public class GuiState {

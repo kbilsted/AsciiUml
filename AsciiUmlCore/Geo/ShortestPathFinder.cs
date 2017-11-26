@@ -111,7 +111,7 @@ namespace AsciiUml.Geo {
 			if (cell == null)
 				return true;
 			var elem = model.Objects.First(z => z.Id == c.Occupants[y, x]);
-			return elem is Line || elem is SlopedLine || elem is SlopedLine2;
+			return elem is Line || elem is SlopedLineVectorized || elem is SlopedLine2;
 		}
 
 

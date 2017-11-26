@@ -17,16 +17,6 @@ namespace AsciiUmlTests {
             }
 
             [Test]
-            public void PaintLine_horizontal() {
-                var line = new SlopedLine();
-                line.Segments.Add(new LineSegment(line, new Coord(0, 0), new Coord(0, 1), SegmentType.Line));
-
-                var res = PaintOneLine(line);
-                Test.AssertString(@"|
-|", res);
-            }
-
-            [Test]
             public void Test2_0_DragLeftAt_2_0() {
                 var line = GetLine2_0().Drag(new Coord(2, 0), new Coord(1, 0));
                 var res = PaintOneLine(labelX, line);

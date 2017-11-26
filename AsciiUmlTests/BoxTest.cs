@@ -10,7 +10,7 @@ namespace AsciiUmlTests {
 	public class BoxTest {
 		[Test]
 		public void FrameCoords() {
-			var res = new Box(new Coord(3,3), "").GetFrameCoords();
+			var res = new Box(100, new Coord(3,3)).GetFrameCoords();
 
 			Assert.AreEqual(new[] {new Coord(3, 3)}, res);
 		}

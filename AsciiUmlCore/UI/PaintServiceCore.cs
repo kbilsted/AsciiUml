@@ -46,7 +46,7 @@ namespace AsciiUml.UI {
 			}
 
 			// lines may not cross boxes, hence drawn afterwards
-			model.Objects.OfType<SlopedLine>().Each(x => PaintSlopedLine(c, x, model));
+			model.Objects.OfType<SlopedLineVectorized>().Each(x => PaintSlopedLine(c, x, model));
 			model.Objects.OfType<SlopedLine2>().Each(x => PaintSlopedLine2(c, x, model));
 
 			return c;
@@ -129,8 +129,8 @@ namespace AsciiUml.UI {
 			}
 		}
 
-		private static void PaintSlopedLine(Canvass canvass, SlopedLine slopedLine, Model model) {
-			foreach (var segment in slopedLine.Segments) {
+		private static void PaintSlopedLine(Canvass canvass, SlopedLineVectorized slopedLineVectorized, Model model) {
+			foreach (var segment in slopedLineVectorized.Segments) {
 				char c = GetLineChar(segment.Direction, segment.Type);
 
 				var delta = Math.Abs(segment.From.X - segment.To.X);
@@ -155,7 +155,7 @@ namespace AsciiUml.UI {
 			if (oc.HasValue) {
 
 				var elem = model.Objects.First(x => x.Id == oc.Value);
-				if (elem is Line || elem is SlopedLine || elem is SlopedLine2) {
+				if (elem is Line || elem is SlopedLineVectorized || elem is SlopedLine2) {
 					var cell = canvass.GetCell(pos);
 					if ((cell == '-' && c == '|') || (cell == '|' && c == '-'))
 						c = '+';
