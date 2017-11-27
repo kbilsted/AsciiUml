@@ -58,7 +58,7 @@ namespace AsciiConsoleUi {
 			}
 
 			if (key.Key == ConsoleKey.Tab) {
-				Parent.Focus();
+				Parent.FocusNextChild(this);
 				return true;
 			}
 
