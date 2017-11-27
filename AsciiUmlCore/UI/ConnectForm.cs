@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AsciiConsoleUi;
 
 namespace AsciiUml.UI {
@@ -8,8 +9,10 @@ namespace AsciiUml.UI {
 		private readonly TextLabel validationErrors;
 		public Action OnCancel = () => { };
 		public Action<int, int> OnSubmit = (from, to) => { };
+		private int[] legalInput;
 
-		public ConnectForm(GuiComponent parent, Coord position) {
+		public ConnectForm(GuiComponent parent, Coord position, int[] legalInput) {
+			this.legalInput = legalInput;
 			titled = new TitledWindow(parent, "Connect...") {Position = position};
 
 			new TextLabel(titled, "From object:", new Coord(0, 0));
@@ -31,10 +34,22 @@ namespace AsciiUml.UI {
 				return;
 			}
 
+			if (!legalInput.Contains(ifrom)) {
+				validationErrors.Text = $"No object with id '{ifrom}'";
+				return;
+			}
+
 			if (string.IsNullOrWhiteSpace(to.Value) || !int.TryParse(to.Value, out var ito)) {
 				validationErrors.Text = "Need to fill in 'to'";
 				return;
 			}
+
+			if (!legalInput.Contains(ito))
+			{
+				validationErrors.Text = $"No object with id '{ito}'";
+				return;
+			}
+
 			titled.RemoveMeAndChildren();
 			OnSubmit(ifrom, ito);
 		}

@@ -200,7 +200,7 @@ ctrl+c ............... Exit program");
 
 			var cmds = NoopForceRepaint;
 
-			var connect = new ConnectForm(umlWindow, state.TheCurser.Pos) {
+			var connect = new ConnectForm(umlWindow, state.TheCurser.Pos, state.Model.Objects.Select(x=>x.Id).ToArray()) {
 				OnCancel = () => {
 					umlWindow.HandleCommands(cmds);
 					state.PaintSelectableIds = false;
